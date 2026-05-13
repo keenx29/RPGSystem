@@ -8,6 +8,7 @@ namespace RPGSystem.Controllers
     {
         private readonly DiceService _diceService;
 
+        private static List<RollResult> _rollHistory = new();
         public CharacterController(DiceService diceService)
         {
             _diceService = diceService;
@@ -31,7 +32,8 @@ namespace RPGSystem.Controllers
 
             CharacterSheetViewModel vm = new CharacterSheetViewModel
             {
-                Character = character
+                Character = character,
+                RollHistory = _rollHistory
             };
 
             return View(vm);
@@ -90,11 +92,12 @@ namespace RPGSystem.Controllers
                 Modifier = modifier,
                 StatName = statName
             };
+            _rollHistory.Insert(0, result);
 
             CharacterSheetViewModel vm = new CharacterSheetViewModel
             {
                 Character = character,
-                RollResult = result
+                RollHistory = _rollHistory
             };
 
             return View("Sheet", vm);

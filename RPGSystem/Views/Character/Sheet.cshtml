@@ -55,16 +55,60 @@
 
 </div>
 
-@if (Model.RollResult != null)
-{
-    <h3>Roll Result</h3>
+<div class="card mt-4 p-3">
 
-    <p>
-        @Model.RollResult.StatName Roll:
-        @Model.RollResult.DiceRoll
-        +
-        @Model.RollResult.Modifier
-        =
-        @Model.RollResult.Total
-    </p>
-}
+    <h3>Roll History</h3>
+
+    @if (Model.RollHistory.Any())
+    {
+        @foreach (var roll in Model.RollHistory)
+        {
+            <div class="border-bottom mb-2 pb-2">
+
+                <strong>@roll.StatName</strong>
+
+                rolled
+
+                @if (roll.DiceRoll == 20)
+                {
+                    <strong class="text-success">
+                        @roll.DiceRoll
+                    </strong>
+                }
+                else if (roll.DiceRoll == 1)
+                {
+                    <strong class="text-danger">
+                        @roll.DiceRoll
+                    </strong>
+                }
+                else
+                {
+                    <strong>
+                        @roll.DiceRoll
+                    </strong>
+                }
+
+                @if (roll.Modifier >= 0)
+                {
+                    <span> + </span>
+                }
+                else
+                {
+                    <span> - </span>
+                }
+
+                <strong>@Math.Abs(roll.Modifier)</strong>
+
+                =
+
+                <strong>@roll.Total</strong>
+
+            </div>
+        }
+    }
+    else
+    {
+        <p>No rolls yet.</p>
+    }
+
+</div>
