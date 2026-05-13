@@ -1,0 +1,33 @@
+﻿@model RPGSystem.Models.StatCardViewModel
+
+<div class="card p-3 m-2 text-center" style="width: 200px;">
+
+    <h4>@Model.StatName</h4>
+
+    <h2>@Model.StatValue</h2>
+
+    <p>
+        Modifier:
+        @if (Model.Modifier >= 0)
+        {
+            <span>+@Model.Modifier</span>
+        }
+        else
+        {
+            <span>@Model.Modifier</span>
+        }
+    </p>
+
+    <form asp-action="RollStat" method="post">
+
+        <input type="hidden"
+               name="statName"
+               value="@Model.StatName" />
+
+        <button class="btn btn-primary" type="submit">
+            Roll
+        </button>
+
+    </form>
+
+</div>

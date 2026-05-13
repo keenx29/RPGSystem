@@ -1,8 +1,59 @@
-﻿@model RPGSystem.Models.CharacterSheetViewModel
+﻿@using RPGSystem.Models
+@model RPGSystem.Models.CharacterSheetViewModel
 
 <h1>@Model.Character.Name</h1>
 
-<h3>Stats</h3>
+<div class="d-flex flex-wrap">
+
+    <partial name="_StatCard"
+             model='new StatCardViewModel
+             {
+                 StatName = "Strength",
+                 StatValue = Model.Character.Strength,
+                 Modifier = Model.Character.GetStrengthModifier()
+             }' />
+
+    <partial name="_StatCard"
+             model='new StatCardViewModel
+             {
+                 StatName = "Dexterity",
+                 StatValue = Model.Character.Dexterity,
+                 Modifier = Model.Character.GetDexterityModifier()
+             }' />
+
+    <partial name="_StatCard"
+             model='new StatCardViewModel
+             {
+                 StatName = "Constitution",
+                 StatValue = Model.Character.Constitution,
+                 Modifier = Model.Character.GetConstitutionModifier()
+             }' />
+
+    <partial name="_StatCard"
+             model='new StatCardViewModel
+             {
+                 StatName = "Intelligence",
+                 StatValue = Model.Character.Intelligence,
+                 Modifier = Model.Character.GetIntelligenceModifier()
+             }' />
+
+    <partial name="_StatCard"
+             model='new StatCardViewModel
+             {
+                 StatName = "Wisdom",
+                 StatValue = Model.Character.Wisdom,
+                 Modifier = Model.Character.GetWisdomModifier()
+             }' />
+
+    <partial name="_StatCard"
+             model='new StatCardViewModel
+             {
+                 StatName = "Charisma",
+                 StatValue = Model.Character.Charisma,
+                 Modifier = Model.Character.GetCharismaModifier()
+             }' />
+
+</div>
 
 @if (Model.RollResult != null)
 {
@@ -17,25 +68,3 @@
         @Model.RollResult.Total
     </p>
 }
-
-<div>
-    <p>
-        Strength: @Model.Character.Strength
-        (Modifier: @Model.Character.GetStrengthModifier())
-
-        <form asp-action="RollStat" method="post">
-            <input type="hidden" name="statName" value="Strength" />
-            <button type="submit">Roll</button>
-        </form>
-    </p>
-
-    <p>
-        Dexterity: @Model.Character.Dexterity
-        (Modifier: @Model.Character.GetDexterityModifier())
-    </p>
-
-    <p>
-        Constitution: @Model.Character.Constitution
-        (Modifier: @Model.Character.GetConstitutionModifier())
-    </p>
-</div>
