@@ -1,15 +1,41 @@
-﻿@model RPGSystem.Models.Character
+﻿@model RPGSystem.Models.CharacterSheetViewModel
 
-<h1>@Model.Name</h1>
+<h1>@Model.Character.Name</h1>
+
+<h3>Stats</h3>
+
+@if (Model.RollResult != null)
+{
+    <h3>Roll Result</h3>
+
+    <p>
+        @Model.RollResult.StatName Roll:
+        @Model.RollResult.DiceRoll
+        +
+        @Model.RollResult.Modifier
+        =
+        @Model.RollResult.Total
+    </p>
+}
 
 <div>
-    <h3>Stats</h3>
+    <p>
+        Strength: @Model.Character.Strength
+        (Modifier: @Model.Character.GetStrengthModifier())
 
-    <p>Strength: @Model.Strength</p>
-    <p>Dexterity: @Model.Dexterity</p>
-    <p>Constitution: @Model.Constitution</p>
+        <form asp-action="RollStat" method="post">
+            <input type="hidden" name="statName" value="Strength" />
+            <button type="submit">Roll</button>
+        </form>
+    </p>
 
-    <p>Intelligence: @Model.Intelligence</p>
-    <p>Wisdom: @Model.Wisdom</p>
-    <p>Charisma: @Model.Charisma</p>
+    <p>
+        Dexterity: @Model.Character.Dexterity
+        (Modifier: @Model.Character.GetDexterityModifier())
+    </p>
+
+    <p>
+        Constitution: @Model.Character.Constitution
+        (Modifier: @Model.Character.GetConstitutionModifier())
+    </p>
 </div>
