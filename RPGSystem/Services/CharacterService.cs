@@ -24,6 +24,7 @@ namespace RPGSystem.Services
 
                 MaxHP = 28,
                 CurrentHP = 28,
+                MovementSpeed = 30,
 
                 Skills = new List<Skill>
                 {
@@ -47,6 +48,12 @@ namespace RPGSystem.Services
                         RelatedAbility = AbilityType.Dexterity,
                         IsProficient = true
                     }
+                },
+                EquippedWeapon = new Weapon
+                {
+                    Name = "Longsword",
+                    DamageDice = "1d8",
+                    AttackBonus = 0
                 }
             };
         }

@@ -16,9 +16,13 @@
         public int ArmorClass { get; set; }
         public int MaxHP { get; set; }
         public int CurrentHP { get; set; }
+        public int MovementSpeed { get; set; } = 30;
 
         //Skills
         public List<Skill> Skills { get; set; } = new();
+
+        //Inventory
+        public Weapon EquippedWeapon { get; set; }
 
         public int GetStrengthModifier()
         {
