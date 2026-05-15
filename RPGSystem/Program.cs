@@ -7,6 +7,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<DiceService>();
 
+builder.Services.AddSingleton<CharacterService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -103,6 +103,15 @@
 
             return bonus;
         }
+        
+        public string FormatModifier(int value)
+        {
+            if (value >= 0)
+            {
+                return $"+{value}";
+            }
+            return value.ToString();
+        }
     }
 }
 

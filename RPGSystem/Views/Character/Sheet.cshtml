@@ -1,4 +1,5 @@
 ﻿@using RPGSystem.Models
+@using RPGSystem.Helpers
 @model RPGSystem.Models.CharacterSheetViewModel
 
 <h1>@Model.Character.Name</h1>
@@ -86,20 +87,12 @@
 
         <div class="col-md-3">
             <strong>Proficiency Bonus</strong>
-            <p>+@Model.Character.GetProficiencyBonus()</p>
+            <p>@ModifierFormatter.Format(Model.Character.GetProficiencyBonus())</p>
         </div>
 
         <div class="col-md-3">
             <strong>Initiative</strong>
-
-            @if (Model.Character.GetInitiative() >= 0)
-            {
-                <p>+@Model.Character.GetInitiative()</p>
-            }
-            else
-            {
-                <p>@Model.Character.GetInitiative()</p>
-            }
+            <p>@ModifierFormatter.Format(Model.Character.GetInitiative())</p>
         </div>
 
         <div class="col-md-3">
@@ -137,14 +130,7 @@
 
             <div>
 
-                @if (bonus >= 0)
-                {
-                    <span>+@bonus</span>
-                }
-                else
-                {
-                    <span>@bonus</span>
-                }
+                <span>@ModifierFormatter.Format(bonus)</span>
 
             </div>
 
@@ -186,22 +172,12 @@
                         @roll.DiceRoll
                     </strong>
                 }
-
-                @if (roll.Modifier >= 0)
-                {
-                    <span> + </span>
-                }
-                else
-                {
-                    <span> - </span>
-                }
-
-                <strong>@Math.Abs(roll.Modifier)</strong>
-
+                <span>@ModifierFormatter.Format(roll.Modifier)</span>
+                
                 =
 
                 <strong>@roll.Total</strong>
-
+                
             </div>
         }
     }

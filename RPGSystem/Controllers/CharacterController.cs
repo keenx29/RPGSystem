@@ -7,55 +7,19 @@ namespace RPGSystem.Controllers
     public class CharacterController : Controller
     {
         private readonly DiceService _diceService;
+        private readonly CharacterService _characterService;
 
         private static List<RollResult> _rollHistory = new();
-        public CharacterController(DiceService diceService)
+        public CharacterController(DiceService diceService, CharacterService characterService)
         {
             _diceService = diceService;
+            _characterService = characterService;
         }
 
         [HttpGet]
         public IActionResult Sheet()
         {
-            Character character = new Character
-            {
-                Name = "Thorin",
-                    
-                Strength = 16,
-                Dexterity = 12,
-                Constitution = 14,
-                Intelligence = 10,
-                Wisdom = 8,
-                Charisma = 13,
-
-                Level = 3,
-                ArmorClass = 15,
-                MaxHP = 28,
-                CurrentHP = 28,
-                Skills = new List<Skill>
-                {
-                    new Skill
-                    {
-                        Name = "Athletics",
-                        RelatedAbility = AbilityType.Strength,
-                        IsProficient = true
-                    },
-
-                    new Skill
-                    {
-                        Name = "Perception",
-                        RelatedAbility = AbilityType.Wisdom,
-                        IsProficient = false
-                    },
-
-                    new Skill
-                    {
-                        Name = "Stealth",
-                        RelatedAbility = AbilityType.Dexterity,
-                        IsProficient = true
-                    }
-                }
-            };
+            Character character = _characterService.GetTestCharacter();
 
             CharacterSheetViewModel vm = new CharacterSheetViewModel
             {
@@ -69,46 +33,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollStat(string statName)
         {
-            Character character = new Character
-            {
-                Name = "Thorin",
-
-                Strength = 16,
-                Dexterity = 12,
-                Constitution = 14,
-                Intelligence = 10,
-                Wisdom = 8,
-                Charisma = 13,
-
-                Level = 3,
-                ArmorClass = 15,
-                MaxHP = 28,
-                CurrentHP = 28,
-
-                Skills = new List<Skill>
-                {
-                    new Skill
-                    {
-                        Name = "Athletics",
-                        RelatedAbility = AbilityType.Strength,
-                        IsProficient = true
-                    },
-
-                    new Skill
-                    {
-                        Name = "Perception",
-                        RelatedAbility = AbilityType.Wisdom,
-                        IsProficient = false
-                    },
-
-                    new Skill
-                    {
-                        Name = "Stealth",
-                        RelatedAbility = AbilityType.Dexterity,
-                        IsProficient = true
-                    }
-                }
-            };
+            Character character = _characterService.GetTestCharacter();
 
             int modifier = 0;
 
