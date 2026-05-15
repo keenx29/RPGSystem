@@ -3,7 +3,7 @@
 
 <h1>@Model.Character.Name</h1>
 
-<!-- Stat Cards -->
+@* Stat Cards *@
 <div class="d-flex flex-wrap">
 
     <partial name="_StatCard"
@@ -56,7 +56,7 @@
 
 </div>
 
-<!-- Derived Stats -->
+@* Derived Stats *@
 <div class="card mt-4 p-3">
 
     <h3>Character Stats</h3>
@@ -111,7 +111,49 @@
 
 </div>
 
-<!-- Roll History Panel-->
+@* Skills Panel *@
+<div class="card mt-4 p-3">
+
+    <h3>Skills</h3>
+
+    @foreach (var skill in Model.Character.Skills)
+    {
+        int bonus = Model.Character.GetSkillBonus(skill);
+
+        <div class="d-flex justify-content-between border-bottom p-2">
+
+            <div>
+                <strong>@skill.Name</strong>
+
+                (@skill.RelatedAbility)
+
+                @if (skill.IsProficient)
+                {
+                    <span class="text-success">
+                        Proficient
+                    </span>
+                }
+            </div>
+
+            <div>
+
+                @if (bonus >= 0)
+                {
+                    <span>+@bonus</span>
+                }
+                else
+                {
+                    <span>@bonus</span>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@* Roll History Panel *@
 <div class="card mt-4 p-3">
 
     <h3>Roll History</h3>

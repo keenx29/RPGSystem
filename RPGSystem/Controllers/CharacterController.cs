@@ -31,7 +31,30 @@ namespace RPGSystem.Controllers
                 Level = 3,
                 ArmorClass = 15,
                 MaxHP = 28,
-                CurrentHP = 28
+                CurrentHP = 28,
+                Skills = new List<Skill>
+                {
+                    new Skill
+                    {
+                        Name = "Athletics",
+                        RelatedAbility = AbilityType.Strength,
+                        IsProficient = true
+                    },
+
+                    new Skill
+                    {
+                        Name = "Perception",
+                        RelatedAbility = AbilityType.Wisdom,
+                        IsProficient = false
+                    },
+
+                    new Skill
+                    {
+                        Name = "Stealth",
+                        RelatedAbility = AbilityType.Dexterity,
+                        IsProficient = true
+                    }
+                }
             };
 
             CharacterSheetViewModel vm = new CharacterSheetViewModel
@@ -60,7 +83,31 @@ namespace RPGSystem.Controllers
                 Level = 3,
                 ArmorClass = 15,
                 MaxHP = 28,
-                CurrentHP = 28
+                CurrentHP = 28,
+
+                Skills = new List<Skill>
+                {
+                    new Skill
+                    {
+                        Name = "Athletics",
+                        RelatedAbility = AbilityType.Strength,
+                        IsProficient = true
+                    },
+
+                    new Skill
+                    {
+                        Name = "Perception",
+                        RelatedAbility = AbilityType.Wisdom,
+                        IsProficient = false
+                    },
+
+                    new Skill
+                    {
+                        Name = "Stealth",
+                        RelatedAbility = AbilityType.Dexterity,
+                        IsProficient = true
+                    }
+                }
             };
 
             int modifier = 0;

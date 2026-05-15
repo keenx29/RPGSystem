@@ -17,6 +17,9 @@
         public int MaxHP { get; set; }
         public int CurrentHP { get; set; }
 
+        //Skills
+        public List<Skill> Skills { get; set; } = new();
+
         public int GetStrengthModifier()
         {
             return (Strength - 10) / 2;
@@ -60,6 +63,45 @@
         public int GetProficiencyBonus()
         {
             return 2 + ((Level - 1) / 4);
+        }
+
+        public int GetAbilityModifier(AbilityType ability)
+        {
+            switch (ability)
+            {
+                case AbilityType.Strength:
+                    return GetStrengthModifier();
+
+                case AbilityType.Dexterity:
+                    return GetDexterityModifier();
+
+                case AbilityType.Constitution:
+                    return GetConstitutionModifier();
+
+                case AbilityType.Intelligence:
+                    return GetIntelligenceModifier();
+
+                case AbilityType.Wisdom:
+                    return GetWisdomModifier();
+
+                case AbilityType.Charisma:
+                    return GetCharismaModifier();
+
+                default:
+                    return 0;
+            }
+        }
+
+        public int GetSkillBonus(Skill skill)
+        {
+            int bonus = GetAbilityModifier(skill.RelatedAbility);
+
+            if (skill.IsProficient)
+            {
+                bonus += GetProficiencyBonus();
+            }
+
+            return bonus;
         }
     }
 }
