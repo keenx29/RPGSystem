@@ -116,45 +116,97 @@ namespace RPGSystem.Controllers
         {
             Character character = _characterService.GetTestCharacter();
 
-            Weapon weapon = character.EquippedWeapon;
+            var weapon = character.EquippedWeapon;
 
-            int d20 = _diceService.RollD20();
+            int roll = _diceService.RollD20();
 
-            int abilityMod = character.GetStrengthModifier(); // TODO: STR/DEX logic
-            int prof = character.GetProficiencyBonus();// TODO: Weapon Proficiencies
-            int weaponBonus = weapon.AttackBonus;
+            int modifier =
+                character.GetStrengthModifier()// TODO: STR/DEX logic
+                + character.GetProficiencyBonus()// TODO: Weapon Proficiencies
+                + weapon.AttackBonus;
 
-            int attackTotal = d20 + abilityMod + prof + weaponBonus;
-
-            // Damage roll (basic)
-            int damageRoll = _diceService.RollDice(weapon.DamageDice);
-            int damageTotal = damageRoll + abilityMod;// TODO: Damage Bonuses (i.e. Rage)
-
-            // Attack result
             _rollHistory.Insert(0, new RollResult
             {
+                DiceRoll = roll,
+                Modifier = modifier,
                 StatName = $"{weapon.Name} Attack",
-                DiceRoll = d20,
-                Modifier = abilityMod + prof + weaponBonus,
                 RollType = "Attack"
             });
 
-            // Damage result
-            _rollHistory.Insert(0, new RollResult
-            {
-                StatName = $"{weapon.Name} Damage",
-                DiceRoll = damageRoll,
-                Modifier = abilityMod,
-                RollType = "Damage"
-            });
-
-            CharacterSheetViewModel vm = new CharacterSheetViewModel
+            return View("Sheet", new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            });
         }
+        [HttpPost]
+        public IActionResult RollDamage()
+        {
+            Character character = _characterService.GetTestCharacter();
+            var weapon = character.EquippedWeapon;
+
+            int damageRoll = _diceService.RollDice(weapon.DamageDice);
+
+            int modifier = character.GetStrengthModifier();// TODO: Damage Bonuses (i.e. Rage)
+
+            _rollHistory.Insert(0, new RollResult
+            {
+                DiceRoll = damageRoll,
+                Modifier = modifier,
+                StatName = $"{weapon.Name} Damage",
+                RollType = "Damage"
+            });
+
+            return View("Sheet", new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            });
+        }
+        //[HttpPost]
+        //public IActionResult RollAttack()
+        //{
+        //    Character character = _characterService.GetTestCharacter();
+
+        //    Weapon weapon = character.EquippedWeapon;
+
+        //    int d20 = _diceService.RollD20();
+
+        //    int abilityMod = character.GetStrengthModifier(); 
+        //    int prof = character.GetProficiencyBonus();
+        //    int weaponBonus = weapon.AttackBonus;
+
+        //    int attackTotal = d20 + abilityMod + prof + weaponBonus;
+
+        //    // Damage roll (basic)
+        //    int damageRoll = _diceService.RollDice(weapon.DamageDice);
+        //    int damageTotal = damageRoll + abilityMod;
+
+        //    // Attack result
+        //    _rollHistory.Insert(0, new RollResult
+        //    {
+        //        StatName = $"{weapon.Name} Attack",
+        //        DiceRoll = d20,
+        //        Modifier = abilityMod + prof + weaponBonus,
+        //        RollType = "Attack"
+        //    });
+
+        //    // Damage result
+        //    _rollHistory.Insert(0, new RollResult
+        //    {
+        //        StatName = $"{weapon.Name} Damage",
+        //        DiceRoll = damageRoll,
+        //        Modifier = abilityMod,
+        //        RollType = "Damage"
+        //    });
+
+        //    CharacterSheetViewModel vm = new CharacterSheetViewModel
+        //    {
+        //        Character = character,
+        //        RollHistory = _rollHistory
+        //    };
+
+        //    return View("Sheet", vm);
+        //}
     }
 }

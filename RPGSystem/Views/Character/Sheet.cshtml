@@ -105,12 +105,21 @@
 </div>
 
 @* Weapon Panel *@
-<div class="row">
-    <form asp-action="RollAttack" method="post">
-        <button class="btn btn-danger">
-            Attack with @Model.Character.EquippedWeapon.Name
-        </button>
-    </form>
+<div class="row align-items-center">
+    <div class="col">
+        <form asp-action="RollAttack" method="post">
+            <button class="btn btn-danger">
+                Attack Roll
+            </button>
+        </form>
+    </div>
+    <div class="col">
+        <form asp-action="RollDamage" method="post" class="mt-2">
+            <button class="btn btn-warning">
+                Damage Roll
+            </button>
+        </form>
+    </div>
 </div>
 
 
@@ -205,7 +214,7 @@
                 }
                 else if (roll.RollType == "Damage")
                 {
-                    <span class="text-danger"> damage</span>
+                    <span class="text-danger"> @Model.Character.EquippedWeapon.DamageType damage</span>
                 }
 
             </div>
