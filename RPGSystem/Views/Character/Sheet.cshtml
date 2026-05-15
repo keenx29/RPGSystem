@@ -104,6 +104,16 @@
 
 </div>
 
+@* Weapon Panel *@
+<div class="row">
+    <form asp-action="RollAttack" method="post">
+        <button class="btn btn-danger">
+            Attack with @Model.Character.EquippedWeapon.Name
+        </button>
+    </form>
+</div>
+
+
 @* Skills Panel *@
 <div class="card mt-4 p-3">
 
@@ -115,7 +125,6 @@
 
         <div class="row align-items-center border-bottom p-2">
 
-            <!-- LEFT: Skill info -->
             <div class="col">
                 <strong>@skill.Name</strong>
                 <span class="text-muted">
@@ -130,14 +139,12 @@
                 }
             </div>
 
-            <!-- MIDDLE: Bonus -->
             <div class="col-auto text-end">
                 <span class="fw-bold">
                     @ModifierFormatter.Format(bonus)
                 </span>
             </div>
 
-            <!-- RIGHT: Button -->
             <div class="col-auto">
                 <form asp-action="RollSkill" method="post" class="m-0">
                     <input type="hidden" name="skillName" value="@skill.Name" />
@@ -191,7 +198,16 @@
                 =
 
                 <strong>@roll.Total</strong>
-                
+
+                @if (roll.RollType == "Attack")
+                {
+                    <span class="text-dark"> to hit</span>
+                }
+                else if (roll.RollType == "Damage")
+                {
+                    <span class="text-danger"> damage</span>
+                }
+
             </div>
         }
     }

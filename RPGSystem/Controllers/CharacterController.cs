@@ -90,9 +90,7 @@ namespace RPGSystem.Controllers
 
             Skill skill = character.Skills.First(s => s.Name == skillName);
 
-            Random rnd = new Random();
-
-            int roll = rnd.Next(1, 21);
+            int roll = _diceService.RollD20();
 
             int modifier = character.GetSkillBonus(skill);
 
@@ -104,6 +102,51 @@ namespace RPGSystem.Controllers
             };
 
             _rollHistory.Insert(0, result);
+
+            CharacterSheetViewModel vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
+        }
+        [HttpPost]
+        public IActionResult RollAttack()
+        {
+            Character character = _characterService.GetTestCharacter();
+
+            Weapon weapon = character.EquippedWeapon;
+
+            int d20 = _diceService.RollD20();
+
+            int abilityMod = character.GetStrengthModifier(); // TODO: STR/DEX logic
+            int prof = character.GetProficiencyBonus();// TODO: Weapon Proficiencies
+            int weaponBonus = weapon.AttackBonus;
+
+            int attackTotal = d20 + abilityMod + prof + weaponBonus;
+
+            // Damage roll (basic)
+            int damageRoll = _diceService.RollDice(weapon.DamageDice);
+            int damageTotal = damageRoll + abilityMod;// TODO: Damage Bonuses (i.e. Rage)
+
+            // Attack result
+            _rollHistory.Insert(0, new RollResult
+            {
+                StatName = $"{weapon.Name} Attack",
+                DiceRoll = d20,
+                Modifier = abilityMod + prof + weaponBonus,
+                RollType = "Attack"
+            });
+
+            // Damage result
+            _rollHistory.Insert(0, new RollResult
+            {
+                StatName = $"{weapon.Name} Damage",
+                DiceRoll = damageRoll,
+                Modifier = abilityMod,
+                RollType = "Damage"
+            });
 
             CharacterSheetViewModel vm = new CharacterSheetViewModel
             {
