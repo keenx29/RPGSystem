@@ -24,10 +24,14 @@ namespace RPGSystem.Controllers
                 Strength = 16,
                 Dexterity = 12,
                 Constitution = 14,
-
                 Intelligence = 10,
                 Wisdom = 8,
-                Charisma = 13
+                Charisma = 13,
+
+                Level = 3,
+                ArmorClass = 15,
+                MaxHP = 28,
+                CurrentHP = 28
             };
 
             CharacterSheetViewModel vm = new CharacterSheetViewModel
@@ -49,10 +53,14 @@ namespace RPGSystem.Controllers
                 Strength = 16,
                 Dexterity = 12,
                 Constitution = 14,
-
                 Intelligence = 10,
                 Wisdom = 8,
-                Charisma = 13
+                Charisma = 13,
+
+                Level = 3,
+                ArmorClass = 15,
+                MaxHP = 28,
+                CurrentHP = 28
             };
 
             int modifier = 0;
