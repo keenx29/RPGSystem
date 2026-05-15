@@ -113,25 +113,39 @@
     {
         int bonus = Model.Character.GetSkillBonus(skill);
 
-        <div class="d-flex justify-content-between border-bottom p-2">
+        <div class="row align-items-center border-bottom p-2">
 
-            <div>
+            <!-- LEFT: Skill info -->
+            <div class="col">
                 <strong>@skill.Name</strong>
-
-                (@skill.RelatedAbility)
+                <span class="text-muted">
+                    (@skill.RelatedAbility)
+                </span>
 
                 @if (skill.IsProficient)
                 {
-                    <span class="text-success">
+                    <span class="text-success ms-2">
                         Proficient
                     </span>
                 }
             </div>
 
-            <div>
+            <!-- MIDDLE: Bonus -->
+            <div class="col-auto text-end">
+                <span class="fw-bold">
+                    @ModifierFormatter.Format(bonus)
+                </span>
+            </div>
 
-                <span>@ModifierFormatter.Format(bonus)</span>
+            <!-- RIGHT: Button -->
+            <div class="col-auto">
+                <form asp-action="RollSkill" method="post" class="m-0">
+                    <input type="hidden" name="skillName" value="@skill.Name" />
 
+                    <button class="btn btn-sm btn-dark">
+                        Roll
+                    </button>
+                </form>
             </div>
 
         </div>

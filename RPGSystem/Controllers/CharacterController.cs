@@ -82,5 +82,36 @@ namespace RPGSystem.Controllers
 
             return View("Sheet", vm);
         }
+
+        [HttpPost]
+        public IActionResult RollSkill(string skillName)
+        {
+            Character character = _characterService.GetTestCharacter();
+
+            Skill skill = character.Skills.First(s => s.Name == skillName);
+
+            Random rnd = new Random();
+
+            int roll = rnd.Next(1, 21);
+
+            int modifier = character.GetSkillBonus(skill);
+
+            RollResult result = new RollResult
+            {
+                DiceRoll = roll,
+                Modifier = modifier,
+                StatName = skill.Name
+            };
+
+            _rollHistory.Insert(0, result);
+
+            CharacterSheetViewModel vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
+        }
     }
 }
