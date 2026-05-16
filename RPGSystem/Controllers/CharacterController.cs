@@ -29,50 +29,24 @@ namespace RPGSystem.Controllers
 
             return View(vm);
         }
-
         [HttpPost]
-        public IActionResult RollStat(string statName)
+        public IActionResult RollAbility(string abilityName)
         {
             var character = _characterService.GetTestCharacter();
 
-            int modifier = 0;
-
-            switch (statName)
-            {
-                case "Strength":
-                    modifier = character.GetStrengthModifier();
-                    break;
-
-                case "Dexterity":
-                    modifier = character.GetDexterityModifier();
-                    break;
-
-                case "Constitution":
-                    modifier = character.GetConstitutionModifier();
-                    break;
-
-                case "Intelligence":
-                    modifier = character.GetIntelligenceModifier();
-                    break;
-
-                case "Wisdom":
-                    modifier = character.GetWisdomModifier();
-                    break;
-
-                case "Charisma":
-                    modifier = character.GetCharismaModifier();
-                    break;
-            }
+            var ability = character.GetAbility(abilityName);
 
             int roll = _diceService.RollD20();
+            int modifier = ability.Modifier;
 
             var result = new RollResult
             {
-                Actor = statName,
+                Actor = ability.Name,
                 Type = RollType.Check,
                 DiceRoll = roll,
                 Modifier = modifier
             };
+
             _rollHistory.Insert(0, result);
 
             var vm = new CharacterSheetViewModel
@@ -83,7 +57,7 @@ namespace RPGSystem.Controllers
 
             return View("Sheet", vm);
         }
-
+        
         [HttpPost]
         public IActionResult RollSkill(string skillName)
         {
@@ -93,7 +67,7 @@ namespace RPGSystem.Controllers
 
             int roll = _diceService.RollD20();
 
-            int modifier = character.GetSkillBonus(skill);
+            int modifier = skill.GetBonus(character.GetProficiencyBonus());
 
             var result = new RollResult
             {
@@ -123,8 +97,8 @@ namespace RPGSystem.Controllers
             int roll = _diceService.RollD20();
 
             int modifier =
-                character.GetStrengthModifier()// TODO: STR/DEX logic
-                + character.GetProficiencyBonus()// TODO: Weapon Proficiencies
+                character.GetAbility("Strength").Modifier // TODO: STR/DEX logic
+                + character.GetProficiencyBonus() // TODO: Weapon Proficiencies
                 + weapon.AttackBonus;
 
             var result = new RollResult
@@ -152,7 +126,7 @@ namespace RPGSystem.Controllers
 
             int roll = _diceService.RollDice(weapon.DamageDice);
 
-            int modifier = character.GetStrengthModifier();// TODO: Damage Bonuses (i.e. Rage)
+            int modifier = character.GetAbility("Strength").Modifier;// TODO: Damage Bonuses (i.e. Rage)
 
             var result = new RollResult
             {
