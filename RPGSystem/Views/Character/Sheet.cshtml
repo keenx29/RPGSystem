@@ -174,55 +174,9 @@
 
     <h3>Roll History</h3>
 
-    @if (Model.RollHistory.Any())
+    @foreach (var roll in Model.RollHistory)
     {
-        @foreach (var roll in Model.RollHistory)
-        {
-            <div class="border-bottom mb-2 pb-2">
-
-                <strong>@roll.StatName</strong>
-
-                rolled
-
-                @if (roll.DiceRoll == 20)
-                {
-                    <strong class="text-success">
-                        @roll.DiceRoll
-                    </strong>
-                }
-                else if (roll.DiceRoll == 1)
-                {
-                    <strong class="text-danger">
-                        @roll.DiceRoll
-                    </strong>
-                }
-                else
-                {
-                    <strong>
-                        @roll.DiceRoll
-                    </strong>
-                }
-                <span>@ModifierFormatter.Format(roll.Modifier)</span>
-                
-                =
-
-                <strong>@roll.Total</strong>
-
-                @if (roll.RollType == "Attack")
-                {
-                    <span class="text-dark"> to hit</span>
-                }
-                else if (roll.RollType == "Damage")
-                {
-                    <span class="text-danger"> @Model.Character.EquippedWeapon.DamageType damage</span>
-                }
-
-            </div>
-        }
-    }
-    else
-    {
-        <p>No rolls yet.</p>
+        <partial name="_RollMessage" model="roll" />
     }
 
 </div>

@@ -70,7 +70,7 @@ namespace RPGSystem.Controllers
             {
                 DiceRoll = diceRoll,
                 Modifier = modifier,
-                StatName = statName
+                Title = $"{statName} Check"
             };
             _rollHistory.Insert(0, result);
 
@@ -98,7 +98,7 @@ namespace RPGSystem.Controllers
             {
                 DiceRoll = roll,
                 Modifier = modifier,
-                StatName = skill.Name
+                Title = $"{skill.Name} Check"
             };
 
             _rollHistory.Insert(0, result);
@@ -116,7 +116,7 @@ namespace RPGSystem.Controllers
         {
             Character character = _characterService.GetTestCharacter();
 
-            var weapon = character.EquippedWeapon;
+            Weapon weapon = character.EquippedWeapon;
 
             int roll = _diceService.RollD20();
 
@@ -129,8 +129,9 @@ namespace RPGSystem.Controllers
             {
                 DiceRoll = roll,
                 Modifier = modifier,
-                StatName = $"{weapon.Name} Attack",
-                RollType = "Attack"
+                Title = $"{weapon.Name} Attack",
+                RollType = "Attack",
+                WeaponName = weapon.Name
             });
 
             return View("Sheet", new CharacterSheetViewModel
@@ -153,8 +154,9 @@ namespace RPGSystem.Controllers
             {
                 DiceRoll = damageRoll,
                 Modifier = modifier,
-                StatName = $"{weapon.Name} Damage",
-                RollType = "Damage"
+                Title = $"{weapon.Name} Damage",
+                RollType = "Damage",
+                WeaponName = weapon.Name
             });
 
             return View("Sheet", new CharacterSheetViewModel

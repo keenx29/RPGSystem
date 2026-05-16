@@ -1,0 +1,59 @@
+﻿@using RPGSystem.Helpers
+@model RPGSystem.Models.RollResult
+
+<div class="card mb-2 p-2">
+
+    <div class="d-flex justify-content-between">
+
+        <div>
+            <strong>@Model.Title</strong>
+        </div>
+
+        <div>
+            @if (Model.DiceRoll == 20)
+            {
+                <span class="text-success fw-bold">
+                    CRIT
+                </span>
+            }
+
+            @if (Model.DiceRoll == 1)
+            {
+                <span class="text-danger fw-bold">
+                    FAIL
+                </span>
+            }
+        </div>
+
+    </div>
+
+    <div class="mt-2">
+
+        @if (Model.DiceRoll == 20)
+        {
+            <strong class="text-success">
+                @Model.DiceRoll
+            </strong>
+        }
+        else if (Model.DiceRoll == 1)
+        {
+            <strong class="text-danger">
+                @Model.DiceRoll
+            </strong>
+        }
+        else
+        {
+            <strong>
+                @Model.DiceRoll
+            </strong>
+        }
+
+        @ModifierFormatter.Format(Model.Modifier)
+
+        =
+
+        <strong>@Model.Total</strong>
+        
+    </div>
+
+</div>

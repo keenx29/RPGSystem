@@ -6,9 +6,9 @@
         {
             if (value >= 0)
             {
-                return $"+{value}";
+                return $"+ {value}";
             }
-            return value.ToString();
+            return $"- {Math.Abs(value)}";
         }
     }
 }
