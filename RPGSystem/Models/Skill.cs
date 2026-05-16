@@ -1,11 +1,24 @@
-﻿namespace RPGSystem.Models
+﻿using RPGSystem.Models;
+
+public class Skill
 {
-    public class Skill
+    public string Name { get; set; } = "";
+
+    public Ability RelatedAbility { get; set; }
+
+    public bool IsProficient { get; set; }
+    public bool IsExpertise { get; set; }
+
+    public int GetBonus(int proficiencyBonus)
     {
-        public string Name { get; set; } = "";
+        int bonus = RelatedAbility.Modifier;
 
-        public AbilityType RelatedAbility { get; set; }
+        if (IsProficient)
+            bonus += proficiencyBonus;
 
-        public bool IsProficient { get; set; }
+        if (IsExpertise)
+            bonus += proficiencyBonus;
+
+        return bonus;
     }
 }
