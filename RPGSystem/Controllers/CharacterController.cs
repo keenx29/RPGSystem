@@ -19,9 +19,9 @@ namespace RPGSystem.Controllers
         [HttpGet]
         public IActionResult Sheet()
         {
-            Character character = _characterService.GetTestCharacter();
+            var character = _characterService.GetTestCharacter();
 
-            CharacterSheetViewModel vm = new CharacterSheetViewModel
+            var vm = new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
@@ -33,7 +33,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollStat(string statName)
         {
-            Character character = _characterService.GetTestCharacter();
+            var character = _characterService.GetTestCharacter();
 
             int modifier = 0;
 
@@ -64,17 +64,18 @@ namespace RPGSystem.Controllers
                     break;
             }
 
-            int diceRoll = _diceService.RollD20();
+            int roll = _diceService.RollD20();
 
-            RollResult result = new RollResult
+            var result = new RollResult
             {
-                DiceRoll = diceRoll,
-                Modifier = modifier,
-                Title = $"{statName} Check"
+                Actor = statName,
+                Type = RollType.Check,
+                DiceRoll = roll,
+                Modifier = modifier
             };
             _rollHistory.Insert(0, result);
 
-            CharacterSheetViewModel vm = new CharacterSheetViewModel
+            var vm = new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
@@ -86,24 +87,25 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollSkill(string skillName)
         {
-            Character character = _characterService.GetTestCharacter();
+            var character = _characterService.GetTestCharacter();
 
-            Skill skill = character.Skills.First(s => s.Name == skillName);
+            var skill = character.Skills.First(s => s.Name == skillName);
 
             int roll = _diceService.RollD20();
 
             int modifier = character.GetSkillBonus(skill);
 
-            RollResult result = new RollResult
+            var result = new RollResult
             {
+                Actor = skill.Name,
+                Type = RollType.Check,
                 DiceRoll = roll,
-                Modifier = modifier,
-                Title = $"{skill.Name} Check"
+                Modifier = modifier
             };
 
             _rollHistory.Insert(0, result);
 
-            CharacterSheetViewModel vm = new CharacterSheetViewModel
+            var vm = new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
@@ -114,9 +116,9 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollAttack()
         {
-            Character character = _characterService.GetTestCharacter();
+            var character = _characterService.GetTestCharacter();
 
-            Weapon weapon = character.EquippedWeapon;
+            var weapon = character.EquippedWeapon;
 
             int roll = _diceService.RollD20();
 
@@ -125,90 +127,51 @@ namespace RPGSystem.Controllers
                 + character.GetProficiencyBonus()// TODO: Weapon Proficiencies
                 + weapon.AttackBonus;
 
-            _rollHistory.Insert(0, new RollResult
+            var result = new RollResult
             {
+                Actor = weapon.Name, 
+                Type = RollType.Attack,
                 DiceRoll = roll,
                 Modifier = modifier,
-                Title = $"{weapon.Name} Attack",
-                RollType = "Attack",
-                WeaponName = weapon.Name
-            });
+            };
+            _rollHistory.Insert(0, result);
 
-            return View("Sheet", new CharacterSheetViewModel
+            var viewModel = new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
-            });
+            };
+
+            return View("Sheet", viewModel);
         }
         [HttpPost]
         public IActionResult RollDamage()
         {
-            Character character = _characterService.GetTestCharacter();
+            var character = _characterService.GetTestCharacter();
             var weapon = character.EquippedWeapon;
 
-            int damageRoll = _diceService.RollDice(weapon.DamageDice);
+            int roll = _diceService.RollDice(weapon.DamageDice);
 
             int modifier = character.GetStrengthModifier();// TODO: Damage Bonuses (i.e. Rage)
 
-            _rollHistory.Insert(0, new RollResult
+            var result = new RollResult
             {
-                DiceRoll = damageRoll,
+                Actor = weapon.Name,
+                Type = RollType.Damage,
+                DiceRoll = roll,
                 Modifier = modifier,
-                Title = $"{weapon.Name} Damage",
-                RollType = "Damage",
-                WeaponName = weapon.Name
-            });
+                DamageType = weapon.DamageType
+            };
 
-            return View("Sheet", new CharacterSheetViewModel
+            _rollHistory.Insert(0, result);
+
+            var viewModel = new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
-            });
+            };
+
+            return View("Sheet", viewModel);
         }
-        //[HttpPost]
-        //public IActionResult RollAttack()
-        //{
-        //    Character character = _characterService.GetTestCharacter();
-
-        //    Weapon weapon = character.EquippedWeapon;
-
-        //    int d20 = _diceService.RollD20();
-
-        //    int abilityMod = character.GetStrengthModifier(); 
-        //    int prof = character.GetProficiencyBonus();
-        //    int weaponBonus = weapon.AttackBonus;
-
-        //    int attackTotal = d20 + abilityMod + prof + weaponBonus;
-
-        //    // Damage roll (basic)
-        //    int damageRoll = _diceService.RollDice(weapon.DamageDice);
-        //    int damageTotal = damageRoll + abilityMod;
-
-        //    // Attack result
-        //    _rollHistory.Insert(0, new RollResult
-        //    {
-        //        StatName = $"{weapon.Name} Attack",
-        //        DiceRoll = d20,
-        //        Modifier = abilityMod + prof + weaponBonus,
-        //        RollType = "Attack"
-        //    });
-
-        //    // Damage result
-        //    _rollHistory.Insert(0, new RollResult
-        //    {
-        //        StatName = $"{weapon.Name} Damage",
-        //        DiceRoll = damageRoll,
-        //        Modifier = abilityMod,
-        //        RollType = "Damage"
-        //    });
-
-        //    CharacterSheetViewModel vm = new CharacterSheetViewModel
-        //    {
-        //        Character = character,
-        //        RollHistory = _rollHistory
-        //    };
-
-        //    return View("Sheet", vm);
-        //}
     }
 }
