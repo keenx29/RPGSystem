@@ -1,0 +1,12 @@
+﻿@model List<RPGSystem.Models.RollResult>
+
+<div class="card p-3" style="height: 100vh; overflow-y: auto; position: sticky; top: 0;">
+
+    <h4>Roll History</h4>
+
+    @foreach (var roll in Model)
+    {
+        <partial name="_RollMessage" model="roll" />
+    }
+
+</div>

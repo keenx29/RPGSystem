@@ -2,156 +2,160 @@
 @using RPGSystem.Helpers
 @model RPGSystem.Models.CharacterSheetViewModel
 
-<h1>@Model.Character.Name</h1>
-
-@* Ability Cards *@
-<div class="d-flex flex-wrap">
-
-    @foreach (var ability in Model.Character.Abilities)
-    {
-        <partial name="_AbilityCard" model="ability" />
-    }
-
-</div>
-
-@* Derived Stats *@
-<div class="card mt-4 p-3">
-
-    <h3>Character Stats</h3>
-
+<div class="container-fluid">
     <div class="row">
+        <div class="col-9 px-5 py-4">
+            @* main content *@
+            <div>
+                <h1>@Model.Character.Name</h1>
+            </div>
+            @* Ability Cards *@
+            <div class="d-flex flex-wrap">
 
-        <div class="col-md-3">
-            <strong>Level</strong>
-            <p>@Model.Character.Level</p>
-        </div>
-
-        <div class="col-md-3">
-            <strong>HP</strong>
-            <p>
-                @Model.Character.CurrentHP
-                /
-                @Model.Character.MaxHP
-            </p>
-        </div>
-
-        <div class="col-md-3">
-            <strong>Armor Class</strong>
-            <p>@Model.Character.ArmorClass</p>
-        </div>
-    </div>
-    <div class="row">
-
-        <div class="col-md-3">
-            <strong>Proficiency Bonus</strong>
-            <p>@ModifierFormatter.FormatWithoutSpace(Model.Character.GetProficiencyBonus())</p>
-        </div>
-
-        <div class="col-md-3">
-            <strong>Initiative</strong>
-            <p>@ModifierFormatter.FormatWithoutSpace(Model.Character.GetInitiative())</p>
-        </div>
-
-        <div class="col-md-3">
-            <strong>Passive Perception</strong>
-            <p>@Model.Character.GetPassivePerception()</p>
-        </div>
-
-    </div>
-
-</div>
-
-@* Weapon Panel *@
-<div class="row align-items-center">
-    <div class="col">
-        <form asp-action="RollAttack" method="post">
-            <button class="btn btn-danger">
-                Attack Roll
-            </button>
-        </form>
-    </div>
-    <div class="col">
-        <form asp-action="RollDamage" method="post" class="mt-2">
-            <button class="btn btn-warning">
-                Damage Roll
-            </button>
-        </form>
-    </div>
-</div>
-
-
-@* Skills Panel *@
-<div class="card mt-4 p-3">
-
-    <h3>Skills</h3>
-
-    @foreach (var skill in Model.Character.Skills)
-    {
-        int bonus = Model.Character.GetSkillBonus(skill);
-
-        <div class="row align-items-center border-bottom p-2">
-
-            <div class="col">
-                <strong>@skill.Name</strong>
-                <span class="text-muted">
-                    (@skill.RelatedAbility.Name)
-                </span>
-
-                @if (skill.IsExpertise)
+                @foreach (var ability in Model.Character.Abilities)
                 {
-                    <span class="text-success ms-2">
-                        Expertise
-                    </span>
+                    <partial name="_AbilityCard" model="ability" />
                 }
-                else if(skill.IsProficient)
+
+            </div>
+            @* Derived Stats *@
+            <div class="card mt-4 p-3">
+
+                <h3>Character Stats</h3>
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <strong>Level</strong>
+                        <p>@Model.Character.Level</p>
+                    </div>
+
+                    <div class="col-md-3">
+                        <strong>HP</strong>
+                        <p>
+                            @Model.Character.CurrentHP
+                            /
+                            @Model.Character.MaxHP
+                        </p>
+                    </div>
+
+                    <div class="col-md-3">
+                        <strong>Armor Class</strong>
+                        <p>@Model.Character.ArmorClass</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Proficiency Bonus</strong>
+                        <p>@ModifierFormatter.FormatWithoutSpace(Model.Character.GetProficiencyBonus())</p>
+                    </div>
+
+                    <div class="col-md-3">
+                        <strong>Initiative</strong>
+                        <p>@ModifierFormatter.FormatWithoutSpace(Model.Character.GetInitiative())</p>
+                    </div>
+
+                    <div class="col-md-3">
+                        <strong>Passive Perception</strong>
+                        <p>@Model.Character.GetPassivePerception()</p>
+                    </div>
+
+                </div>
+            </div>
+            @* Weapon Panel *@
+            <div class="row align-items-center">
+                <div class="col">
+                    <form asp-action="RollAttack" method="post">
+                        <button class="btn btn-danger">
+                            Attack Roll
+                        </button>
+                    </form>
+                </div>
+                <div class="col">
+                    <form asp-action="RollDamage" method="post" class="mt-2">
+                        <button class="btn btn-warning">
+                            Damage Roll
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @* Skills Panel *@
+            <div class="card mt-4 p-3">
+
+                <h3>Skills</h3>
+
+                @foreach (var skill in Model.Character.Skills)
                 {
-                    <span class="text-success ms-2">
-                        Proficient
-                    </span>
+                    int bonus = Model.Character.GetSkillBonus(skill);
+
+                    <div class="row align-items-center border-bottom p-2">
+
+                        <div class="col">
+                            <strong>@skill.Name</strong>
+                            <span class="text-muted">
+                                (@skill.RelatedAbility.Name)
+                            </span>
+
+                            @if (skill.IsExpertise)
+                            {
+                                <span class="text-success ms-2">
+                                    Expertise
+                                </span>
+                            }
+                            else if (skill.IsProficient)
+                            {
+                                <span class="text-success ms-2">
+                                    Proficient
+                                </span>
+                            }
+                        </div>
+
+                        @if (skill.IsProficient)
+                        {
+                            <div class="col-auto text-end">
+                                <span class="fw-bold">
+                                    @ModifierFormatter.FormatWithoutSpace(bonus)
+                                </span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-auto text-end">
+                                <span class="">
+                                    @ModifierFormatter.FormatWithoutSpace(bonus)
+                                </span>
+                            </div>
+                        }
+
+
+                        <div class="col-auto">
+                            <form asp-action="RollSkill" method="post" class="m-0">
+                                <input type="hidden" name="skillName" value="@skill.Name" />
+
+                                <button class="btn btn-sm btn-dark">
+                                    Roll
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
                 }
             </div>
-
-            @if (skill.IsProficient)
-            {
-                <div class="col-auto text-end">
-                    <span class="fw-bold">
-                        @ModifierFormatter.FormatWithoutSpace(bonus)
-                    </span>
-                </div>
-            }
-            else
-            {
-                <div class="col-auto text-end">
-                    <span class="">
-                        @ModifierFormatter.FormatWithoutSpace(bonus)
-                    </span>
-                </div>
-            }
-
-
-            <div class="col-auto">
-                <form asp-action="RollSkill" method="post" class="m-0">
-                    <input type="hidden" name="skillName" value="@skill.Name" />
-
-                    <button class="btn btn-sm btn-dark">
-                        Roll
-                    </button>
-                </form>
-            </div>
-
         </div>
-    }
 
+        <div class="col-3">
+            <partial name="_RollHistoryPanel" model="Model.RollHistory" />
+        </div>
+
+    </div>
 </div>
 
-@* Roll History Panel *@
-<div class="card mt-4 p-3">
 
-    <h3>Roll History</h3>
 
-    @foreach (var roll in Model.RollHistory)
-    {
-        <partial name="_RollMessage" model="roll" />
-    }
 
-</div>
+
+
+
+
+
+
