@@ -6,56 +6,42 @@ namespace RPGSystem.Services
     {
         public Character GetTestCharacter()
         {
-            return new Character
+            var strength = new Ability { Name = "Strength", Score = 16 };
+            var dexterity = new Ability { Name = "Dexterity", Score = 14 };
+            var constitution = new Ability { Name = "Constitution", Score = 14 };
+            var intelligence = new Ability { Name = "Intelligence", Score = 10 };
+            var wisdom = new Ability { Name = "Wisdom", Score = 12 };
+            var charisma = new Ability { Name = "Charisma", Score = 8 };
+
+            var character = new Character
             {
-                Name = "Thorin",
-
+                Name = "Tyrion",
                 Level = 3,
-
-                Strength = 16,
-                Dexterity = 12,
-                Constitution = 14,
-
-                Intelligence = 10,
-                Wisdom = 8,
-                Charisma = 13,
-
-                ArmorClass = 15,
-
-                MaxHP = 28,
-                CurrentHP = 28,
                 MovementSpeed = 30,
+
+                Abilities = new List<Ability>
+                {
+                    strength, dexterity, constitution,
+                    intelligence, wisdom, charisma
+                },
 
                 Skills = new List<Skill>
                 {
-                    new Skill
-                    {
-                        Name = "Athletics",
-                        RelatedAbility = AbilityType.Strength,
-                        IsProficient = true
-                    },
-
-                    new Skill
-                    {
-                        Name = "Perception",
-                        RelatedAbility = AbilityType.Wisdom,
-                        IsProficient = false
-                    },
-
-                    new Skill
-                    {
-                        Name = "Stealth",
-                        RelatedAbility = AbilityType.Dexterity,
-                        IsProficient = true
-                    }
+                    new Skill { Name = "Athletics", RelatedAbility = strength, IsProficient = true },
+                    new Skill { Name = "Perception", RelatedAbility = wisdom },
+                    new Skill { Name = "Stealth", RelatedAbility = dexterity, IsProficient = true }
                 },
+
                 EquippedWeapon = new Weapon
                 {
                     Name = "Longsword",
+                    AttackBonus = 0,
                     DamageDice = "1d8",
-                    AttackBonus = 0
+                    DamageType = "slashing"
                 }
             };
+
+            return character;
         }
     }
 }
