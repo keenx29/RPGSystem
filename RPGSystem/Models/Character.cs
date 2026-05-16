@@ -8,14 +8,14 @@
         // Core data
         public List<Ability> Abilities { get; set; } = new();
         public List<Skill> Skills { get; set; } = new();
-
-        // Derived stats
-        public int Level { get; set; }
-        public int ArmorClass { get; set; }
         public int MaxHP { get; set; }
         public int CurrentHP { get; set; }
         public int MovementSpeed { get; set; } = 30;
 
+        // Derived stats
+        public int Level { get; set; }
+        public int ArmorClass { get; set; }
+        
         // Equipment
         public Weapon EquippedWeapon { get; set; }
 

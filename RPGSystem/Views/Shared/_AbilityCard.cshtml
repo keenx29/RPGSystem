@@ -1,0 +1,27 @@
+﻿@using RPGSystem.Helpers
+@model RPGSystem.Models.Ability
+
+<div class="card p-3 m-2 text-center" style="width: 200px;">
+
+    <h4>@Model.Name</h4>
+
+    <h2>@Model.Score</h2>
+
+    <p>
+        Modifier:
+        <span>@ModifierFormatter.FormatWithoutSpace(Model.Modifier)</span>
+    </p>
+
+    <form asp-action="RollAbility" method="post">
+
+        <input type="hidden"
+               name="abilityName"
+               value="@Model.Name" />
+
+        <button class="btn btn-dark" type="submit">
+            Roll
+        </button>
+
+    </form>
+
+</div>
