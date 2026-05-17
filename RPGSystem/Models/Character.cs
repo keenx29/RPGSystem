@@ -63,12 +63,9 @@
         }
         public int GetArmorClass()
         {
-            int baseAc = 10;
-
             if (EquippedArmor != null)
-                baseAc = EquippedArmor.ArmorClass;
-
-            return baseAc;
+                ArmorClass = EquippedArmor.ArmorClass;
+            return ArmorClass;
         }
         public void EquipWeapon(Weapon weapon)
         {
