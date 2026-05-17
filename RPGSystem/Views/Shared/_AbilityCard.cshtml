@@ -11,17 +11,31 @@
         Modifier:
         <span>@ModifierFormatter.FormatWithoutSpace(Model.Modifier)</span>
     </p>
+    <div class="d-flex justify-content-center gap-2">
 
-    <form asp-action="RollAbility" method="post">
+        <form asp-action="RollAbility" method="post">
 
-        <input type="hidden"
-               name="abilityName"
-               value="@Model.Name" />
+            <input type="hidden"
+                    name="abilityName"
+                    value="@Model.Name" />
 
-        <button class="btn btn-dark" type="submit">
-            Roll
-        </button>
+            <button class="btn btn-dark btn-sm">
+                Check
+            </button>
 
-    </form>
+        </form>
 
+        <form asp-action="RollSavingThrow" method="post">
+
+            <input type="hidden"
+                    name="abilityName"
+                    value="@Model.Name" />
+
+            <button class="btn btn-sm @(Model.IsSavingThrowProficient ? "btn-outline-danger" : "btn-outline-dark")">
+                Save
+            </button>
+
+        </form>
+
+    </div>
 </div>

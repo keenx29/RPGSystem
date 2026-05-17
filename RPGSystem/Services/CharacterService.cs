@@ -6,9 +6,9 @@ namespace RPGSystem.Services
     {
         public Character GetTestCharacter()
         {
-            var strength = new Ability { Name = "Strength", Score = 16 };
+            var strength = new Ability { Name = "Strength", Score = 16, IsSavingThrowProficient=true};
             var dexterity = new Ability { Name = "Dexterity", Score = 14 };
-            var constitution = new Ability { Name = "Constitution", Score = 14 };
+            var constitution = new Ability { Name = "Constitution", Score = 14, IsSavingThrowProficient = true };
             var intelligence = new Ability { Name = "Intelligence", Score = 10 };
             var wisdom = new Ability { Name = "Wisdom", Score = 12 };
             var charisma = new Ability { Name = "Charisma", Score = 8 };

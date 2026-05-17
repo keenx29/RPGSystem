@@ -41,8 +41,20 @@
         {
             return Abilities.First(a => a.Name == name);
         }
+        // Helper: saving throw bonus calculation
+        public int GetSavingThrowBonus(Ability ability)
+        {
+            int bonus = ability.Modifier;
 
-        // Skill helper (delegates to Skill class)
+            if (ability.IsSavingThrowProficient)
+            {
+                bonus += GetProficiencyBonus();
+            }
+
+            return bonus;
+        }
+
+        // Helper: skill bonus (delegates to Skill class)
         public int GetSkillBonus(Skill skill)
         {
             return skill.GetBonus(GetProficiencyBonus());

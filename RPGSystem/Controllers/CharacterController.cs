@@ -57,7 +57,35 @@ namespace RPGSystem.Controllers
 
             return View("Sheet", vm);
         }
-        
+        [HttpPost]
+        public IActionResult RollSavingThrow(string abilityName)
+        {
+            var character = _characterService.GetTestCharacter();
+
+            var ability = character.GetAbility(abilityName);
+
+            int roll = _diceService.RollD20();
+
+            int modifier = character.GetSavingThrowBonus(ability);
+
+            var result = new RollResult
+            {
+                Actor = ability.Name,
+                Type = RollType.Save,
+                DiceRoll = roll,
+                Modifier = modifier
+            };
+
+            _rollHistory.Insert(0, result);
+
+            var vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
+        }
         [HttpPost]
         public IActionResult RollSkill(string skillName)
         {
