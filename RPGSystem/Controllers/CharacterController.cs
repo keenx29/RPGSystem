@@ -8,8 +8,8 @@ namespace RPGSystem.Controllers
     {
         private readonly DiceService _diceService;
         private readonly CharacterService _characterService;
-
         private static List<RollResult> _rollHistory = new();
+
         public CharacterController(DiceService diceService, CharacterService characterService)
         {
             _diceService = diceService;
@@ -138,13 +138,13 @@ namespace RPGSystem.Controllers
             };
             _rollHistory.Insert(0, result);
 
-            var viewModel = new CharacterSheetViewModel
+            var vm = new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
             };
 
-            return View("Sheet", viewModel);
+            return View("Sheet", vm);
         }
         [HttpPost]
         public IActionResult RollDamage()
@@ -167,13 +167,28 @@ namespace RPGSystem.Controllers
 
             _rollHistory.Insert(0, result);
 
-            var viewModel = new CharacterSheetViewModel
+            var vm = new CharacterSheetViewModel
             {
                 Character = character,
                 RollHistory = _rollHistory
             };
 
-            return View("Sheet", viewModel);
+            return View("Sheet", vm);
+        }
+        [HttpPost]
+        public IActionResult EquipWeapon(string weaponName)
+        {
+            var character = _characterService.GetTestCharacter();
+            var weapon = character.Inventory.OfType<Weapon>().First(w => w.Name == weaponName);
+
+            character.EquipWeapon(weapon);
+
+            var vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+            return View("Sheet",vm);
         }
     }
 }

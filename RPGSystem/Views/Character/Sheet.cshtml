@@ -62,7 +62,7 @@
 
                 </div>
             </div>
-            @* Weapon Panel *@
+            @* Attack Panel *@
             <div class="row align-items-center">
                 <div class="col">
                     <form asp-action="RollAttack" method="post">
@@ -140,6 +140,33 @@
 
                     </div>
                 }
+            </div>
+            @* Inventory Panel*@
+            <div class="card p-3 mt-3">
+
+                <h4>Inventory</h4>
+
+                @foreach (var item in Model.Character.Inventory)
+                {
+                    if (item is Weapon weapon)
+                    {
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <strong>@weapon.Name</strong>
+                            </div>
+
+                            <form asp-action="EquipWeapon" method="post">
+                                <input type="hidden" name="weaponName" value="@weapon.Name" />
+                                <button class="btn btn-sm btn-dark">
+                                    Equip
+                                </button>
+                            </form>
+
+                        </div>
+                    }
+                }
+
             </div>
         </div>
 

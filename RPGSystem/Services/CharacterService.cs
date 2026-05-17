@@ -35,9 +35,13 @@ namespace RPGSystem.Services
                 EquippedWeapon = new Weapon
                 {
                     Name = "Longsword",
-                    AttackBonus = 0,
+                    AttackBonus = 1,
                     DamageDice = "1d8",
                     DamageType = "slashing"
+                },
+                Inventory = new List<Item>
+                {
+                    new Weapon { Name= "Axe", AttackBonus = 1, DamageDice = "1d8", DamageType="slashing" }
                 }
             };
 

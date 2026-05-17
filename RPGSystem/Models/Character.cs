@@ -15,9 +15,10 @@
         // Derived stats
         public int Level { get; set; }
         public int ArmorClass { get; set; }
-        
+
         // Equipment
-        public Weapon EquippedWeapon { get; set; }
+        public Weapon EquippedWeapon { get; set; } = new();
+        public List<Item> Inventory { get; set; } = new();
 
         // System logic (minimal only)
 
@@ -58,6 +59,10 @@
         public int GetSkillBonus(Skill skill)
         {
             return skill.GetBonus(GetProficiencyBonus());
+        }
+        public void EquipWeapon(Weapon weapon)
+        {
+            EquippedWeapon = weapon;
         }
     }
 }

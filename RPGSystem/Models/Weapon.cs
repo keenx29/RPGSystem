@@ -1,10 +1,8 @@
 ﻿namespace RPGSystem.Models
 {
-    public class Weapon
+    public class Weapon : Item
     {
-        public string Name { get; set; } = "";
-
-        public string DamageDice { get; set; } = "1d8";
+        public string DamageDice { get; set; } = "1d6";
 
         public string DamageType { get; set; } = "slashing";
 
