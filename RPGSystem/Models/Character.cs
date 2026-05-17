@@ -14,10 +14,11 @@
 
         // Derived stats
         public int Level { get; set; }
-        public int ArmorClass { get; set; }
+        public int ArmorClass { get; set; } = 10;
 
         // Equipment
-        public Weapon EquippedWeapon { get; set; } = new();
+        public Weapon? EquippedWeapon { get; set; }
+        public Armor? EquippedArmor { get; set; }
         public List<Item> Inventory { get; set; } = new();
 
         // System logic (minimal only)
@@ -60,9 +61,23 @@
         {
             return skill.GetBonus(GetProficiencyBonus());
         }
+        public int GetArmorClass()
+        {
+            int baseAc = 10;
+
+            if (EquippedArmor != null)
+                baseAc = EquippedArmor.ArmorClass;
+
+            return baseAc;
+        }
         public void EquipWeapon(Weapon weapon)
         {
             EquippedWeapon = weapon;
         }
+        public void EquipArmor(Armor armor)
+        {
+            EquippedArmor = armor;
+        }
+
     }
 }

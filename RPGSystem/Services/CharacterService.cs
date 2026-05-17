@@ -39,9 +39,16 @@ namespace RPGSystem.Services
                     DamageDice = "1d8",
                     DamageType = "slashing"
                 },
+                EquippedArmor = new Armor
+                {
+                    Name = "Leather Tunic",
+                    ArmorClass = 13
+                    
+                },
                 Inventory = new List<Item>
                 {
-                    new Weapon { Name= "Axe", AttackBonus = 1, DamageDice = "1d8", DamageType="slashing" }
+                    new Weapon { Name= "Axe", AttackBonus = 1, DamageDice = "1d8", DamageType="slashing" },
+                    new Armor { Name="Chainmail", ArmorClass=15}
                 }
             };
 

@@ -26,7 +26,7 @@ namespace RPGSystem.Controllers
                 Character = character,
                 RollHistory = _rollHistory
             };
-
+            
             return View(vm);
         }
         [HttpPost]
@@ -188,7 +188,24 @@ namespace RPGSystem.Controllers
                 Character = character,
                 RollHistory = _rollHistory
             };
-            return View("Sheet",vm);
+
+            return View("Sheet", vm);
+        }
+        [HttpPost]
+        public IActionResult EquipArmor(string armorName)
+        {
+            var character = _characterService.GetTestCharacter();
+            var armor = character.Inventory.OfType<Armor>().First(w => w.Name == armorName);
+
+            character.EquipArmor(armor);
+
+            var vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
         }
     }
 }
