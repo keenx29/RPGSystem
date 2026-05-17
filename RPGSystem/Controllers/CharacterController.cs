@@ -207,5 +207,20 @@ namespace RPGSystem.Controllers
 
             return View("Sheet", vm);
         }
+        [HttpPost]
+        public IActionResult ModifyHP(int value)
+        {
+            var character = _characterService.GetTestCharacter();
+
+            character.CurrentHP += value; // negative = damage, positive = heal
+
+            var vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
+        }
     }
 }

@@ -8,8 +8,8 @@
         // Core data
         public List<Ability> Abilities { get; set; } = new();
         public List<Skill> Skills { get; set; } = new();
-        public int MaxHP { get; set; }
-        public int CurrentHP { get; set; }
+        public int MaxHP { get; set; } = 20;
+        public int CurrentHP { get; set; } = 20;
         public int MovementSpeed { get; set; } = 30;
 
         // Derived stats
@@ -75,6 +75,13 @@
         {
             EquippedArmor = armor;
         }
-
+        public void TakeDamage(int value)
+        {
+            CurrentHP = Math.Max(0, CurrentHP - value);
+        }
+        public void Heal(int value)
+        {
+            CurrentHP = Math.Min(MaxHP, CurrentHP + value);
+        }
     }
 }
