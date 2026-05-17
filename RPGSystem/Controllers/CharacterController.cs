@@ -208,16 +208,24 @@ namespace RPGSystem.Controllers
             return View("Sheet", vm);
         }
         [HttpPost]
-        public IActionResult ModifyHP(int value)
+        public IActionResult ModifyHP(int amount, string mode)
         {
             var character = _characterService.GetTestCharacter();
 
-            character.CurrentHP += value; // negative = damage, positive = heal
+            if (mode == "damage")
+            {
+                character.CurrentHP -= amount;
+            }
+            else if (mode == "heal")
+            {
+                character.CurrentHP += amount;
+            }
+
+            character.CurrentHP = Math.Clamp(character.CurrentHP, 0, character.MaxHP);
 
             var vm = new CharacterSheetViewModel
             {
-                Character = character,
-                RollHistory = _rollHistory
+                Character = character
             };
 
             return View("Sheet", vm);

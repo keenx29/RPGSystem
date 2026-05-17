@@ -247,6 +247,41 @@
                 }
 
             </div>
+            @* HP Control Panel*@
+            <div class="card p-3 mt-3 text-center">
+
+                <h5>HP</h5>
+
+                <h2>@Model.Character.CurrentHP / @Model.Character.MaxHP</h2>
+
+                <form asp-action="ModifyHP" method="post">
+
+                    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                        <button class="btn btn-danger"
+                                name="mode"
+                                value="damage">
+                            -
+                        </button>
+
+                        <input type="number"
+                               name="amount"
+                               value="1"
+                               min="1"
+                               class="form-control text-center"
+                               style="width: 80px;" />
+
+                        <button class="btn btn-success"
+                                name="mode"
+                                value="heal">
+                            +
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
         </div>
 
         <div class="col-3">
