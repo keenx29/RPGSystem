@@ -2,9 +2,13 @@
 {
     public enum ItemType
     {
+        General,
         Weapon,
         Armor,
         Consumable,
-        Misc
+        Tool,
+        Pack,
+        Ammo,
+        Magic
     }
 }

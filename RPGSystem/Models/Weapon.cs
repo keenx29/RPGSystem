@@ -9,5 +9,6 @@
         public bool IsFinesse { get; set; }
 
         public int AttackBonus { get; set; }
+        public AbilityType ScalingAbility { get; set; } = AbilityType.Strength;
     }
 }

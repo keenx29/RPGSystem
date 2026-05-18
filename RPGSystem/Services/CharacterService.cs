@@ -9,6 +9,15 @@ namespace RPGSystem.Services
         {
             _character = GetTestCharacter();
         }
+        public void UnequipWeapon()
+        {
+            _character.EquippedWeapon = null;
+        }
+
+        public void UnequipArmor()
+        {
+            _character.EquippedArmor = null;
+        }
         public Character GetCharacter()
         {
             return _character;
@@ -51,13 +60,13 @@ namespace RPGSystem.Services
                 EquippedArmor = new Armor
                 {
                     Name = "Leather Tunic",
-                    ArmorClass = 13
+                    BaseArmorClass = 13
                     
                 },
                 Inventory = new List<Item>
                 {
                     new Weapon { Name= "Axe", AttackBonus = 1, DamageDice = "1d8", DamageType="slashing" },
-                    new Armor { Name="Chainmail", ArmorClass=15}
+                    new Armor { Name="Chainmail", BaseArmorClass=15}
                 }
             };
 

@@ -259,7 +259,7 @@
                             @if (item is Weapon weapon)
                             {
                                 <form asp-action="EquipWeapon" method="post">
-                                    <input type="hidden" name="weaponName" value="@weapon.Name" />
+                                    <input type="hidden" name="weaponId" value="@weapon.Id" />
                                     <button class="btn btn-sm btn-dark">Equip</button>
                                 </form>
                             }
@@ -267,7 +267,7 @@
                             @if (item is Armor armor)
                             {
                                 <form asp-action="EquipArmor" method="post">
-                                    <input type="hidden" name="armorName" value="@armor.Name" />
+                                    <input type="hidden" name="armorId" value="@armor.Id" />
                                     <button class="btn btn-sm btn-dark">Equip</button>
                                 </form>
                             }

@@ -21,6 +21,7 @@
         public Weapon? EquippedWeapon { get; set; }
         public Armor? EquippedArmor { get; set; }
         public List<Item> Inventory { get; set; } = new();
+        public List<Item> AttunedItems { get; set; } = new();
 
         // System logic (minimal only)
         public void LevelUp(int hpGain)
@@ -83,16 +84,22 @@
         public int GetArmorClass()
         {
             if (EquippedArmor != null)
-                ArmorClass = EquippedArmor.ArmorClass;
+                ArmorClass = EquippedArmor.BaseArmorClass;
             return ArmorClass;
         }
         public void EquipWeapon(Weapon weapon)
         {
+            if (EquippedWeapon != null)
+                Inventory.Add(EquippedWeapon);
             EquippedWeapon = weapon;
+            Inventory.Remove(EquippedWeapon);
         }
         public void EquipArmor(Armor armor)
         {
+            if (EquippedArmor != null)
+                Inventory.Add(EquippedArmor);
             EquippedArmor = armor;
+            Inventory.Remove(EquippedArmor);
         }
         public void TakeDamage(int value)
         {

@@ -165,31 +165,26 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult EquipWeapon(string weaponName)
+        public IActionResult EquipWeapon(Guid weaponId)
         {
             var character = _characterService.GetCharacter();
-            var weapon = character.Inventory.OfType<Weapon>().First(w => w.Name == weaponName);
+            var weapon = character.Inventory.OfType<Weapon>().First(w => w.Id == weaponId);
 
             character.EquipWeapon(weapon);
-
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
 
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult EquipArmor(string armorName)
+        public IActionResult EquipArmor(Guid armorId)
         {
             var character = _characterService.GetCharacter();
-            var armor = character.Inventory.OfType<Armor>().First(w => w.Name == armorName);
+            var armor = character.Inventory.OfType<Armor>().First(a => a.Id == armorId);
 
             character.EquipArmor(armor);
 
             return RedirectToAction("Sheet");
         }
+
         [HttpPost]
         public IActionResult ModifyHP(int amount, string mode)
         {
