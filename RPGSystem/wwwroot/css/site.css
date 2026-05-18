@@ -50,3 +50,66 @@ input[type=number] {
     transform: scale(1.05);
     z-index: 2;
 }
+.inventory-item {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #fff;
+    transition: all 0.15s ease-in-out;
+}
+
+.inventory-item:hover {
+    border-color: #aaa;
+    transform: translateY(-1px);
+}
+
+.inventory-item.equipped {
+    border-left: 4px solid #28a745;
+    background: #f6fff6;
+}
+.equipped-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.equipped-slot {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    background: #fff;
+    transition: 0.15s ease-in-out;
+}
+
+.equipped-slot:hover {
+    border-color: #aaa;
+}
+
+.slot-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.slot-value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.equipped-name {
+    color: #222;
+}
+
+.slot-state {
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+.slot-state.active {
+    color: #28a745;
+}
+
+.slot-state.empty {
+    color: #999;
+}

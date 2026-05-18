@@ -175,51 +175,59 @@
             @* Equipped Inventory Panel*@
             <div class="card p-3 mt-3">
 
-                <h4>Equipped</h4>
+                <h4 class="mb-3">Equipped</h4>
 
-                <div class="d-flex flex-column gap-2">
+                <div class="equipped-container">
 
-                    <!-- Weapon -->
-                    <div class="border p-2 d-flex justify-content-between align-items-center">
+                    <!-- WEAPON SLOT -->
+                    <div class="equipped-slot">
 
-                        <div>
-                            <strong>Weapon:</strong>
+                        <div class="slot-label">
+                            🗡 Weapon
+                        </div>
 
+                        <div class="slot-value">
                             @if (Model.Character.EquippedWeapon != null)
                             {
-                                <span class="ms-2">@Model.Character.EquippedWeapon.Name</span>
+                                <span class="equipped-name">
+                                    @Model.Character.EquippedWeapon.Name
+                                </span>
                             }
                             else
                             {
-                                <span class="text-muted ms-2">None</span>
+                                <span class="text-muted">Empty</span>
                             }
                         </div>
 
-                        <span class="badge bg-success">
-                            Equipped
-                        </span>
+                        <div class="slot-state @(Model.Character.EquippedWeapon != null ? "active" : "empty")">
+                            @(Model.Character.EquippedWeapon != null ? "Equipped" : "Not equipped")
+                        </div>
 
                     </div>
 
-                    <!-- Armor -->
-                    <div class="border p-2 d-flex justify-content-between align-items-center">
+                    <!-- ARMOR SLOT -->
+                    <div class="equipped-slot">
 
-                        <div>
-                            <strong>Armor:</strong>
+                        <div class="slot-label">
+                            🛡 Armor
+                        </div>
 
+                        <div class="slot-value">
                             @if (Model.Character.EquippedArmor != null)
                             {
-                                <span class="ms-2">@Model.Character.EquippedArmor.Name</span>
+                                <span class="equipped-name">
+                                    @Model.Character.EquippedArmor.Name
+                                </span>
                             }
                             else
                             {
-                                <span class="text-muted ms-2">None</span>
+                                <span class="text-muted">Empty</span>
                             }
                         </div>
 
-                        <span class="badge bg-success">
-                            Equipped
-                        </span>
+                        <div class="slot-state @(Model.Character.EquippedArmor != null ? "active" : "empty")">
+                            @(Model.Character.EquippedArmor != null ? "Equipped" : "Not equipped")
+                        </div>
 
                     </div>
 
@@ -228,48 +236,72 @@
             @* Inventory Panel *@
             <div class="card p-3 mt-3">
 
-                <h4>Inventory</h4>
+                <h4 class="mb-3">Inventory</h4>
 
                 @foreach (var item in Model.Character.Inventory)
                 {
-                    <div class="border p-2 mb-2 d-flex justify-content-between align-items-center">
+                    var isWeapon = item is Weapon;
+                    var isArmor = item is Armor;
 
-                        <div>
+                    <div class="inventory-item @(Model.Character.EquippedWeapon?.Id == item.Id || Model.Character.EquippedArmor?.Id == item.Id ? "equipped" : "")">
 
-                            <strong>@item.Name</strong>
+                        <!-- HEADER -->
+                        <div class="d-flex justify-content-between align-items-center">
 
-                            @if (item is Weapon)
-                            {
-                                <span class="text-muted ms-2">Weapon</span>
-                            }
-                            else if (item is Armor)
-                            {
-                                <span class="text-muted ms-2">Armor</span>
-                            }
-                            else
-                            {
-                                <span class="text-muted ms-2">Item</span>
-                            }
+                            <div class="d-flex align-items-center gap-2">
+
+                                <strong>@item.Name</strong>
+
+                                @if (isWeapon)
+                                {
+                                    <span class="badge bg-secondary">Weapon</span>
+                                }
+                                else if (isArmor)
+                                {
+                                    <span class="badge bg-secondary">Armor</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-dark border">Item</span>
+                                }
+
+                            </div>
+
+                            <!-- small weight / meta (future-proof feel) -->
+                            <small class="text-muted">
+                                @item.Weight lb
+                            </small>
 
                         </div>
 
                         <!-- ACTIONS -->
-                        <div class="d-flex gap-2">
+                        <div class="mt-2 d-flex gap-2">
 
-                            @if (item is Weapon weapon)
+                            @if (isWeapon)
                             {
                                 <form asp-action="EquipWeapon" method="post">
-                                    <input type="hidden" name="weaponId" value="@weapon.Id" />
-                                    <button class="btn btn-sm btn-dark">Equip</button>
+                                    <input type="hidden" name="weaponId" value="@item.Id" />
+
+                                    <button class="btn btn-sm @(Model.Character.EquippedWeapon?.Id == item.Id ? "btn-success" : "btn-dark")">
+                                        @(Model.Character.EquippedWeapon?.Id == item.Id ? "Equipped" : "Equip")
+                                    </button>
                                 </form>
                             }
 
-                            @if (item is Armor armor)
+                            @if (isArmor)
                             {
                                 <form asp-action="EquipArmor" method="post">
-                                    <input type="hidden" name="armorId" value="@armor.Id" />
-                                    <button class="btn btn-sm btn-dark">Equip</button>
+                                    <input type="hidden" name="armorId" value="@item.Id" />
+
+                                    <button class="btn btn-sm @(Model.Character.EquippedArmor?.Id == item.Id ? "btn-success" : "btn-dark")">
+                                        @(Model.Character.EquippedArmor?.Id == item.Id ? "Equipped" : "Equip")
+                                    </button>
                                 </form>
+                            }
+
+                            @if (!isWeapon && !isArmor)
+                            {
+                                <span class="text-muted small">No actions</span>
                             }
 
                         </div>
