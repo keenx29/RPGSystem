@@ -6,6 +6,37 @@
     <div class="row">
         <div class="col-9 px-5 py-4">
             @* main content *@
+            <div class="mb-2">
+                <small class="text-muted">
+                    Current roll mode: <strong>@Model.SelectedAdvantageState</strong>
+                </small>
+            </div>
+            <form asp-action="SetAdvantageState" method="post">
+                <div class="btn-group mb-3" role="group">
+
+                    <button type="submit"
+                            name="state"
+                            value="Normal"
+                            class="btn btn-secondary @(Model.SelectedAdvantageState == AdvantageState.Normal ? "active" : "")">
+                        Normal
+                    </button>
+
+                    <button type="submit"
+                            name="state"
+                            value="Advantage"
+                            class="btn btn-success @(Model.SelectedAdvantageState == AdvantageState.Advantage ? "active" : "")">
+                        Advantage
+                    </button>
+
+                    <button type="submit"
+                            name="state"
+                            value="Disadvantage"
+                            class="btn btn-danger @(Model.SelectedAdvantageState == AdvantageState.Disadvantage ? "active" : "")">
+                        Disadvantage
+                    </button>
+
+                </div>
+            </form>
             <div>
                 <h1>@Model.Character.Name</h1>
             </div>

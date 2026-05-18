@@ -9,6 +9,8 @@ builder.Services.AddSingleton<DiceService>();
 
 builder.Services.AddSingleton<CharacterService>();
 
+builder.Services.AddSingleton<RollStateService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

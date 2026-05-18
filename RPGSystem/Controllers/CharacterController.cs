@@ -9,25 +9,35 @@ namespace RPGSystem.Controllers
         private readonly DiceService _diceService;
         private readonly CharacterService _characterService;
         private static List<RollResult> _rollHistory = new();
+        private static RollStateService _rollState;
 
-        public CharacterController(DiceService diceService, CharacterService characterService)
+        public CharacterController(DiceService diceService, CharacterService characterService, RollStateService rollState)
         {
             _diceService = diceService;
             _characterService = characterService;
+            _rollState = rollState;
         }
 
         [HttpGet]
         public IActionResult Sheet()
         {
-            var character = _characterService.GetTestCharacter();
-
             var vm = new CharacterSheetViewModel
             {
-                Character = character,
-                RollHistory = _rollHistory
+                Character = _characterService.GetTestCharacter(),
+                RollHistory = _rollHistory,
+                SelectedAdvantageState = _rollState.SelectedAdvantageState
             };
             
             return View(vm);
+        }
+        [HttpPost]
+        public IActionResult SetAdvantageState(string state)
+        {
+            Enum.TryParse(state, out AdvantageState parsed);
+
+            _rollState.SelectedAdvantageState = parsed;
+
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult RollAbility(string abilityName)
@@ -36,7 +46,10 @@ namespace RPGSystem.Controllers
 
             var ability = character.GetAbility(abilityName);
 
-            int roll = _diceService.RollD20();
+            var advantage = _rollState.SelectedAdvantageState;
+
+            int roll = _diceService.RollD20(advantage);
+
             int modifier = ability.Modifier;
 
             var result = new RollResult
@@ -49,13 +62,7 @@ namespace RPGSystem.Controllers
 
             _rollHistory.Insert(0, result);
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult RollSavingThrow(string abilityName)
@@ -64,7 +71,9 @@ namespace RPGSystem.Controllers
 
             var ability = character.GetAbility(abilityName);
 
-            int roll = _diceService.RollD20();
+            var advantage = _rollState.SelectedAdvantageState;
+
+            int roll = _diceService.RollD20(advantage);
 
             int modifier = character.GetSavingThrowBonus(ability);
 
@@ -78,13 +87,7 @@ namespace RPGSystem.Controllers
 
             _rollHistory.Insert(0, result);
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult RollSkill(string skillName)
@@ -93,7 +96,9 @@ namespace RPGSystem.Controllers
 
             var skill = character.Skills.First(s => s.Name == skillName);
 
-            int roll = _diceService.RollD20();
+            var advantage = _rollState.SelectedAdvantageState;
+
+            int roll = _diceService.RollD20(advantage);
 
             int modifier = skill.GetBonus(character.GetProficiencyBonus());
 
@@ -107,13 +112,7 @@ namespace RPGSystem.Controllers
 
             _rollHistory.Insert(0, result);
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult RollAttack()
@@ -122,7 +121,9 @@ namespace RPGSystem.Controllers
 
             var weapon = character.EquippedWeapon;
 
-            int roll = _diceService.RollD20();
+            var advantage = _rollState.SelectedAdvantageState;
+
+            int roll = _diceService.RollD20(advantage);
 
             int modifier =
                 character.GetAbility("Strength").Modifier // TODO: STR/DEX logic
@@ -138,13 +139,7 @@ namespace RPGSystem.Controllers
             };
             _rollHistory.Insert(0, result);
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult RollDamage()
@@ -167,13 +162,7 @@ namespace RPGSystem.Controllers
 
             _rollHistory.Insert(0, result);
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult EquipWeapon(string weaponName)

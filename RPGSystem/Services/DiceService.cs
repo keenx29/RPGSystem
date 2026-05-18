@@ -1,10 +1,31 @@
-﻿namespace RPGSystem.Services
+﻿using RPGSystem.Models;
+
+namespace RPGSystem.Services
 {
     public class DiceService
     {
         private readonly Random _random = new();
+        public int RollD20(AdvantageState advantage = AdvantageState.Normal)
+        {
+            if (advantage == AdvantageState.Advantage)
+            {
+                int firstRoll = RollOnce();
+                int secondRoll = RollOnce();
 
-        public int RollD20()
+                return Math.Max(firstRoll, secondRoll);
+            }
+
+            if (advantage == AdvantageState.Disadvantage)
+            {
+                int firstRoll = RollOnce();
+                int secondRoll = RollOnce();
+
+                return Math.Min(firstRoll, secondRoll);
+            }
+
+            return RollOnce();
+        }
+        public int RollOnce()
         {
             return _random.Next(1, 21);
         }

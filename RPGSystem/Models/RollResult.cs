@@ -15,5 +15,6 @@ namespace RPGSystem.Models
         public int Total => DiceRoll + Modifier;
 
         public string? DamageType { get; set; }
+        public AdvantageState AdvantageType { get; set; } = AdvantageState.Normal;
     }
 }

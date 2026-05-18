@@ -45,3 +45,8 @@ input[type=number]::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+.btn-group .btn.active {
+    border: 2px solid #000;
+    transform: scale(1.05);
+    z-index: 2;
+}
