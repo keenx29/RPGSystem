@@ -4,6 +4,7 @@
     {
         // Identity
         public string Name { get; set; } = "";
+        public CharacterClass Class { get; set; }
 
         // Core data
         public List<Ability> Abilities { get; set; } = new();
@@ -22,20 +23,24 @@
         public List<Item> Inventory { get; set; } = new();
 
         // System logic (minimal only)
-        public void LevelUp()
+        public void LevelUp(int hpGain)
         {
             Level++;
-
-            int hpGain = 5 + Abilities
-                .First(a => a.Name == "Constitution")
-                .Modifier;
-
-            if (hpGain < 1)
-                hpGain = 1;
 
             MaxHP += hpGain;
 
             CurrentHP = MaxHP;
+        }
+        public int GetHitDie()
+        {
+            switch (Class)
+            {
+                case CharacterClass.Fighter:
+                    return 10;
+
+                default:
+                    return 8;
+            }
         }
         public int GetProficiencyBonus()
         {

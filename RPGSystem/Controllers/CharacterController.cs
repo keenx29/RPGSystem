@@ -263,8 +263,12 @@ namespace RPGSystem.Controllers
         public IActionResult LevelUp()
         {
             var character = _characterService.GetTestCharacter();
+            var ability = character.GetAbility("Constitution");
+            int hpGain =
+            _diceService.RollDice($"1d{character.GetHitDie()}")
+            + ability.Modifier;
 
-            character.LevelUp();
+            character.LevelUp(hpGain);
 
             var vm = new CharacterSheetViewModel
             {
