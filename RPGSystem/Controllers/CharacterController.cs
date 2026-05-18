@@ -259,5 +259,20 @@ namespace RPGSystem.Controllers
 
             return View("Sheet", vm);
         }
+        [HttpPost]
+        public IActionResult LevelUp()
+        {
+            var character = _characterService.GetTestCharacter();
+
+            character.LevelUp();
+
+            var vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
+        }
     }
 }

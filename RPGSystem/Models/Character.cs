@@ -22,7 +22,21 @@
         public List<Item> Inventory { get; set; } = new();
 
         // System logic (minimal only)
+        public void LevelUp()
+        {
+            Level++;
 
+            int hpGain = 5 + Abilities
+                .First(a => a.Name == "Constitution")
+                .Modifier;
+
+            if (hpGain < 1)
+                hpGain = 1;
+
+            MaxHP += hpGain;
+
+            CurrentHP = MaxHP;
+        }
         public int GetProficiencyBonus()
         {
             return 2 + ((Level - 1) / 4);

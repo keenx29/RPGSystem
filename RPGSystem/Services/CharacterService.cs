@@ -16,7 +16,7 @@ namespace RPGSystem.Services
             var character = new Character
             {
                 Name = "Tyrion",
-                Level = 3,
+                Level = 4,
                 MovementSpeed = 30,
 
                 Abilities = new List<Ability>

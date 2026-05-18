@@ -294,7 +294,21 @@
                     </form>
                 </div>
             </div>
-            
+            <div class="card p-3 text-center">
+
+                <h5>Level</h5>
+
+                <h2>@Model.Character.Level</h2>
+
+                <form asp-action="LevelUp" method="post">
+
+                    <button class="btn btn-warning btn-sm mt-2">
+                        Level Up
+                    </button>
+
+                </form>
+
+            </div>
         </div>
 
         <div class="col-3">
