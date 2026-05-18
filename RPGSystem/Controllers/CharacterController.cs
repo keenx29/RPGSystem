@@ -23,7 +23,7 @@ namespace RPGSystem.Controllers
         {
             var vm = new CharacterSheetViewModel
             {
-                Character = _characterService.GetTestCharacter(),
+                Character = _characterService.GetCharacter(),
                 RollHistory = _rollHistory,
                 SelectedAdvantageState = _rollState.SelectedAdvantageState
             };
@@ -42,7 +42,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollAbility(string abilityName)
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
 
             var ability = character.GetAbility(abilityName);
 
@@ -67,7 +67,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollSavingThrow(string abilityName)
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
 
             var ability = character.GetAbility(abilityName);
 
@@ -92,7 +92,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollSkill(string skillName)
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
 
             var skill = character.Skills.First(s => s.Name == skillName);
 
@@ -117,7 +117,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollAttack()
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
 
             var weapon = character.EquippedWeapon;
 
@@ -144,7 +144,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollDamage()
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
             var weapon = character.EquippedWeapon;
 
             int roll = _diceService.RollDice(weapon.DamageDice);
@@ -167,7 +167,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult EquipWeapon(string weaponName)
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
             var weapon = character.Inventory.OfType<Weapon>().First(w => w.Name == weaponName);
 
             character.EquipWeapon(weapon);
@@ -178,28 +178,22 @@ namespace RPGSystem.Controllers
                 RollHistory = _rollHistory
             };
 
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult EquipArmor(string armorName)
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
             var armor = character.Inventory.OfType<Armor>().First(w => w.Name == armorName);
 
             character.EquipArmor(armor);
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult ModifyHP(int amount, string mode)
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
 
             if (mode == "damage")
             {
@@ -212,46 +206,28 @@ namespace RPGSystem.Controllers
 
             character.CurrentHP = Math.Clamp(character.CurrentHP, 0, character.MaxHP);
             
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult ShortRest()
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
             character.CurrentHP = Math.Min(character.MaxHP, character.CurrentHP + (character.MaxHP / 4));
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult LongRest()
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
             character.CurrentHP = character.MaxHP;
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult LevelUp()
         {
-            var character = _characterService.GetTestCharacter();
+            var character = _characterService.GetCharacter();
             var ability = character.GetAbility("Constitution");
             int hpGain =
             _diceService.RollDice($"1d{character.GetHitDie()}")
@@ -259,13 +235,7 @@ namespace RPGSystem.Controllers
 
             character.LevelUp(hpGain);
 
-            var vm = new CharacterSheetViewModel
-            {
-                Character = character,
-                RollHistory = _rollHistory
-            };
-
-            return View("Sheet", vm);
+            return RedirectToAction("Sheet");
         }
     }
 }

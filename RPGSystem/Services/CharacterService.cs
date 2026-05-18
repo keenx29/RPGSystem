@@ -4,6 +4,15 @@ namespace RPGSystem.Services
 {
     public class CharacterService
     {
+        private Character _character;
+        public CharacterService()
+        {
+            _character = GetTestCharacter();
+        }
+        public Character GetCharacter()
+        {
+            return _character;
+        }
         public Character GetTestCharacter()
         {
             var strength = new Ability { Name = "Strength", Score = 16, IsSavingThrowProficient=true};
