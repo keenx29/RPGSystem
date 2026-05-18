@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RPGSystem.Helpers;
 using RPGSystem.Models;
 using RPGSystem.Services;
 
@@ -40,11 +41,11 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult RollAbility(string abilityName)
+        public IActionResult RollAbility(AbilityType abilityType)
         {
             var character = _characterService.GetCharacter();
 
-            var ability = character.GetAbility(abilityName);
+            var ability = character.GetAbility(abilityType);
 
             var advantage = _rollState.SelectedAdvantageState;
 
@@ -65,11 +66,11 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult RollSavingThrow(string abilityName)
+        public IActionResult RollSavingThrow(AbilityType abilityType)
         {
             var character = _characterService.GetCharacter();
 
-            var ability = character.GetAbility(abilityName);
+            var ability = character.GetAbility(abilityType);
 
             var advantage = _rollState.SelectedAdvantageState;
 
@@ -126,7 +127,7 @@ namespace RPGSystem.Controllers
             int roll = _diceService.RollD20(advantage);
 
             int modifier =
-                character.GetAbility("Strength").Modifier // TODO: STR/DEX logic
+                character.GetAbility(AbilityType.Strength).Modifier // TODO: STR/DEX logic
                 + character.GetProficiencyBonus() // TODO: Weapon Proficiencies
                 + weapon.AttackBonus;
 
@@ -149,7 +150,9 @@ namespace RPGSystem.Controllers
 
             int roll = _diceService.RollDice(weapon.DamageDice);
 
-            int modifier = character.GetAbility("Strength").Modifier;// TODO: Damage Bonuses (i.e. Rage)
+            int modifier = character.GetAbility(AbilityType.Strength).Modifier;
+            // TODO: Damage Bonuses (i.e. Rage)
+            // TODO: Damage mod based on ability (i.e. Dex for rogues)
 
             var result = new RollResult
             {
@@ -167,69 +170,39 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult EquipWeapon(Guid weaponId)
         {
-            var character = _characterService.GetCharacter();
-            var weapon = character.Inventory.OfType<Weapon>().First(w => w.Id == weaponId);
-
-            character.EquipWeapon(weapon);
-
+            _characterService.EquipWeapon(weaponId);
             return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult EquipArmor(Guid armorId)
         {
-            var character = _characterService.GetCharacter();
-            var armor = character.Inventory.OfType<Armor>().First(a => a.Id == armorId);
-
-            character.EquipArmor(armor);
-
+            _characterService.EquipArmor(armorId);
             return RedirectToAction("Sheet");
         }
 
         [HttpPost]
         public IActionResult ModifyHP(int amount, string mode)
         {
-            var character = _characterService.GetCharacter();
-
-            if (mode == "damage")
-            {
-                character.CurrentHP -= amount;
-            }
-            else if (mode == "heal")
-            {
-                character.CurrentHP += amount;
-            }
-
-            character.CurrentHP = Math.Clamp(character.CurrentHP, 0, character.MaxHP);
-            
+            _characterService.ModifyHP(amount, mode);
             return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult ShortRest()
         {
-            var character = _characterService.GetCharacter();
-            character.CurrentHP = Math.Min(character.MaxHP, character.CurrentHP + (character.MaxHP / 4));
-
+            _characterService.ShortRest();
             return RedirectToAction("Sheet");
         }
+
         [HttpPost]
         public IActionResult LongRest()
         {
-            var character = _characterService.GetCharacter();
-            character.CurrentHP = character.MaxHP;
-
+            _characterService.LongRest();
             return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult LevelUp()
         {
-            var character = _characterService.GetCharacter();
-            var ability = character.GetAbility("Constitution");
-            int hpGain =
-            _diceService.RollDice($"1d{character.GetHitDie()}")
-            + ability.Modifier;
-
-            character.LevelUp(hpGain);
-
+            _characterService.LevelUp();
             return RedirectToAction("Sheet");
         }
     }

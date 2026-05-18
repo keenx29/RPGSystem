@@ -1,6 +1,6 @@
 ﻿namespace RPGSystem.Models
 {
-    public enum CharacterClass
+    public enum CharacterClassType
     {
         Fighter
     }

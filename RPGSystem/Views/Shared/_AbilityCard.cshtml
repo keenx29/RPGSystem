@@ -16,8 +16,8 @@
         <form asp-action="RollAbility" method="post">
 
             <input type="hidden"
-                    name="abilityName"
-                    value="@Model.Name" />
+                    name="abilityType"
+                    value="@Model.Type" />
 
             <button class="btn btn-dark btn-sm">
                 Check
@@ -28,8 +28,8 @@
         <form asp-action="RollSavingThrow" method="post">
 
             <input type="hidden"
-                    name="abilityName"
-                    value="@Model.Name" />
+                    name="abilityType"
+                    value="@Model.Type" />
 
             <button class="btn btn-sm @(Model.IsSavingThrowProficient ? "btn-outline-danger" : "btn-outline-dark")">
                 Save

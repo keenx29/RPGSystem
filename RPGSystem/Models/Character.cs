@@ -4,7 +4,7 @@
     {
         // Identity
         public string Name { get; set; } = "";
-        public CharacterClass Class { get; set; }
+        public CharacterClassType ClassType { get; set; }
 
         // Core data
         public List<Ability> Abilities { get; set; } = new();
@@ -23,7 +23,6 @@
         public List<Item> Inventory { get; set; } = new();
         public List<Item> AttunedItems { get; set; } = new();
 
-        // System logic (minimal only)
         public void LevelUp(int hpGain)
         {
             Level++;
@@ -32,17 +31,7 @@
 
             CurrentHP = MaxHP;
         }
-        public int GetHitDie()
-        {
-            switch (Class)
-            {
-                case CharacterClass.Fighter:
-                    return 10;
 
-                default:
-                    return 8;
-            }
-        }
         public int GetProficiencyBonus()
         {
             return 2 + ((Level - 1) / 4);
@@ -50,20 +39,19 @@
 
         public int GetInitiative()
         {
-            return GetAbility("Dexterity").Modifier;
+            return GetAbility(AbilityType.Dexterity).Modifier;
         }
 
         public int GetPassivePerception()
         {
-            return 10 + GetAbility("Wisdom").Modifier;
+            return 10 + GetAbility(AbilityType.Wisdom).Modifier;
         }
 
-        // Helper: ability lookup (needed only once)
-        public Ability GetAbility(string name)
+        public Ability GetAbility(AbilityType type)
         {
-            return Abilities.First(a => a.Name == name);
+            return Abilities.First(a => a.Type == type);
         }
-        // Helper: saving throw bonus calculation
+
         public int GetSavingThrowBonus(Ability ability)
         {
             int bonus = ability.Modifier;
@@ -76,38 +64,17 @@
             return bonus;
         }
 
-        // Helper: skill bonus (delegates to Skill class)
         public int GetSkillBonus(Skill skill)
         {
             return skill.GetBonus(GetProficiencyBonus());
         }
+
         public int GetArmorClass()
         {
             if (EquippedArmor != null)
-                ArmorClass = EquippedArmor.BaseArmorClass;
+                return EquippedArmor.BaseArmorClass;
+
             return ArmorClass;
-        }
-        public void EquipWeapon(Weapon weapon)
-        {
-            if (EquippedWeapon != null)
-                Inventory.Add(EquippedWeapon);
-            EquippedWeapon = weapon;
-            Inventory.Remove(EquippedWeapon);
-        }
-        public void EquipArmor(Armor armor)
-        {
-            if (EquippedArmor != null)
-                Inventory.Add(EquippedArmor);
-            EquippedArmor = armor;
-            Inventory.Remove(EquippedArmor);
-        }
-        public void TakeDamage(int value)
-        {
-            CurrentHP = Math.Max(0, CurrentHP - value);
-        }
-        public void Heal(int value)
-        {
-            CurrentHP = Math.Min(MaxHP, CurrentHP + value);
         }
     }
 }
