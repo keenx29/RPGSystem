@@ -222,10 +222,39 @@ namespace RPGSystem.Controllers
             }
 
             character.CurrentHP = Math.Clamp(character.CurrentHP, 0, character.MaxHP);
+            
+            var vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
+        }
+        [HttpPost]
+        public IActionResult ShortRest()
+        {
+            var character = _characterService.GetTestCharacter();
+            character.CurrentHP = Math.Min(character.MaxHP, character.CurrentHP + (character.MaxHP / 4));
 
             var vm = new CharacterSheetViewModel
             {
-                Character = character
+                Character = character,
+                RollHistory = _rollHistory
+            };
+
+            return View("Sheet", vm);
+        }
+        [HttpPost]
+        public IActionResult LongRest()
+        {
+            var character = _characterService.GetTestCharacter();
+            character.CurrentHP = character.MaxHP;
+
+            var vm = new CharacterSheetViewModel
+            {
+                Character = character,
+                RollHistory = _rollHistory
             };
 
             return View("Sheet", vm);
