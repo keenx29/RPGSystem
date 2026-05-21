@@ -1,5 +1,6 @@
 ﻿using RPGSystem.Helpers;
 using RPGSystem.Models;
+using RPGSystem.Models.Classes;
 
 namespace RPGSystem.Services
 {
@@ -21,13 +22,15 @@ namespace RPGSystem.Services
         {
             var ability = _character.GetAbility(AbilityType.Constitution);
 
-            int hitDie = CharacterClassData.GetHitDie(_character.ClassType);
+            var characterClass = CharacterClassFactory.Create(_character.ClassType);
 
             int hpGain =
-                _diceService.RollDice($"1d{hitDie}")
+                _diceService.RollDice($"1d{characterClass.HitDie}")
                 + ability.Modifier;
 
             _character.LevelUp(hpGain);
+
+            _character.ClassFeatures = characterClass.GetFeaturesForLevel(_character.Level);
         }
         public void ShortRest()
         {
@@ -95,11 +98,13 @@ namespace RPGSystem.Services
             var wisdom = new Ability { Name = "Wisdom", Type = AbilityType.Wisdom, Score = 12 };
             var charisma = new Ability { Name = "Charisma", Type = AbilityType.Charisma, Score = 8 };
 
+
             var character = new Character
             {
                 Name = "Tyrion",
                 Level = 4,
                 MovementSpeed = 30,
+                ClassType = CharacterClassType.Fighter,
 
                 Abilities = new List<Ability>
                 {
@@ -131,8 +136,13 @@ namespace RPGSystem.Services
                 {
                     new Weapon { Name= "Axe", AttackBonus = 1, DamageDice = "1d8", DamageType="slashing" },
                     new Armor { Name="Chainmail", BaseArmorClass=15}
-                }
+                },
+
             };
+
+            var characterClass = CharacterClassFactory.Create(character.ClassType);
+
+            character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
 
             return character;
         }

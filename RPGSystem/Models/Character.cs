@@ -17,6 +17,9 @@
         public int Level { get; set; }
         public int ArmorClass { get; set; } = 10;
 
+        // Class Data
+        public List<string> ClassFeatures { get; set; } = new();
+
         // Equipment
         public Weapon? EquippedWeapon { get; set; }
         public Armor? EquippedArmor { get; set; }
