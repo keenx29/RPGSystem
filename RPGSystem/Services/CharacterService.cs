@@ -1,6 +1,7 @@
 ﻿using RPGSystem.Helpers;
 using RPGSystem.Models;
 using RPGSystem.Models.Classes;
+using RPGSystem.Models.Classes.Features;
 
 namespace RPGSystem.Services
 {
@@ -18,9 +19,17 @@ namespace RPGSystem.Services
         {
             return _character;
         }
+        private ClassFeatureInstance? GetFeature(string name)
+        {
+            return _character.ClassFeatures
+                .FirstOrDefault(f => f.Name == name);
+        }
         public void UseSecondWind()
         {
-            if (_character.SecondWindUsesRemaining <= 0)
+            var feature = _character.ClassFeatures
+                .FirstOrDefault(f => f.Name == FighterFeatures.SecondWind);
+
+            if (feature == null || !feature.IsAvailable)
                 return;
 
             int healAmount =
@@ -29,7 +38,7 @@ namespace RPGSystem.Services
 
             ModifyHP(healAmount, "heal");
 
-            _character.SecondWindUsesRemaining--;
+            feature.UsesRemaining--;
         }
         public void LevelUp()
         {
@@ -51,12 +60,23 @@ namespace RPGSystem.Services
                 _character.MaxHP,
                 _character.CurrentHP + (_character.MaxHP / 4) //TODO: Short rest hit die logic
             );
-            _character.SecondWindUsesRemaining = 1;
+            var secondWind = GetFeature(FighterFeatures.SecondWind);
+
+            if (secondWind != null)
+                secondWind.UsesRemaining = secondWind.MaxUses;
+
+            var actionSurge = GetFeature(FighterFeatures.ActionSurge);
+
+            if (actionSurge != null)
+                actionSurge.UsesRemaining = actionSurge.MaxUses;
         }
         public void LongRest()
         {
             _character.CurrentHP = _character.MaxHP;
-            _character.SecondWindUsesRemaining = 1;
+            foreach (var feature in _character.ClassFeatures)
+            {
+                feature.UsesRemaining = feature.MaxUses;
+            }
         }
         public void ModifyHP(int amount, string mode)
         {

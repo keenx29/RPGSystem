@@ -9,18 +9,33 @@ namespace RPGSystem.Models.Classes
 
         public override int HitDie => 10;
 
-        public override List<string> GetFeaturesForLevel(int level)
+        public override List<ClassFeatureInstance> GetFeaturesForLevel(int level)
         {
-            var features = new List<string>();
+            var features = new List<ClassFeatureInstance>();
 
             if (level >= 1)
-                features.Add(FighterFeatures.SecondWind);
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = FighterFeatures.SecondWind,
+                    UsesRemaining = 1,
+                    MaxUses = 1
+                });
 
             if (level >= 2)
-                features.Add(FighterFeatures.ActionSurge);
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = FighterFeatures.ActionSurge,
+                    UsesRemaining = 1,
+                    MaxUses = 1
+                });
 
             if (level >= 5)
-                features.Add(FighterFeatures.ExtraAttack);
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = FighterFeatures.ExtraAttack,
+                    UsesRemaining = 0,
+                    MaxUses = 0
+                });
 
             return features;
         }

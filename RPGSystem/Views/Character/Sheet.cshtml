@@ -1,5 +1,6 @@
 ﻿@using RPGSystem.Models
 @using RPGSystem.Helpers
+@using RPGSystem.Models.Classes.Features
 @model RPGSystem.Models.CharacterSheetViewModel
 
 <div class="container-fluid">
@@ -373,22 +374,51 @@
 
             </div>
             @* Class Features Panel *@
-            <div class="card p-3 text-center">
+            <div class="card p-3">
+
+                <h5>Class Features</h5>
+
                 @foreach (var feature in Model.Character.ClassFeatures)
                 {
-                    <div>@feature</div>
+                    <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
+
+                        <!-- LEFT SIDE -->
+                        <div class="d-flex align-items-center gap-2">
+
+                            @if (feature.IsAvailable)
+                            {
+                                <span class="text-success">✔</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger">✖</span>
+                            }
+
+                            <strong>@feature.Name</strong>
+
+                            <small class="text-muted">
+                                (@feature.UsesRemaining / @feature.MaxUses)
+                            </small>
+
+                        </div>
+
+                        <!-- RIGHT SIDE -->
+                        @if (feature.Name == FighterFeatures.SecondWind)
+                        {
+                            <form asp-action="UseSecondWind" method="post">
+
+                                <button class="btn btn-sm btn-warning"
+                                        disabled="@(feature.UsesRemaining <= 0)">
+                                    Use
+                                </button>
+
+                            </form>
+                        }
+
+                    </div>
                 }
+
             </div>
-            <form asp-action="UseSecondWind" method="post">
-
-                <button class="btn btn-warning"
-                        disabled="@(Model.Character.SecondWindUsesRemaining <= 0)">
-
-                    Second Wind
-
-                </button>
-
-            </form>
         </div>
 
         <div class="col-3">

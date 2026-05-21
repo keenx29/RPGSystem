@@ -1,4 +1,6 @@
-﻿namespace RPGSystem.Models.Classes
+﻿using RPGSystem.Models.Classes.Features;
+
+namespace RPGSystem.Models.Classes
 {
     public abstract class CharacterClass
     {
@@ -6,6 +8,6 @@
 
         public abstract int HitDie { get; }
 
-        public abstract List<string> GetFeaturesForLevel(int level);
+        public abstract List<ClassFeatureInstance> GetFeaturesForLevel(int level);
     }
 }

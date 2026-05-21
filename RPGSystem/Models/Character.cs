@@ -1,4 +1,6 @@
-﻿namespace RPGSystem.Models
+﻿using RPGSystem.Models.Classes.Features;
+
+namespace RPGSystem.Models
 {
     public class Character
     {
@@ -18,8 +20,7 @@
         public int ArmorClass { get; set; } = 10;
 
         // Class Data
-        public List<string> ClassFeatures { get; set; } = new();
-        public int SecondWindUsesRemaining { get; set; } = 1;
+        public List<ClassFeatureInstance> ClassFeatures { get; set; } = new();
 
         // Equipment
         public Weapon? EquippedWeapon { get; set; }
