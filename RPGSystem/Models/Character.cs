@@ -19,6 +19,7 @@
 
         // Class Data
         public List<string> ClassFeatures { get; set; } = new();
+        public int SecondWindUsesRemaining { get; set; } = 1;
 
         // Equipment
         public Weapon? EquippedWeapon { get; set; }

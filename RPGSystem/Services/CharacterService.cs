@@ -18,6 +18,19 @@ namespace RPGSystem.Services
         {
             return _character;
         }
+        public void UseSecondWind()
+        {
+            if (_character.SecondWindUsesRemaining <= 0)
+                return;
+
+            int healAmount =
+                _diceService.RollDice("1d10")
+                + _character.Level;
+
+            ModifyHP(healAmount, "heal");
+
+            _character.SecondWindUsesRemaining--;
+        }
         public void LevelUp()
         {
             var ability = _character.GetAbility(AbilityType.Constitution);
@@ -38,10 +51,12 @@ namespace RPGSystem.Services
                 _character.MaxHP,
                 _character.CurrentHP + (_character.MaxHP / 4) //TODO: Short rest hit die logic
             );
+            _character.SecondWindUsesRemaining = 1;
         }
         public void LongRest()
         {
             _character.CurrentHP = _character.MaxHP;
+            _character.SecondWindUsesRemaining = 1;
         }
         public void ModifyHP(int amount, string mode)
         {

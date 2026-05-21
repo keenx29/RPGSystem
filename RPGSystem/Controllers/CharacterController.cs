@@ -205,5 +205,11 @@ namespace RPGSystem.Controllers
             _characterService.LevelUp();
             return RedirectToAction("Sheet");
         }
+        [HttpPost]
+        public IActionResult UseSecondWind()
+        {
+            _characterService.UseSecondWind();
+            return RedirectToAction("Sheet");
+        }
     }
 }

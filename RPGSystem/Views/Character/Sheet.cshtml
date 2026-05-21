@@ -379,6 +379,16 @@
                     <div>@feature</div>
                 }
             </div>
+            <form asp-action="UseSecondWind" method="post">
+
+                <button class="btn btn-warning"
+                        disabled="@(Model.Character.SecondWindUsesRemaining <= 0)">
+
+                    Second Wind
+
+                </button>
+
+            </form>
         </div>
 
         <div class="col-3">
