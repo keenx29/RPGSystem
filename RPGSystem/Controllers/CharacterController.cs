@@ -8,15 +8,21 @@ namespace RPGSystem.Controllers
     public class CharacterController : Controller
     {
         private readonly DiceService _diceService;
+        private readonly RollService _rollService;
         private readonly CharacterService _characterService;
         private static List<RollResult> _rollHistory = new();
         private static RollStateService _rollState;
 
-        public CharacterController(DiceService diceService, CharacterService characterService, RollStateService rollState)
+        public CharacterController(
+            DiceService diceService, 
+            CharacterService characterService, 
+            RollStateService rollState, 
+            RollService rollService)
         {
             _diceService = diceService;
             _characterService = characterService;
             _rollState = rollState;
+            _rollService = rollService;
         }
 
         [HttpGet]
@@ -43,23 +49,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollAbility(AbilityType abilityType)
         {
-            var character = _characterService.GetCharacter();
-
-            var ability = character.GetAbility(abilityType);
-
-            var advantage = _rollState.SelectedAdvantageState;
-
-            int roll = _diceService.RollD20(advantage);
-
-            int modifier = ability.Modifier;
-
-            var result = new RollResult
-            {
-                Actor = ability.Name,
-                Type = RollType.Check,
-                DiceRoll = roll,
-                Modifier = modifier
-            };
+            var result = _rollService.RollAbility(abilityType, _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -68,23 +58,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollSavingThrow(AbilityType abilityType)
         {
-            var character = _characterService.GetCharacter();
-
-            var ability = character.GetAbility(abilityType);
-
-            var advantage = _rollState.SelectedAdvantageState;
-
-            int roll = _diceService.RollD20(advantage);
-
-            int modifier = character.GetSavingThrowBonus(ability);
-
-            var result = new RollResult
-            {
-                Actor = ability.Name,
-                Type = RollType.Save,
-                DiceRoll = roll,
-                Modifier = modifier
-            };
+            var result = _rollService.RollSavingThrow(abilityType, _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -93,23 +67,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollSkill(string skillName)
         {
-            var character = _characterService.GetCharacter();
-
-            var skill = character.Skills.First(s => s.Name == skillName);
-
-            var advantage = _rollState.SelectedAdvantageState;
-
-            int roll = _diceService.RollD20(advantage);
-
-            int modifier = skill.GetBonus(character.GetProficiencyBonus());
-
-            var result = new RollResult
-            {
-                Actor = skill.Name,
-                Type = RollType.Check,
-                DiceRoll = roll,
-                Modifier = modifier
-            };
+            var result = _rollService.RollSkill(skillName, _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -118,26 +76,8 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollAttack()
         {
-            var character = _characterService.GetCharacter();
+            var result = _rollService.RollAttack( _rollState.SelectedAdvantageState);
 
-            var weapon = character.EquippedWeapon;
-
-            var advantage = _rollState.SelectedAdvantageState;
-
-            int roll = _diceService.RollD20(advantage);
-
-            int modifier =
-                character.GetAbility(AbilityType.Strength).Modifier // TODO: STR/DEX logic
-                + character.GetProficiencyBonus() // TODO: Weapon Proficiencies
-                + weapon.AttackBonus;
-
-            var result = new RollResult
-            {
-                Actor = weapon.Name, 
-                Type = RollType.Attack,
-                DiceRoll = roll,
-                Modifier = modifier,
-            };
             _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
@@ -145,23 +85,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollDamage()
         {
-            var character = _characterService.GetCharacter();
-            var weapon = character.EquippedWeapon;
-
-            int roll = _diceService.RollDice(weapon.DamageDice);
-
-            int modifier = character.GetAbility(AbilityType.Strength).Modifier;
-            // TODO: Damage Bonuses (i.e. Rage)
-            // TODO: Damage mod based on ability (i.e. Dex for rogues)
-
-            var result = new RollResult
-            {
-                Actor = weapon.Name,
-                Type = RollType.Damage,
-                DiceRoll = roll,
-                Modifier = modifier,
-                DamageType = weapon.DamageType
-            };
+            var result = _rollService.RollDamage();
 
             _rollHistory.Insert(0, result);
 
