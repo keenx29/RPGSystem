@@ -19,24 +19,16 @@ namespace RPGSystem.Services
         {
             return _character;
         }
-        private ClassFeatureInstance? GetFeature(string name)
-        {
-            return _character.ClassFeatures
-                .FirstOrDefault(f => f.Name == name);
-        }
         public void UseSecondWind()
         {
-            var feature = _character.ClassFeatures
-                .FirstOrDefault(f => f.Name == FighterFeatures.SecondWind);
+            var feature = _character.GetFeature(FighterFeatures.SecondWind);
 
             if (feature == null || !feature.IsAvailable)
                 return;
 
-            int healAmount =
-                _diceService.RollDice("1d10")
-                + _character.Level;
+            int healAmount = _diceService.RollDice("1d10") + _character.Level;
 
-            ModifyHP(healAmount, "heal");
+            _character.Heal(healAmount);
 
             feature.UsesRemaining--;
         }
@@ -56,72 +48,46 @@ namespace RPGSystem.Services
         }
         public void ShortRest()
         {
-            _character.CurrentHP = Math.Min(
-                _character.MaxHP,
-                _character.CurrentHP + (_character.MaxHP / 4) //TODO: Short rest hit die logic
-            );
-            var secondWind = GetFeature(FighterFeatures.SecondWind);
-
-            if (secondWind != null)
-                secondWind.UsesRemaining = secondWind.MaxUses;
-
-            var actionSurge = GetFeature(FighterFeatures.ActionSurge);
-
-            if (actionSurge != null)
-                actionSurge.UsesRemaining = actionSurge.MaxUses;
+            _character.ShortRest();
         }
         public void LongRest()
         {
-            _character.CurrentHP = _character.MaxHP;
-            foreach (var feature in _character.ClassFeatures)
-            {
-                feature.UsesRemaining = feature.MaxUses;
-            }
+            _character.LongRest();
         }
-        public void ModifyHP(int amount, string mode)
+        public void ModifyHP(int amount, HpChangeType type)
         {
-            if (mode == "damage")
-            {
-                _character.CurrentHP -= amount;
-            }
-            else if (mode == "heal")
-            {
-                _character.CurrentHP += amount;
-            }
-
-            _character.CurrentHP = Math.Clamp(_character.CurrentHP, 0, _character.MaxHP);
+            if (type == HpChangeType.Damage)
+                TakeDamage(amount);
+            else
+                Heal(amount);
+        }
+        public void TakeDamage(int amount)
+        {
+            _character.TakeDamage(amount);
+        }
+        public void Heal(int amount)
+        {
+            _character.Heal(amount);
         }
         public void EquipWeapon(Guid weaponId)
         {
-            var weapon = _character.Inventory
-                .OfType<Weapon>()
-                .First(w => w.Id == weaponId);
+            var weapon = _character.Inventory.OfType<Weapon>().First(w => w.Id == weaponId);
 
-            if (_character.EquippedWeapon != null)
-                _character.Inventory.Add(_character.EquippedWeapon);
-
-            _character.EquippedWeapon = weapon;
-            _character.Inventory.Remove(weapon);
+            _character.EquipWeapon(weapon);
         }
         public void UnequipWeapon()
         {
-            _character.EquippedWeapon = null;
+            _character.UnequipWeapon();
         }
         public void EquipArmor(Guid armorId)
         {
-            var armor = _character.Inventory
-                .OfType<Armor>()
-                .First(a => a.Id == armorId);
+            var armor = _character.Inventory.OfType<Armor>().First(a => a.Id == armorId);
 
-            if (_character.EquippedArmor != null)
-                _character.Inventory.Add(_character.EquippedArmor);
-
-            _character.EquippedArmor = armor;
-            _character.Inventory.Remove(armor);
+            _character.EquipArmor(armor);
         }
         public void UnequipArmor()
         {
-            _character.EquippedArmor = null;
+            _character.UnequipArmor();
         }
         
         public Character GetTestCharacter()

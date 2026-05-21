@@ -28,6 +28,76 @@ namespace RPGSystem.Models
         public List<Item> Inventory { get; set; } = new();
         public List<Item> AttunedItems { get; set; } = new();
 
+        public void TakeDamage(int amount)
+        {
+            CurrentHP = Math.Max(0, CurrentHP - amount);
+        }
+        public void Heal(int amount)
+        {
+            CurrentHP = Math.Min(MaxHP, CurrentHP + amount);
+        }
+        public void EquipWeapon(Weapon weapon)
+        {
+            if (EquippedWeapon != null)
+                Inventory.Add(EquippedWeapon);
+
+            EquippedWeapon = weapon;
+            Inventory.Remove(weapon);
+        }
+        public void UnequipWeapon()
+        {
+            if (EquippedWeapon != null)
+            {
+                Inventory.Add(EquippedWeapon);
+                EquippedWeapon = null;
+            }
+        }
+        public void EquipArmor(Armor armor)
+        {
+            if (EquippedArmor != null)
+                Inventory.Add(EquippedArmor);
+
+            EquippedArmor = armor;
+            Inventory.Remove(armor);
+        }
+        public void UnequipArmor()
+        {
+            if (EquippedArmor != null)
+            {
+                Inventory.Add(EquippedArmor);
+                EquippedArmor = null;
+            }
+        }
+        public ClassFeatureInstance? GetFeature(string name)
+        {
+            return ClassFeatures.FirstOrDefault(f => f.Name == name);
+        }
+        public void UseFeature(string name, Action<ClassFeatureInstance> effect)
+        {
+            //TODO: future generic feature system
+        }
+        public void ShortRest()
+        {
+            CurrentHP = Math.Min(MaxHP, CurrentHP + (MaxHP / 4)); //TODO: Hit die logic
+
+            foreach (var feature in ClassFeatures)
+            {
+                if (feature.Name == FighterFeatures.SecondWind ||
+                    feature.Name == FighterFeatures.ActionSurge)
+                {
+                    feature.UsesRemaining = feature.MaxUses;
+                }
+            }
+        }
+        public void LongRest()
+        {
+            CurrentHP = MaxHP;
+
+            foreach (var feature in ClassFeatures)
+            {
+                feature.UsesRemaining = feature.MaxUses;
+            }
+        }
         public void LevelUp(int hpGain)
         {
             Level++;

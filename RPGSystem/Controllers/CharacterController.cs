@@ -183,7 +183,8 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult ModifyHP(int amount, string mode)
         {
-            _characterService.ModifyHP(amount, mode);
+            Enum.TryParse(mode, true, out HpChangeType type);
+            _characterService.ModifyHP(amount, type);
             return RedirectToAction("Sheet");
         }
         [HttpPost]
