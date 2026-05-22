@@ -108,7 +108,21 @@ namespace RPGSystem.Models.Characters
 
             CurrentHP = MaxHP;
         }
+        public Ability GetAttackAbility(Weapon weapon)
+        {
+            return weapon.ScalingType switch
+            {
+                WeaponScalingType.Dexterity => GetAbility(AbilityType.Dexterity),
 
+                WeaponScalingType.Finesse =>
+                    GetAbility(AbilityType.Dexterity).Modifier >
+                    GetAbility(AbilityType.Strength).Modifier
+                        ? GetAbility(AbilityType.Dexterity)
+                        : GetAbility(AbilityType.Strength),
+
+                _ => GetAbility(AbilityType.Strength)
+            };
+        }
         public int GetProficiencyBonus()
         {
             return 2 + (Level - 1) / 4;

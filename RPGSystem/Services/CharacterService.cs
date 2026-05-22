@@ -51,7 +51,6 @@ namespace RPGSystem.Services
         }
         public RollResult RollSkill(SkillType skillType, AdvantageState adv)
         {
-            //TODO: Add SkillType enum to use instead of string lookup
             var skill = _character.GetSkill(skillType);
 
             int roll = _diceService.RollD20(adv);
@@ -69,12 +68,11 @@ namespace RPGSystem.Services
             // TODO: STR/DEX logic // TODO: Weapon Proficiencies
             var weapon = _character.EquippedWeapon;
 
+            var ability = _character.GetAttackAbility(weapon);
+
             int roll = _diceService.RollD20(adv);
 
-            int modifier =
-                _character.GetAbility(AbilityType.Strength).Modifier +
-                _character.GetProficiencyBonus() +
-                weapon.AttackBonus;
+            int modifier = ability.Modifier + _character.GetProficiencyBonus() + weapon.AttackBonus;
 
             return new RollResult
             {
@@ -90,9 +88,11 @@ namespace RPGSystem.Services
             // TODO: Damage mod based on ability (i.e. Dex for rogues)
             var weapon = _character.EquippedWeapon;
 
-            int roll = _diceService.RollDice(weapon.DamageDice);
+            var ability = _character.GetAttackAbility(weapon);
 
-            int modifier = _character.GetAbility(AbilityType.Strength).Modifier;
+            int modifier = ability.Modifier;
+
+            int roll = _diceService.RollDice(weapon.DamageDice);
 
             return new RollResult
             {
@@ -105,7 +105,6 @@ namespace RPGSystem.Services
         }
         public RollResult? UseSecondWind()
         {
-            //TODO: Return RollResult to display healing done
             var feature = _character.GetFeature(FighterFeatures.SecondWind);
 
             if (feature == null || !feature.IsAvailable)
@@ -139,7 +138,6 @@ namespace RPGSystem.Services
         }
         public RollResult? LevelUp()
         {
-            //TODO: Return RollResult to display gained hp max
             var ability = _character.GetAbility(AbilityType.Constitution);
 
             var characterClass = CharacterClassFactory.Create(_character.ClassType);
@@ -238,7 +236,8 @@ namespace RPGSystem.Services
                     Name = "Longsword",
                     AttackBonus = 1,
                     DamageDice = "1d8",
-                    DamageType = "slashing"
+                    DamageType = "slashing",
+                    ScalingType = WeaponScalingType.Strength,
                 },
                 EquippedArmor = new Armor
                 {
@@ -248,7 +247,14 @@ namespace RPGSystem.Services
                 },
                 Inventory = new List<Item>
                 {
-                    new Weapon { Name= "Axe", AttackBonus = 1, DamageDice = "1d8", DamageType="slashing" },
+                    new Weapon 
+                    { 
+                        Name= "Rapier",
+                        AttackBonus = 1,
+                        DamageDice = "1d8",
+                        DamageType="piercing",
+                        ScalingType= WeaponScalingType.Finesse,
+                    },
                     new Armor { Name="Chainmail", BaseArmorClass=15}
                 },
 
