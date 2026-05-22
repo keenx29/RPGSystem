@@ -1,4 +1,5 @@
-﻿using RPGSystem.Models.Rolls;
+﻿using Microsoft.AspNetCore.Mvc;
+using RPGSystem.Models.Rolls;
 
 namespace RPGSystem.Services
 {
@@ -44,6 +45,23 @@ namespace RPGSystem.Services
             }
 
             return total;
+        }
+        public RollResult RollDiceDetailed(string notation)
+        {
+            var parts = notation.Split('+', StringSplitOptions.RemoveEmptyEntries);
+
+            int roll = RollDice(parts[0]);
+
+            int modifier = 0;
+
+            if (parts.Length > 1)
+                modifier = int.Parse(parts[1]);
+
+            return new RollResult
+            {
+                DiceRoll = roll,
+                Modifier = modifier,
+            };
         }
     }
 }

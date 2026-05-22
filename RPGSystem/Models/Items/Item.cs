@@ -11,5 +11,6 @@
         public bool IsStackable { get; set; } = false;
 
         public ItemType Type { get; set; }
+        public IItemEffect? Effect { get; set; }
     }
 }

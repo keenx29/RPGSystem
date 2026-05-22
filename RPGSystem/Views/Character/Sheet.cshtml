@@ -246,6 +246,7 @@
                 {
                     var isWeapon = item is Weapon;
                     var isArmor = item is Armor;
+                    var isConsumable = item.Type == ItemType.Consumable;
 
                     <div class="inventory-item @(Model.Character.EquippedWeapon?.Id == item.Id || Model.Character.EquippedArmor?.Id == item.Id ? "equipped" : "")">
 
@@ -263,6 +264,10 @@
                                 else if (isArmor)
                                 {
                                     <span class="badge bg-secondary">Armor</span>
+                                }
+                                else if (isConsumable)
+                                {
+                                    <span class="badge bg-secondary">Consumable</span>
                                 }
                                 else
                                 {
@@ -302,8 +307,18 @@
                                     </button>
                                 </form>
                             }
+                            @if (isConsumable)
+                            {
+                                <form asp-action="UseItem" method="post">
+                                    <input type="hidden" name="itemId" value="@item.Id" />
 
-                            @if (!isWeapon && !isArmor)
+                                    <button class="btn btn-sm btn-dark">
+                                        Use
+                                    </button>
+                                </form>
+                            }
+
+                            @if (!isWeapon && !isArmor && !isConsumable)
                             {
                                 <span class="text-muted small">No actions</span>
                             }

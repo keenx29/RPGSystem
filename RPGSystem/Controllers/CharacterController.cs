@@ -101,6 +101,16 @@ namespace RPGSystem.Controllers
             _characterService.EquipArmor(armorId);
             return RedirectToAction("Sheet");
         }
+        [HttpPost]
+        public IActionResult UseItem(Guid itemId)
+        {
+            var result = _characterService.UseItem(itemId);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
 
         [HttpPost]
         public IActionResult ModifyHP(int amount, string mode)

@@ -125,6 +125,25 @@ namespace RPGSystem.Services
                 Modifier = _character.Level,
             };
         }
+        public RollResult? UseItem(Guid itemId)
+        {
+            var item = _character.Inventory.First(x => x.Id == itemId);
+            var context = new EffectContext
+            {
+                Character = _character,
+                DiceService = _diceService,
+            };
+            if (item != null && item.Effect != null)    
+            {
+                var result = item.Effect.Apply(context);
+                if (result != null)
+                {
+                    _character.Inventory.Remove(item);
+                    return result;
+                }
+            }
+            return null;
+        }
         public void UseActionSurge()
         {
             var feature = _character.GetFeature(FighterFeatures.ActionSurge);
@@ -255,7 +274,13 @@ namespace RPGSystem.Services
                         DamageType="piercing",
                         ScalingType= WeaponScalingType.Finesse,
                     },
-                    new Armor { Name="Chainmail", BaseArmorClass=15}
+                    new Armor { Name="Chainmail", BaseArmorClass=15},
+                    new Item
+                    {
+                        Name="Healing Potion",
+                        Type= ItemType.Consumable,
+                        Effect= new HealEffect("2d4+2"),
+                    }
                 },
 
             };
