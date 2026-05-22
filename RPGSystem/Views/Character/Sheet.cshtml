@@ -417,6 +417,17 @@
 
                             </form>
                         }
+                        @if (feature.Name == FighterFeatures.ActionSurge)
+                        {
+                            <form asp-action="UseActionSurge" method="post">
+
+                                <button class="btn btn-sm btn-warning"
+                                        disabled="@(feature.UsesRemaining <= 0)">
+                                    Use
+                                </button>
+
+                            </form>
+                        }
 
                     </div>
                 }

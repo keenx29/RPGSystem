@@ -142,5 +142,12 @@ namespace RPGSystem.Controllers
 
             return RedirectToAction("Sheet");
         }
+        [HttpPost]
+        public IActionResult UseActionSurge()
+        {
+            _characterService.UseActionSurge();
+            return RedirectToAction("Sheet");
+        }
+
     }
 }

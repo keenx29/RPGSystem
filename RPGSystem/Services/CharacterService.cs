@@ -126,6 +126,17 @@ namespace RPGSystem.Services
                 Modifier = _character.Level,
             };
         }
+        public void UseActionSurge()
+        {
+            var feature = _character.GetFeature(FighterFeatures.ActionSurge);
+
+            if (feature == null || !feature.IsAvailable)
+            {
+                return;
+            }
+
+            feature.UsesRemaining--;
+        }
         public RollResult? LevelUp()
         {
             //TODO: Return RollResult to display gained hp max
