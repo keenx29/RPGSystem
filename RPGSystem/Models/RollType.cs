@@ -5,7 +5,9 @@
         Check,
         Attack,
         Damage,
+        Heal,
         Save,
-        Initiative
+        Initiative,
+        MaxHP,
     }
 }

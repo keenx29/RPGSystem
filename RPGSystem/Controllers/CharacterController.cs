@@ -8,7 +8,6 @@ namespace RPGSystem.Controllers
     public class CharacterController : Controller
     {
         private readonly DiceService _diceService;
-        private readonly RollService _rollService;
         private readonly CharacterService _characterService;
         private static List<RollResult> _rollHistory = new();
         private static RollStateService _rollState;
@@ -16,13 +15,11 @@ namespace RPGSystem.Controllers
         public CharacterController(
             DiceService diceService, 
             CharacterService characterService, 
-            RollStateService rollState, 
-            RollService rollService)
+            RollStateService rollState)
         {
             _diceService = diceService;
             _characterService = characterService;
             _rollState = rollState;
-            _rollService = rollService;
         }
 
         [HttpGet]
@@ -49,7 +46,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollAbility(AbilityType abilityType)
         {
-            var result = _rollService.RollAbility(abilityType, _rollState.SelectedAdvantageState);
+            var result = _characterService.RollAbility(abilityType, _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -58,7 +55,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollSavingThrow(AbilityType abilityType)
         {
-            var result = _rollService.RollSavingThrow(abilityType, _rollState.SelectedAdvantageState);
+            var result = _characterService.RollSavingThrow(abilityType, _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -67,7 +64,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollSkill(string skillName)
         {
-            var result = _rollService.RollSkill(skillName, _rollState.SelectedAdvantageState);
+            var result = _characterService.RollSkill(skillName, _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -76,7 +73,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollAttack()
         {
-            var result = _rollService.RollAttack( _rollState.SelectedAdvantageState);
+            var result = _characterService.RollAttack( _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -85,7 +82,7 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollDamage()
         {
-            var result = _rollService.RollDamage();
+            var result = _characterService.RollDamage();
 
             _rollHistory.Insert(0, result);
 
@@ -127,13 +124,21 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult LevelUp()
         {
-            _characterService.LevelUp();
+            var result = _characterService.LevelUp();
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
             return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult UseSecondWind()
         {
-            _characterService.UseSecondWind();
+            var result = _characterService.UseSecondWind();
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
             return RedirectToAction("Sheet");
         }
     }

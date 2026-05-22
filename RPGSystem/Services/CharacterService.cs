@@ -19,32 +19,132 @@ namespace RPGSystem.Services
         {
             return _character;
         }
-        public void UseSecondWind()
+        public RollResult RollAbility(AbilityType type, AdvantageState adv)
         {
+            var ability = _character.GetAbility(type);
+
+            int roll = _diceService.RollD20(adv);
+
+            return new RollResult
+            {
+                Actor = ability.Name,
+                Type = RollType.Check,
+                DiceRoll = roll,
+                Modifier = ability.Modifier
+            };
+        }
+        public RollResult RollSavingThrow(AbilityType type, AdvantageState adv)
+        {
+            var ability = _character.GetAbility(type);
+
+            int roll = _diceService.RollD20(adv);
+
+            return new RollResult
+            {
+                Actor = ability.Name,
+                Type = RollType.Save,
+                DiceRoll = roll,
+                Modifier = _character.GetSavingThrowBonus(ability)
+            };
+        }
+        public RollResult RollSkill(string skillName, AdvantageState adv)
+        {
+            //TODO: Add SkillType enum to use instead of string lookup
+            var skill = _character.Skills.First(s => s.Name == skillName);
+
+            int roll = _diceService.RollD20(adv);
+
+            return new RollResult
+            {
+                Actor = skill.Name,
+                Type = RollType.Check,
+                DiceRoll = roll,
+                Modifier = skill.GetBonus(_character.GetProficiencyBonus())
+            };
+        }
+        public RollResult RollAttack(AdvantageState adv)
+        {
+            // TODO: STR/DEX logic // TODO: Weapon Proficiencies
+            var weapon = _character.EquippedWeapon;
+
+            int roll = _diceService.RollD20(adv);
+
+            int modifier =
+                _character.GetAbility(AbilityType.Strength).Modifier +
+                _character.GetProficiencyBonus() +
+                weapon.AttackBonus;
+
+            return new RollResult
+            {
+                Actor = weapon.Name,
+                Type = RollType.Attack,
+                DiceRoll = roll,
+                Modifier = modifier
+            };
+        }
+        public RollResult RollDamage()
+        {
+            // TODO: Damage Bonuses (i.e. Rage)
+            // TODO: Damage mod based on ability (i.e. Dex for rogues)
+            var weapon = _character.EquippedWeapon;
+
+            int roll = _diceService.RollDice(weapon.DamageDice);
+
+            int modifier = _character.GetAbility(AbilityType.Strength).Modifier;
+
+            return new RollResult
+            {
+                Actor = weapon.Name,
+                Type = RollType.Damage,
+                DiceRoll = roll,
+                Modifier = modifier,
+                DamageType = weapon.DamageType
+            };
+        }
+        public RollResult? UseSecondWind()
+        {
+            //TODO: Return RollResult to display healing done
             var feature = _character.GetFeature(FighterFeatures.SecondWind);
 
             if (feature == null || !feature.IsAvailable)
-                return;
+                return null;
 
-            int healAmount = _diceService.RollDice("1d10") + _character.Level;
+            int roll = _diceService.RollDice("1d10");
+
+            int healAmount = roll + _character.Level;
 
             _character.Heal(healAmount);
 
             feature.UsesRemaining--;
+            return new RollResult
+            {
+                Actor = "Second Wind",
+                Type = RollType.Heal,
+                DiceRoll = roll,
+                Modifier = _character.Level,
+            };
         }
-        public void LevelUp()
+        public RollResult? LevelUp()
         {
+            //TODO: Return RollResult to display gained hp max
             var ability = _character.GetAbility(AbilityType.Constitution);
 
             var characterClass = CharacterClassFactory.Create(_character.ClassType);
 
-            int hpGain =
-                _diceService.RollDice($"1d{characterClass.HitDie}")
-                + ability.Modifier;
+            int roll = _diceService.RollDice($"1d{characterClass.HitDie}");
+
+            int hpGain = roll + ability.Modifier;
 
             _character.LevelUp(hpGain);
 
             _character.ClassFeatures = characterClass.GetFeaturesForLevel(_character.Level);
+            return new RollResult
+            {
+                Actor = "Level Up",
+                Type = RollType.MaxHP,
+                DiceRoll = roll,
+                Modifier = ability.Modifier,
+            };
         }
         public void ShortRest()
         {
