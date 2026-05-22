@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 
-namespace RPGSystem.Models
+namespace RPGSystem.Models.Rolls
 {
     public class RollResult
     {

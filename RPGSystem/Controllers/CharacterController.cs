@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RPGSystem.Helpers;
-using RPGSystem.Models;
+using RPGSystem.Models.Characters;
+using RPGSystem.Models.Rolls;
 using RPGSystem.Services;
+using RPGSystem.ViewModels;
 
 namespace RPGSystem.Controllers
 {
@@ -62,9 +63,9 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult RollSkill(string skillName)
+        public IActionResult RollSkill(SkillType skillType)
         {
-            var result = _characterService.RollSkill(skillName, _rollState.SelectedAdvantageState);
+            var result = _characterService.RollSkill(skillType, _rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 

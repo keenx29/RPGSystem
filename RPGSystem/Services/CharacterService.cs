@@ -1,7 +1,9 @@
 ﻿using RPGSystem.Helpers;
-using RPGSystem.Models;
+using RPGSystem.Models.Characters;
 using RPGSystem.Models.Classes;
 using RPGSystem.Models.Classes.Features;
+using RPGSystem.Models.Items;
+using RPGSystem.Models.Rolls;
 
 namespace RPGSystem.Services
 {
@@ -47,10 +49,10 @@ namespace RPGSystem.Services
                 Modifier = _character.GetSavingThrowBonus(ability)
             };
         }
-        public RollResult RollSkill(string skillName, AdvantageState adv)
+        public RollResult RollSkill(SkillType skillType, AdvantageState adv)
         {
             //TODO: Add SkillType enum to use instead of string lookup
-            var skill = _character.Skills.First(s => s.Name == skillName);
+            var skill = _character.GetSkill(skillType);
 
             int roll = _diceService.RollD20(adv);
 
@@ -215,9 +217,9 @@ namespace RPGSystem.Services
 
                 Skills = new List<Skill>
                 {
-                    new Skill { Name = "Athletics", RelatedAbility = strength, IsProficient = true },
-                    new Skill { Name = "Perception", RelatedAbility = wisdom },
-                    new Skill { Name = "Stealth", RelatedAbility = dexterity, IsProficient = true }
+                    new Skill { Name = "Athletics", Type = SkillType.Athletics, RelatedAbility = strength, IsProficient = true },
+                    new Skill { Name = "Perception", Type = SkillType.Perception, RelatedAbility = wisdom },
+                    new Skill { Name = "Stealth", Type = SkillType.Stealth, RelatedAbility = dexterity, IsProficient = true }
                 },
 
                 EquippedWeapon = new Weapon

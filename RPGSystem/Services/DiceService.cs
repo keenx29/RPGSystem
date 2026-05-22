@@ -1,4 +1,4 @@
-﻿using RPGSystem.Models;
+﻿using RPGSystem.Models.Rolls;
 
 namespace RPGSystem.Services
 {

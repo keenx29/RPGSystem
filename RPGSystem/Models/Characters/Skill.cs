@@ -1,8 +1,9 @@
-﻿namespace RPGSystem.Models
+﻿namespace RPGSystem.Models.Characters
 {
     public class Skill
     {
         public string Name { get; set; } = "";
+        public SkillType Type { get; set; }
 
         public Ability RelatedAbility { get; set; }
 

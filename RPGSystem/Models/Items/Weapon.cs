@@ -1,4 +1,6 @@
-﻿namespace RPGSystem.Models
+﻿using RPGSystem.Models.Characters;
+
+namespace RPGSystem.Models.Items
 {
     public class Weapon : Item
     {

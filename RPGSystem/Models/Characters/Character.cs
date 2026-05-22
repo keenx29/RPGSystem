@@ -1,6 +1,8 @@
-﻿using RPGSystem.Models.Classes.Features;
+﻿using RPGSystem.Models.Classes;
+using RPGSystem.Models.Classes.Features;
+using RPGSystem.Models.Items;
 
-namespace RPGSystem.Models
+namespace RPGSystem.Models.Characters
 {
     public class Character
     {
@@ -78,7 +80,7 @@ namespace RPGSystem.Models
         }
         public void ShortRest()
         {
-            CurrentHP = Math.Min(MaxHP, CurrentHP + (MaxHP / 4)); //TODO: Hit die logic
+            CurrentHP = Math.Min(MaxHP, CurrentHP + MaxHP / 4); //TODO: Hit die logic
 
             foreach (var feature in ClassFeatures)
             {
@@ -109,7 +111,7 @@ namespace RPGSystem.Models
 
         public int GetProficiencyBonus()
         {
-            return 2 + ((Level - 1) / 4);
+            return 2 + (Level - 1) / 4;
         }
 
         public int GetInitiative()
@@ -125,6 +127,10 @@ namespace RPGSystem.Models
         public Ability GetAbility(AbilityType type)
         {
             return Abilities.First(a => a.Type == type);
+        }
+        public Skill GetSkill(SkillType type)
+        {
+            return Skills.First(s => s.Type == type);
         }
 
         public int GetSavingThrowBonus(Ability ability)

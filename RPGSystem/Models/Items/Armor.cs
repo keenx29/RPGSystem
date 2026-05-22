@@ -1,4 +1,4 @@
-﻿using RPGSystem.Models;
+﻿using RPGSystem.Models.Items;
 
 public class Armor : Item
 {

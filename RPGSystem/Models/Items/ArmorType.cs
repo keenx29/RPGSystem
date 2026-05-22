@@ -1,4 +1,4 @@
-﻿namespace RPGSystem.Models
+﻿namespace RPGSystem.Models.Items
 {
     public enum ArmorType
     {

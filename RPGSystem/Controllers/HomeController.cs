@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using RPGSystem.Models;
+using RPGSystem.ViewModels;
 using System.Diagnostics;
 
 namespace RPGSystem.Controllers

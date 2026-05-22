@@ -1,4 +1,7 @@
-﻿namespace RPGSystem.Models
+﻿using RPGSystem.Models.Characters;
+using RPGSystem.Models.Rolls;
+
+namespace RPGSystem.ViewModels
 {
     public class CharacterSheetViewModel
     {

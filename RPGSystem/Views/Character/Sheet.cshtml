@@ -1,7 +1,10 @@
-﻿@using RPGSystem.Models
-@using RPGSystem.Helpers
+﻿@using RPGSystem.Helpers
+@using RPGSystem.Models
 @using RPGSystem.Models.Classes.Features
-@model RPGSystem.Models.CharacterSheetViewModel
+@using RPGSystem.Models.Rolls
+@using RPGSystem.ViewModels
+@using RPGSystem.Models.Items
+@model RPGSystem.ViewModels.CharacterSheetViewModel
 
 <div class="container-fluid">
     <div class="row">
@@ -162,7 +165,7 @@
 
                         <div class="col-auto">
                             <form asp-action="RollSkill" method="post" class="m-0">
-                                <input type="hidden" name="skillName" value="@skill.Name" />
+                                <input type="hidden" name="skillType" value="@skill.Type" />
 
                                 <button class="btn btn-sm btn-dark">
                                     Roll

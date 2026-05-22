@@ -1,4 +1,4 @@
-namespace RPGSystem.Models
+namespace RPGSystem.ViewModels
 {
     public class ErrorViewModel
     {

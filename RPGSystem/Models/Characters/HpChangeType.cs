@@ -1,4 +1,4 @@
-﻿namespace RPGSystem.Models
+﻿namespace RPGSystem.Models.Characters
 {
     public enum HpChangeType
     {
