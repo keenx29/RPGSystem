@@ -8,6 +8,8 @@
             {
                 case CharacterClassType.Fighter:
                     return new FighterClass();
+                case CharacterClassType.Rogue:
+                    return new RogueClass();
                 default:
                     throw new Exception("Unknown class type");
             }

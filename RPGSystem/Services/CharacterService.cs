@@ -84,25 +84,65 @@ namespace RPGSystem.Services
         }
         public RollResult RollDamage()
         {
-            // TODO: Damage Bonuses (i.e. Rage)
-            // TODO: Damage mod based on ability (i.e. Dex for rogues)
             var weapon = _character.EquippedWeapon;
-
             var ability = _character.GetAttackAbility(weapon);
+            int roll = _diceService.RollDice(weapon.DamageDice);
 
             int modifier = ability.Modifier;
 
-            int roll = _diceService.RollDice(weapon.DamageDice);
+            int extraDamage = 0;
+
+            var context = new RollContext
+            {
+                Character = _character,
+                Type = RollType.Damage
+            };
+
+            foreach (var feature in _character.ClassFeatures)
+            {
+                if (!feature.IsActive || feature.Modifier == null)
+                    continue;
+
+                var mod = feature.Modifier.Apply(context);
+
+                modifier += mod.FlatBonus;
+
+                if (!string.IsNullOrEmpty(mod.ExtraDice))
+                {
+                    extraDamage += _diceService.RollDice(mod.ExtraDice);
+                }
+            }
 
             return new RollResult
             {
                 Actor = weapon.Name,
                 Type = RollType.Damage,
                 DiceRoll = roll,
-                Modifier = modifier,
-                DamageType = weapon.DamageType
+                Modifier = modifier + extraDamage,
+                DamageType = weapon.DamageType,
             };
         }
+        //public RollResult RollDamage()
+        //{
+        //    // TODO: Damage Bonuses (i.e. Rage)
+        //    // TODO: Damage mod based on ability (i.e. Dex for rogues)
+        //    var weapon = _character.EquippedWeapon;
+
+        //    var ability = _character.GetAttackAbility(weapon);
+
+        //    int modifier = ability.Modifier;
+
+        //    int roll = _diceService.RollDice(weapon.DamageDice);
+
+        //    return new RollResult
+        //    {
+        //        Actor = weapon.Name,
+        //        Type = RollType.Damage,
+        //        DiceRoll = roll,
+        //        Modifier = modifier,
+        //        DamageType = weapon.DamageType
+        //    };
+        //}
         public RollResult? UseSecondWind()
         {
             var feature = _character.GetFeature(FighterFeatures.SecondWind);
@@ -124,6 +164,16 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 Modifier = _character.Level,
             };
+        }
+        public void ToggleFeature(string name)
+        {
+            var feature = _character.ClassFeatures
+                .FirstOrDefault(f => f.Name == name);
+
+            if (feature == null)
+                return;
+
+            feature.IsActive = !feature.IsActive;
         }
         public RollResult? UseItem(Guid itemId)
         {
@@ -283,6 +333,116 @@ namespace RPGSystem.Services
                     }
                 },
 
+            };
+
+            var characterClass = CharacterClassFactory.Create(character.ClassType);
+
+            character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
+
+            return character;
+        }
+        public Character GetRogueTestCharacter()
+        {
+            var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 10 };
+            var dexterity = new Ability { Name = "Dexterity", Type = AbilityType.Dexterity, Score = 16, IsSavingThrowProficient = true };
+            var constitution = new Ability { Name = "Constitution", Type = AbilityType.Constitution, Score = 14 };
+            var intelligence = new Ability { Name = "Intelligence", Type = AbilityType.Intelligence, Score = 12 };
+            var wisdom = new Ability { Name = "Wisdom", Type = AbilityType.Wisdom, Score = 13, IsSavingThrowProficient = true };
+            var charisma = new Ability { Name = "Charisma", Type = AbilityType.Charisma, Score = 8 };
+
+            var character = new Character
+            {
+                Name = "Vex",
+                Level = 4,
+                MovementSpeed = 30,
+                ClassType = CharacterClassType.Rogue,
+
+                Abilities = new List<Ability>
+        {
+            strength, dexterity, constitution,
+            intelligence, wisdom, charisma
+        },
+
+                Skills = new List<Skill>
+        {
+            new Skill
+            {
+                Name = "Stealth",
+                Type = SkillType.Stealth,
+                RelatedAbility = dexterity,
+                IsProficient = true
+            },
+            new Skill
+            {
+                Name = "Perception",
+                Type = SkillType.Perception,
+                RelatedAbility = wisdom,
+                IsProficient = true
+            },
+            new Skill
+            {
+                Name = "Acrobatics",
+                Type = SkillType.Acrobatics,
+                RelatedAbility = dexterity,
+                IsProficient = true
+            },
+            new Skill
+            {
+                Name = "Sleight of Hand",
+                Type = SkillType.SleightOfHand,
+                RelatedAbility = dexterity,
+                IsProficient = true
+            }
+        },
+
+                EquippedWeapon = new Weapon
+                {
+                    Name = "Rapier",
+                    AttackBonus = 1,
+                    DamageDice = "1d8",
+                    DamageType = "piercing",
+                    ScalingType = WeaponScalingType.Finesse
+                },
+
+                EquippedArmor = new Armor
+                {
+                    Name = "Leather Armor",
+                    BaseArmorClass = 11
+                },
+
+                Inventory = new List<Item>
+        {
+            new Weapon
+            {
+                Name = "Shortbow",
+                AttackBonus = 1,
+                DamageDice = "1d6",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Dexterity
+            },
+
+            new Weapon
+            {
+                Name = "Dagger",
+                AttackBonus = 1,
+                DamageDice = "1d4",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Finesse
+            },
+
+            new Armor
+            {
+                Name = "Studded Leather",
+                BaseArmorClass = 12
+            },
+
+            new Item
+            {
+                Name = "Healing Potion",
+                Type = ItemType.Consumable,
+                Effect = new HealEffect("2d4+2")
+            }
+        }
             };
 
             var characterClass = CharacterClassFactory.Create(character.ClassType);

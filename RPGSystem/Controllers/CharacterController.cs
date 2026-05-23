@@ -158,6 +158,13 @@ namespace RPGSystem.Controllers
             _characterService.UseActionSurge();
             return RedirectToAction("Sheet");
         }
+        [HttpPost]
+        public IActionResult ToggleFeature(string featureName)
+        {
+            _characterService.ToggleFeature(featureName);
+
+            return RedirectToAction("Sheet");
+        }
 
     }
 }

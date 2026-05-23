@@ -18,7 +18,8 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = FighterFeatures.SecondWind,
                     UsesRemaining = 1,
-                    MaxUses = 1
+                    MaxUses = 1,
+                    ActionType = FeatureActionType.Use,
                 });
 
             if (level >= 2)
@@ -26,7 +27,8 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = FighterFeatures.ActionSurge,
                     UsesRemaining = 1,
-                    MaxUses = 1
+                    MaxUses = 1,
+                    ActionType = FeatureActionType.Use,
                 });
 
             if (level >= 5)
@@ -34,7 +36,8 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = FighterFeatures.ExtraAttack,
                     UsesRemaining = 0,
-                    MaxUses = 0
+                    MaxUses = 0,
+                    ActionType = FeatureActionType.None,
                 });
 
             return features;

@@ -2,6 +2,7 @@
 {
     public enum CharacterClassType
     {
-        Fighter
+        Fighter,
+        Rogue
     }
 }

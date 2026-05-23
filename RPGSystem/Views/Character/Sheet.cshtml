@@ -400,10 +400,10 @@
                 {
                     <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
 
-                        <!-- LEFT SIDE -->
+                        <!-- LEFT -->
                         <div class="d-flex align-items-center gap-2">
 
-                            @if (feature.IsAvailable)
+                            @if (feature.IsAvailable || feature.IsActive)
                             {
                                 <span class="text-success">✔</span>
                             }
@@ -414,34 +414,43 @@
 
                             <strong>@feature.Name</strong>
 
-                            <small class="text-muted">
-                                (@feature.UsesRemaining / @feature.MaxUses)
-                            </small>
+                            @if (feature.MaxUses > 0)
+                            {
+                                <small class="text-muted">
+                                    (@feature.UsesRemaining / @feature.MaxUses)
+                                </small>
+                            }
+
+                            @if (feature.ActionType == FeatureActionType.Toggle)
+                            {
+                                <span class="badge @(feature.IsActive ? "bg-success" : "bg-secondary")">
+                                    @(feature.IsActive ? "ON" : "OFF")
+                                </span>
+                            }
 
                         </div>
 
-                        <!-- RIGHT SIDE -->
-                        @if (feature.Name == FighterFeatures.SecondWind)
+                        <!-- RIGHT -->
+                        @switch (feature.ActionType)
                         {
-                            <form asp-action="UseSecondWind" method="post">
+                            case FeatureActionType.Use:
+                                <form asp-action="UseFeature" method="post">
+                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                    <button class="btn btn-sm btn-warning"
+                                            disabled="@(feature.UsesRemaining <= 0)">
+                                        Use
+                                    </button>
+                                </form>
+                                break;
 
-                                <button class="btn btn-sm btn-warning"
-                                        disabled="@(feature.UsesRemaining <= 0)">
-                                    Use
-                                </button>
-
-                            </form>
-                        }
-                        @if (feature.Name == FighterFeatures.ActionSurge)
-                        {
-                            <form asp-action="UseActionSurge" method="post">
-
-                                <button class="btn btn-sm btn-warning"
-                                        disabled="@(feature.UsesRemaining <= 0)">
-                                    Use
-                                </button>
-
-                            </form>
+                            case FeatureActionType.Toggle:
+                                <form asp-action="ToggleFeature" method="post">
+                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                    <button class="btn btn-sm btn-primary">
+                                        Toggle
+                                    </button>
+                                </form>
+                                break;
                         }
 
                     </div>

@@ -1,4 +1,6 @@
-﻿namespace RPGSystem.Models.Classes.Features
+﻿using RPGSystem.Models.Rolls;
+
+namespace RPGSystem.Models.Classes.Features
 {
     public class ClassFeatureInstance
     {
@@ -9,5 +11,8 @@
         public int MaxUses { get; set; }
 
         public bool IsAvailable => UsesRemaining > 0;
+        public bool IsActive { get; set; }
+        public ICombatModifier? Modifier { get; set; }
+        public FeatureActionType ActionType { get; set; }
     }
 }
