@@ -17,19 +17,25 @@ namespace RPGSystem.Models.Classes
                 features.Add(new ClassFeatureInstance
                 {
                     Name = MonkFeatures.FlurryOfBlows,
-                    ActionType = FeatureActionType.Use
+                    ActionType = FeatureActionType.ResourceUse,
+                    ResourceName = "Ki",
+                    ResourceCost = 1
                 });
 
                 features.Add(new ClassFeatureInstance
                 {
                     Name = MonkFeatures.PatientDefense,
-                    ActionType = FeatureActionType.Use
+                    ActionType = FeatureActionType.ResourceUse,
+                    ResourceName = "Ki",
+                    ResourceCost = 1
                 });
 
                 features.Add(new ClassFeatureInstance
                 {
                     Name = MonkFeatures.StepOfTheWind,
-                    ActionType = FeatureActionType.Use
+                    ActionType = FeatureActionType.ResourceUse,
+                    ResourceName = "Ki",
+                    ResourceCost = 1
                 });
             }
 

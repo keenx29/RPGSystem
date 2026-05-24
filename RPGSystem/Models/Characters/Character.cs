@@ -127,6 +127,7 @@ namespace RPGSystem.Models.Characters
             {
                 feature.UsesRemaining = feature.MaxUses;
             }
+            RestoreAllResources();
         }
         public void LevelUp(int hpGain)
         {

@@ -403,7 +403,8 @@
                         <!-- LEFT -->
                         <div class="d-flex align-items-center gap-2">
 
-                            @if (feature.IsAvailable || feature.IsActive)
+                            @if (feature.IsAvailable || feature.IsActive || 
+                            (feature.ResourceCost > 0 && Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current > 0))
                             {
                                 <span class="text-success">✔</span>
                             }
@@ -418,6 +419,11 @@
                             {
                                 <small class="text-muted">
                                     (@feature.UsesRemaining / @feature.MaxUses)
+                                </small>
+                            }else if ((feature.ResourceCost > 0 && Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current > 0))
+                            {
+                                <small class="text-muted">
+                                    (@Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current / @Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Max)
                                 </small>
                             }
 
@@ -438,6 +444,15 @@
                                     <input type="hidden" name="featureName" value="@feature.Name" />
                                     <button class="btn btn-sm btn-warning"
                                             disabled="@(!feature.IsAvailable)">
+                                        Use
+                                    </button>
+                                </form>
+                                break;
+                            case FeatureActionType.ResourceUse:
+                                <form asp-action="UseFeature" method="post">
+                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                    <button class="btn btn-sm btn-warning"
+                                            disabled="@(feature.ResourceCost > Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current)">
                                         Use
                                     </button>
                                 </form>

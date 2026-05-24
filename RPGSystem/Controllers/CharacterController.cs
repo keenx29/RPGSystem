@@ -111,7 +111,16 @@ namespace RPGSystem.Controllers
 
             return RedirectToAction("Sheet");
         }
+        [HttpPost]
+        public IActionResult UseFeature(string featureName)
+        {
+            var result = _characterService.UseFeature(featureName);
 
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
         [HttpPost]
         public IActionResult ModifyHP(int amount, string mode)
         {
@@ -140,22 +149,6 @@ namespace RPGSystem.Controllers
             if (result != null)
                 _rollHistory.Insert(0, result);
 
-            return RedirectToAction("Sheet");
-        }
-        [HttpPost]
-        public IActionResult UseSecondWind()
-        {
-            var result = _characterService.UseSecondWind();
-
-            if (result != null)
-                _rollHistory.Insert(0, result);
-
-            return RedirectToAction("Sheet");
-        }
-        [HttpPost]
-        public IActionResult UseActionSurge()
-        {
-            _characterService.UseActionSurge();
             return RedirectToAction("Sheet");
         }
         [HttpPost]

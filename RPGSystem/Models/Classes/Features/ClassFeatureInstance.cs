@@ -9,10 +9,13 @@ namespace RPGSystem.Models.Classes.Features
         public int UsesRemaining { get; set; }
 
         public int MaxUses { get; set; }
+        public string? ResourceName { get; set; }
+        public int ResourceCost { get; set; }
 
-        public bool IsAvailable => UsesRemaining > 0;
+        public bool IsAvailable => (UsesRemaining > 0);
         public bool IsActive { get; set; }
         public ICombatModifier? Modifier { get; set; }
         public FeatureActionType ActionType { get; set; }
+
     }
 }

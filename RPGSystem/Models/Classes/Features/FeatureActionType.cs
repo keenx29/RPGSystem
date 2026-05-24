@@ -4,6 +4,7 @@
     {
         None,
         Use,
-        Toggle
+        Toggle,
+        ResourceUse
     }
 }

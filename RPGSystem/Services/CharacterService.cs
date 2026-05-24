@@ -122,32 +122,11 @@ namespace RPGSystem.Services
                 DamageType = weapon.DamageType,
             };
         }
-        //public RollResult RollDamage()
-        //{
-        //    // TODO: Damage Bonuses (i.e. Rage)
-        //    // TODO: Damage mod based on ability (i.e. Dex for rogues)
-        //    var weapon = _character.EquippedWeapon;
-
-        //    var ability = _character.GetAttackAbility(weapon);
-
-        //    int modifier = ability.Modifier;
-
-        //    int roll = _diceService.RollDice(weapon.DamageDice);
-
-        //    return new RollResult
-        //    {
-        //        Actor = weapon.Name,
-        //        Type = RollType.Damage,
-        //        DiceRoll = roll,
-        //        Modifier = modifier,
-        //        DamageType = weapon.DamageType
-        //    };
-        //}
         public RollResult? UseSecondWind()
         {
             var feature = _character.GetFeature(FighterFeatures.SecondWind);
 
-            if (feature == null || !feature.IsAvailable)
+            if (feature == null )
                 return null;
 
             int roll = _diceService.RollDice("1d10");
@@ -156,7 +135,6 @@ namespace RPGSystem.Services
 
             _character.Heal(healAmount);
 
-            feature.UsesRemaining--;
             return new RollResult
             {
                 Actor = "Second Wind",
@@ -172,7 +150,7 @@ namespace RPGSystem.Services
 
             if (feature == null)
                 return;
-            if (!feature.IsActive && !feature.IsAvailable)
+            if (!feature.IsActive && !feature.IsAvailable && feature.MaxUses > 0)
                 return;
             if (!feature.IsActive)
             {
@@ -200,28 +178,69 @@ namespace RPGSystem.Services
             }
             return null;
         }
-        public void UseFeature(string featureName)
+        public RollResult? UseFeature(string featureName)
         {
-            switch (featureName)
-            {
-                case MonkFeatures.FlurryOfBlows:
-                case MonkFeatures.PatientDefense:
-                case MonkFeatures.StepOfTheWind:
+            var feature = _character.GetFeature(featureName);
 
-                    _character.SpendResource("Ki", 1);
+            if (feature == null)
+                return null;
+
+            switch (feature.ActionType)
+            {
+                case FeatureActionType.Use:
+
+                    if (!feature.IsAvailable)
+                        return null;
+
+                    feature.UsesRemaining--;
+
+                    var result = HandleFeatureEffect(feature);
+
+                    return result;
+
+                case FeatureActionType.ResourceUse:
+
+                    if (feature.ResourceName == null)
+                        return null;
+
+                    bool success =
+                        _character.SpendResource(
+                            feature.ResourceName,
+                            feature.ResourceCost
+                        );
+
+                    if (!success)
+                        return null;
+
+                    result = HandleFeatureEffect(feature);
+
+                    return result;
+            }
+            return null;
+        }
+        private RollResult? HandleFeatureEffect(ClassFeatureInstance feature)
+        {
+            switch (feature.Name)
+            {
+                case FighterFeatures.SecondWind:
+                    var result = UseSecondWind();
+                    return result;
+
+                case FighterFeatures.ActionSurge:
+                    break;
+
+                case MonkFeatures.FlurryOfBlows:
+                    break;
+
+                case MonkFeatures.PatientDefense:
+                    break;
+
+                case MonkFeatures.StepOfTheWind:
+                    break;
+                default:
                     break;
             }
-        }   
-        public void UseActionSurge()
-        {
-            var feature = _character.GetFeature(FighterFeatures.ActionSurge);
-
-            if (feature == null || !feature.IsAvailable)
-            {
-                return;
-            }
-
-            feature.UsesRemaining--;
+            return null;
         }
         public RollResult? LevelUp()
         {
