@@ -4,6 +4,7 @@
     {
         Fighter,
         Rogue,
-        Barbarian
+        Barbarian,
+        Monk
     }
 }

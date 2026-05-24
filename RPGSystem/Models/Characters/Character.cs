@@ -1,6 +1,7 @@
 ﻿using RPGSystem.Models.Classes;
 using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Items;
+using System.Resources;
 
 namespace RPGSystem.Models.Characters
 {
@@ -23,6 +24,7 @@ namespace RPGSystem.Models.Characters
 
         // Class Data
         public List<ClassFeatureInstance> ClassFeatures { get; set; } = new();
+        public List<FeatureResource> FeatureResources { get; set; } = new();
 
         // Equipment
         public Weapon? EquippedWeapon { get; set; }
@@ -70,6 +72,31 @@ namespace RPGSystem.Models.Characters
                 EquippedArmor = null;
             }
         }
+        public FeatureResource? GetResource(string name)
+        {
+            return FeatureResources.FirstOrDefault(r => r.Name == name);
+        }
+        public bool SpendResource(string name, int amount)
+        {
+            var resource = GetResource(name);
+
+            if (resource == null)
+                return false;
+
+            if (resource.Current < amount)
+                return false;
+
+            resource.Current -= amount;
+
+            return true;
+        }
+        public void RestoreAllResources()
+        {
+            foreach (var resource in FeatureResources)
+            {
+                resource.Current = resource.Max;
+            }
+        }
         public ClassFeatureInstance? GetFeature(string name)
         {
             return ClassFeatures.FirstOrDefault(f => f.Name == name);
@@ -90,6 +117,7 @@ namespace RPGSystem.Models.Characters
                     feature.UsesRemaining = feature.MaxUses;
                 }
             }
+            RestoreAllResources();
         }
         public void LongRest()
         {

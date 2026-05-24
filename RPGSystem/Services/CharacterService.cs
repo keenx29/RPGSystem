@@ -15,7 +15,7 @@ namespace RPGSystem.Services
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetBarbarianTestCharacter();
+            _character = GetMonkTestCharacter();
         }
         public Character GetCharacter()
         {
@@ -200,6 +200,18 @@ namespace RPGSystem.Services
             }
             return null;
         }
+        public void UseFeature(string featureName)
+        {
+            switch (featureName)
+            {
+                case MonkFeatures.FlurryOfBlows:
+                case MonkFeatures.PatientDefense:
+                case MonkFeatures.StepOfTheWind:
+
+                    _character.SpendResource("Ki", 1);
+                    break;
+            }
+        }   
         public void UseActionSurge()
         {
             var feature = _character.GetFeature(FighterFeatures.ActionSurge);
@@ -608,6 +620,161 @@ namespace RPGSystem.Services
             };
 
             var characterClass = CharacterClassFactory.Create(character.ClassType);
+
+            character.ClassFeatures =
+                characterClass.GetFeaturesForLevel(character.Level);
+
+            return character;
+        }
+        public Character GetMonkTestCharacter()
+        {
+            var strength = new Ability
+            {
+                Name = "Strength",
+                Type = AbilityType.Strength,
+                Score = 10
+            };
+
+            var dexterity = new Ability
+            {
+                Name = "Dexterity",
+                Type = AbilityType.Dexterity,
+                Score = 18,
+                IsSavingThrowProficient = true
+            };
+
+            var constitution = new Ability
+            {
+                Name = "Constitution",
+                Type = AbilityType.Constitution,
+                Score = 14
+            };
+
+            var intelligence = new Ability
+            {
+                Name = "Intelligence",
+                Type = AbilityType.Intelligence,
+                Score = 10
+            };
+
+            var wisdom = new Ability
+            {
+                Name = "Wisdom",
+                Type = AbilityType.Wisdom,
+                Score = 16,
+                IsSavingThrowProficient = true
+            };
+
+            var charisma = new Ability
+            {
+                Name = "Charisma",
+                Type = AbilityType.Charisma,
+                Score = 8
+            };
+
+            var character = new Character
+            {
+                Name = "Kael",
+                Level = 4,
+                MovementSpeed = 40,
+                ClassType = CharacterClassType.Monk,
+
+                Abilities = new List<Ability>
+        {
+            strength, dexterity, constitution,
+            intelligence, wisdom, charisma
+        },
+
+                Skills = new List<Skill>
+        {
+            new Skill
+            {
+                Name = "Acrobatics",
+                Type = SkillType.Acrobatics,
+                RelatedAbility = dexterity,
+                IsProficient = true
+            },
+
+            new Skill
+            {
+                Name = "Stealth",
+                Type = SkillType.Stealth,
+                RelatedAbility = dexterity,
+                IsProficient = true
+            },
+
+            new Skill
+            {
+                Name = "Perception",
+                Type = SkillType.Perception,
+                RelatedAbility = wisdom,
+                IsProficient = true
+            },
+
+            new Skill
+            {
+                Name = "Athletics",
+                Type = SkillType.Athletics,
+                RelatedAbility = strength
+            }
+        },
+
+                EquippedWeapon = new Weapon
+                {
+                    Name = "Quarterstaff",
+                    AttackBonus = 1,
+                    DamageDice = "1d8",
+                    DamageType = "bludgeoning",
+                    ScalingType = WeaponScalingType.Dexterity
+                },
+
+                EquippedArmor = new Armor
+                {
+                    Name = "Cloth Robes",
+                    BaseArmorClass = 10
+                },
+
+                Inventory = new List<Item>
+        {
+            new Weapon
+            {
+                Name = "Shortsword",
+                AttackBonus = 1,
+                DamageDice = "1d6",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Dexterity
+            },
+
+            new Weapon
+            {
+                Name = "Dart",
+                AttackBonus = 1,
+                DamageDice = "1d4",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Dexterity
+            },
+
+            new Item
+            {
+                Name = "Healing Potion",
+                Type = ItemType.Consumable,
+                Effect = new HealEffect("2d4+2")
+            }
+        },
+
+                FeatureResources = new List<FeatureResource>
+        {
+            new FeatureResource
+            {
+                Name = "Ki",
+                Current = 4,
+                Max = 4
+            }
+        }
+            };
+
+            var characterClass =
+                CharacterClassFactory.Create(character.ClassType);
 
             character.ClassFeatures =
                 characterClass.GetFeaturesForLevel(character.Level);

@@ -460,6 +460,25 @@
                 }
 
             </div>
+            @* Resource Panel *@
+            <div class="card p-3 mt-3">
+
+                <h5>Resources</h5>
+
+                @foreach (var resource in Model.Character.FeatureResources)
+                {
+                    <div class="d-flex justify-content-between border p-2 mb-2">
+
+                        <strong>@resource.Name</strong>
+
+                        <span>
+                            @resource.Current / @resource.Max
+                        </span>
+
+                    </div>
+                }
+
+            </div>
         </div>
 
         <div class="col-3">

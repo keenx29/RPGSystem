@@ -12,6 +12,8 @@
                     return new RogueClass();
                 case CharacterClassType.Barbarian:
                     return new BarbarianClass();
+                case CharacterClassType.Monk:
+                    return new MonkClass();
                 default:
                     throw new Exception("Unknown class type");
             }
