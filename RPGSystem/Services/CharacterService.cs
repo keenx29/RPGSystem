@@ -15,7 +15,7 @@ namespace RPGSystem.Services
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetTestCharacter();
+            _character = GetBarbarianTestCharacter();
         }
         public Character GetCharacter()
         {
@@ -172,7 +172,13 @@ namespace RPGSystem.Services
 
             if (feature == null)
                 return;
-
+            if (!feature.IsActive && !feature.IsAvailable)
+                return;
+            if (!feature.IsActive)
+            {
+                feature.UsesRemaining--;
+            }
+            
             feature.IsActive = !feature.IsActive;
         }
         public RollResult? UseItem(Guid itemId)
@@ -448,6 +454,163 @@ namespace RPGSystem.Services
             var characterClass = CharacterClassFactory.Create(character.ClassType);
 
             character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
+
+            return character;
+        }
+        public Character GetBarbarianTestCharacter()
+        {
+            var strength = new Ability
+            {
+                Name = "Strength",
+                Type = AbilityType.Strength,
+                Score = 18,
+                IsSavingThrowProficient = true
+            };
+
+            var dexterity = new Ability
+            {
+                Name = "Dexterity",
+                Type = AbilityType.Dexterity,
+                Score = 14
+            };
+
+            var constitution = new Ability
+            {
+                Name = "Constitution",
+                Type = AbilityType.Constitution,
+                Score = 16,
+                IsSavingThrowProficient = true
+            };
+
+            var intelligence = new Ability
+            {
+                Name = "Intelligence",
+                Type = AbilityType.Intelligence,
+                Score = 8
+            };
+
+            var wisdom = new Ability
+            {
+                Name = "Wisdom",
+                Type = AbilityType.Wisdom,
+                Score = 12
+            };
+
+            var charisma = new Ability
+            {
+                Name = "Charisma",
+                Type = AbilityType.Charisma,
+                Score = 10
+            };
+
+            var character = new Character
+            {
+                Name = "Grom",
+                Level = 4,
+                MovementSpeed = 30,
+                ClassType = CharacterClassType.Barbarian,
+
+                Abilities = new List<Ability>
+        {
+            strength, dexterity, constitution,
+            intelligence, wisdom, charisma
+        },
+
+                Skills = new List<Skill>
+        {
+            new Skill
+            {
+                Name = "Athletics",
+                Type = SkillType.Athletics,
+                RelatedAbility = strength,
+                IsProficient = true
+            },
+
+            new Skill
+            {
+                Name = "Intimidation",
+                Type = SkillType.Intimidation,
+                RelatedAbility = charisma,
+                IsProficient = true
+            },
+
+            new Skill
+            {
+                Name = "Survival",
+                Type = SkillType.Survival,
+                RelatedAbility = wisdom,
+                IsProficient = true
+            },
+
+            new Skill
+            {
+                Name = "Perception",
+                Type = SkillType.Perception,
+                RelatedAbility = wisdom
+            }
+        },
+
+                EquippedWeapon = new Weapon
+                {
+                    Name = "Greataxe",
+                    AttackBonus = 1,
+                    DamageDice = "1d12",
+                    DamageType = "slashing",
+                    ScalingType = WeaponScalingType.Strength
+                },
+
+                EquippedArmor = new Armor
+                {
+                    Name = "Hide Armor",
+                    BaseArmorClass = 12
+                },
+
+                Inventory = new List<Item>
+        {
+            new Weapon
+            {
+                Name = "Handaxe",
+                AttackBonus = 1,
+                DamageDice = "1d6",
+                DamageType = "slashing",
+                ScalingType = WeaponScalingType.Strength
+            },
+
+            new Weapon
+            {
+                Name = "Javelin",
+                AttackBonus = 1,
+                DamageDice = "1d6",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Strength
+            },
+
+            new Armor
+            {
+                Name = "Chain Shirt",
+                BaseArmorClass = 13
+            },
+
+            new Item
+            {
+                Name = "Healing Potion",
+                Type = ItemType.Consumable,
+                Effect = new HealEffect("2d4+2")
+            },
+
+            new Item
+            {
+                Name = "Greater Healing Potion",
+                Type = ItemType.Consumable,
+                Effect = new HealEffect("4d4+4")
+            }
+        }
+            };
+
+            var characterClass = CharacterClassFactory.Create(character.ClassType);
+
+            character.ClassFeatures =
+                characterClass.GetFeaturesForLevel(character.Level);
 
             return character;
         }

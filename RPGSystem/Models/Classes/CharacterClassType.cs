@@ -3,6 +3,7 @@
     public enum CharacterClassType
     {
         Fighter,
-        Rogue
+        Rogue,
+        Barbarian
     }
 }

@@ -437,7 +437,7 @@
                                 <form asp-action="UseFeature" method="post">
                                     <input type="hidden" name="featureName" value="@feature.Name" />
                                     <button class="btn btn-sm btn-warning"
-                                            disabled="@(feature.UsesRemaining <= 0)">
+                                            disabled="@(!feature.IsAvailable)">
                                         Use
                                     </button>
                                 </form>
@@ -446,7 +446,10 @@
                             case FeatureActionType.Toggle:
                                 <form asp-action="ToggleFeature" method="post">
                                     <input type="hidden" name="featureName" value="@feature.Name" />
-                                    <button class="btn btn-sm btn-primary">
+                                    <button class="btn btn-sm btn-primary"
+                                            disabled="@(feature.MaxUses > 0 && 
+                                                        !feature.IsAvailable && 
+                                                        !feature.IsActive)">
                                         Toggle
                                     </button>
                                 </form>

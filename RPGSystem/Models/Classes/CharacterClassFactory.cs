@@ -10,6 +10,8 @@
                     return new FighterClass();
                 case CharacterClassType.Rogue:
                     return new RogueClass();
+                case CharacterClassType.Barbarian:
+                    return new BarbarianClass();
                 default:
                     throw new Exception("Unknown class type");
             }
