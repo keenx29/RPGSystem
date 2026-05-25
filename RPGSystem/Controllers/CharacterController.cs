@@ -90,6 +90,15 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult RollDamageFromChat(Guid weaponId)
+        {
+            var result = _characterService.RollDamage(weaponId);
+
+            _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult EquipWeapon(Guid weaponId)
         {
             _characterService.EquipWeapon(weaponId);

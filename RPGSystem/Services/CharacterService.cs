@@ -15,7 +15,7 @@ namespace RPGSystem.Services
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetMonkTestCharacter();
+            _character = GetRogueTestCharacter();
         }
         public Character GetCharacter()
         {
@@ -79,12 +79,31 @@ namespace RPGSystem.Services
                 Actor = weapon.Name,
                 Type = RollType.Attack,
                 DiceRoll = roll,
-                Modifier = modifier
+                Modifier = modifier,
+                Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} proficiency + {weapon.AttackBonus} weapon",
+                Description = $"Attack roll with {weapon.Name}",
+                SourceItemId = weapon.Id,
+                CanRollDamage = true,
             };
         }
         public RollResult RollDamage()
         {
-            var weapon = _character.EquippedWeapon;
+            return RollDamageForWeapon(_character.EquippedWeapon);
+            
+        }
+        public RollResult RollDamage(Guid weaponId)
+        {
+            var weapon = _character.EquippedWeapon?.Id == weaponId
+                ? _character.EquippedWeapon
+                : _character.Inventory.OfType<Weapon>().FirstOrDefault(w => w.Id == weaponId);
+
+            if (weapon == null)
+                return RollDamage();
+
+            return RollDamageForWeapon(weapon);
+        }
+        private RollResult RollDamageForWeapon(Weapon weapon)
+        {
             var ability = _character.GetAttackAbility(weapon);
             int roll = _diceService.RollDice(weapon.DamageDice);
 
@@ -98,12 +117,18 @@ namespace RPGSystem.Services
                 Type = RollType.Damage
             };
 
+            var appliedEffects = new List<string>();
+
             foreach (var feature in _character.ClassFeatures)
             {
                 if (!feature.IsActive || feature.Modifier == null)
                     continue;
 
                 var mod = feature.Modifier.Apply(context);
+                if (mod != null && (mod.FlatBonus != 0 || !string.IsNullOrEmpty(mod.ExtraDice)))
+                {
+                    appliedEffects.Add(feature.Name);
+                }
 
                 modifier += mod.FlatBonus;
 
@@ -120,6 +145,9 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 Modifier = modifier + extraDamage,
                 DamageType = weapon.DamageType,
+                Formula = $"{weapon.DamageDice} + {ability.Modifier}",
+                Description = $"Damage roll with {weapon.Name}",
+                AppliedEffects = appliedEffects
             };
         }
         public RollResult? UseSecondWind()

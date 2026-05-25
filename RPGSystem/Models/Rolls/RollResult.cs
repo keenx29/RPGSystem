@@ -16,5 +16,11 @@ namespace RPGSystem.Models.Rolls
 
         public string? DamageType { get; set; }
         public AdvantageState AdvantageType { get; set; } = AdvantageState.Normal;
+        public string Formula { get; set; } = "";
+        public string Description { get; set; } = "";
+        public List<string> AppliedEffects { get; set; } = new();
+        public Guid? SourceItemId { get; set; }
+        public bool CanRollDamage { get; set; }
+
     }
 }

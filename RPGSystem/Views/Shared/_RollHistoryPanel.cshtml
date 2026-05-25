@@ -1,13 +1,80 @@
-﻿@using RPGSystem.Models.Rolls
-@model List<RollResult>
+﻿@model List<RPGSystem.Models.Rolls.RollResult>
 
-<div class="card p-3" style="height: 100vh; overflow-y: auto; position: sticky; top: 0;">
+<div class="roll-chat">
+    <div class="roll-chat-header">
+        <h5>Roll Chat</h5>
+    </div>
 
-    <h4>Roll History</h4>
+    @if (!Model.Any())
+    {
+        <div class="text-muted small p-3">
+            No rolls yet.
+        </div>
+    }
 
     @foreach (var roll in Model)
     {
-        <partial name="_RollMessage" model="roll" />
-    }
+        <div class="roll-message roll-@roll.Type.ToString().ToLower()">
 
+            <div class="roll-message-header">
+                <strong>@roll.Actor</strong>
+                <span>@roll.Type</span>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(roll.Description))
+            {
+                <div class="roll-description">
+                    @roll.Description
+                </div>
+            }
+
+            <div class="roll-total">
+                @roll.Total
+            </div>
+
+            <div class="roll-breakdown">
+                @roll.DiceRoll + @roll.Modifier
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(roll.Formula))
+            {
+                <div class="roll-formula">
+                    @roll.Formula
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(roll.DamageType))
+            {
+                <div class="roll-damage-type">
+                    @roll.DamageType
+                </div>
+            }
+
+            @if (roll.AppliedEffects.Any())
+            {
+                <div class="roll-effects">
+                    @foreach (var effect in roll.AppliedEffects)
+                    {
+                        <span class="roll-effect">@effect</span>
+                    }
+                </div>
+            }
+
+            <div class="roll-actions">
+                @if (roll.CanRollDamage && roll.SourceItemId.HasValue)
+                {
+                    <form asp-controller="Character"
+                          asp-action="RollDamageFromChat"
+                          method="post"
+                          class="mt-2">
+                        <input type="hidden" name="weaponId" value="@roll.SourceItemId" />
+                        <button class="btn btn-sm btn-danger">
+                            Damage
+                        </button>
+                    </form>
+                }
+            </div>
+
+        </div>
+    }
 </div>

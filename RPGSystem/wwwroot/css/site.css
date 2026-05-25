@@ -113,3 +113,61 @@ input[type=number] {
 .slot-state.empty {
     color: #999;
 }
+.roll-chat {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-left: 1px solid #dee2e6;
+}
+
+.roll-chat-header {
+    margin-bottom: 0.75rem;
+}
+
+.roll-message {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.roll-message-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.roll-description {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.roll-total {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: 0.5rem;
+}
+
+.roll-breakdown,
+.roll-formula {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.roll-effect {
+    display: inline-block;
+    font-size: 0.75rem;
+    background: #e9ecef;
+    border-radius: 999px;
+    padding: 0.15rem 0.5rem;
+    margin-top: 0.5rem;
+    margin-right: 0.25rem;
+}
