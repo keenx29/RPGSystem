@@ -20,7 +20,12 @@ namespace RPGSystem.Models.Rolls
         public string Description { get; set; } = "";
         public List<string> AppliedEffects { get; set; } = new();
         public Guid? SourceItemId { get; set; }
-        public bool CanRollDamage { get; set; }
+        public bool IsCriticalSuccess => DiceRoll == 20;
+        public bool IsCriticalFailure => DiceRoll == 1;
+        public bool CanRollDamage => Type == RollType.Attack;
+        public bool CanRollCriticalDamage => CanRollDamage && IsCriticalSuccess;
+        public bool IsCriticalDamage { get; set; }
+
 
     }
 }

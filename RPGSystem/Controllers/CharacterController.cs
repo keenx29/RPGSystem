@@ -92,7 +92,16 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult RollDamageFromChat(Guid weaponId)
         {
-            var result = _characterService.RollDamage(weaponId);
+            var result = _characterService.RollDamage();
+
+            _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
+        public IActionResult RollCriticalDamageFromChat()
+        {
+            var result = _characterService.RollCriticalDamage();
 
             _rollHistory.Insert(0, result);
 

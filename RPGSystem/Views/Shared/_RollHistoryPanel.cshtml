@@ -68,12 +68,36 @@
                           method="post"
                           class="mt-2">
                         <input type="hidden" name="weaponId" value="@roll.SourceItemId" />
-                        <button class="btn btn-sm btn-danger">
+                        <button class="btn btn-sm btn-warning">
                             Damage
                         </button>
                     </form>
                 }
+                @if (roll.CanRollCriticalDamage)
+                {
+                    <form asp-controller="Character"
+                          asp-action="RollCriticalDamageFromChat"
+                          method="post"
+                          class="mt-2">
+                        <button class="btn btn-sm btn-warning">
+                            Crit Damage
+                        </button>
+                    </form>
+                }
             </div>
+            @if (roll.IsCriticalSuccess)
+            {
+                <span class="badge bg-success">Critical Hit</span>
+            }
+
+            @if (roll.IsCriticalFailure)
+            {
+                <span class="badge bg-danger">Critical Fail</span>
+            }
+            @if (roll.IsCriticalDamage)
+            {
+                <span class="badge bg-warning text-dark">Critical Damage</span>
+            }
 
         </div>
     }

@@ -8,6 +8,7 @@ namespace RPGSystem.Services
         private readonly Random _random = new();
         public int RollD20(AdvantageState advantage = AdvantageState.Normal)
         {
+            return 20;
             if (advantage == AdvantageState.Advantage)
             {
                 int firstRoll = RollOnce();
@@ -62,6 +63,18 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 Modifier = modifier,
             };
+        }
+        public string DoubleDiceExpression(string diceExpression)
+        {
+            var parts = diceExpression.Split('d');
+
+            if (parts.Length != 2)
+                return diceExpression;
+
+            if (!int.TryParse(parts[0], out int diceCount))
+                return diceExpression;
+
+            return $"{diceCount * 2}d{parts[1]}";
         }
     }
 }

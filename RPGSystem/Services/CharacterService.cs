@@ -83,33 +83,36 @@ namespace RPGSystem.Services
                 Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} proficiency + {weapon.AttackBonus} weapon",
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
-                CanRollDamage = true,
             };
         }
         public RollResult RollDamage()
         {
-            return RollDamageForWeapon(_character.EquippedWeapon);
-            
+            return RollDamage(isCritical: false);
         }
-        public RollResult RollDamage(Guid weaponId)
+
+        public RollResult RollCriticalDamage()
         {
-            var weapon = _character.EquippedWeapon?.Id == weaponId
-                ? _character.EquippedWeapon
-                : _character.Inventory.OfType<Weapon>().FirstOrDefault(w => w.Id == weaponId);
+            return RollDamage(isCritical: true);
+        }
+
+        private RollResult RollDamage(bool isCritical)
+        {
+            var weapon = _character.EquippedWeapon;
 
             if (weapon == null)
-                return RollDamage();
+                throw new InvalidOperationException("Character has no equipped weapon.");
 
-            return RollDamageForWeapon(weapon);
-        }
-        private RollResult RollDamageForWeapon(Weapon weapon)
-        {
             var ability = _character.GetAttackAbility(weapon);
-            int roll = _diceService.RollDice(weapon.DamageDice);
+
+            var damageDice = isCritical
+                ? _diceService.DoubleDiceExpression(weapon.DamageDice)
+                : weapon.DamageDice;
+
+            int roll = _diceService.RollDice(damageDice);
 
             int modifier = ability.Modifier;
-
             int extraDamage = 0;
+            var appliedEffects = new List<string>();
 
             var context = new RollContext
             {
@@ -117,25 +120,25 @@ namespace RPGSystem.Services
                 Type = RollType.Damage
             };
 
-            var appliedEffects = new List<string>();
-
             foreach (var feature in _character.ClassFeatures)
             {
                 if (!feature.IsActive || feature.Modifier == null)
                     continue;
 
                 var mod = feature.Modifier.Apply(context);
-                if (mod != null && (mod.FlatBonus != 0 || !string.IsNullOrEmpty(mod.ExtraDice)))
-                {
-                    appliedEffects.Add(feature.Name);
-                }
 
                 modifier += mod.FlatBonus;
 
                 if (!string.IsNullOrEmpty(mod.ExtraDice))
                 {
-                    extraDamage += _diceService.RollDice(mod.ExtraDice);
+                    var extraDice = isCritical
+                        ? _diceService.DoubleDiceExpression(mod.ExtraDice)
+                        : mod.ExtraDice;
+
+                    extraDamage += _diceService.RollDice(extraDice);
                 }
+
+                appliedEffects.Add(feature.Name);
             }
 
             return new RollResult
@@ -145,9 +148,12 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 Modifier = modifier + extraDamage,
                 DamageType = weapon.DamageType,
-                Formula = $"{weapon.DamageDice} + {ability.Modifier}",
-                Description = $"Damage roll with {weapon.Name}",
-                AppliedEffects = appliedEffects
+                Formula = $"{damageDice} + {ability.Modifier} {ability.Name}",
+                Description = isCritical
+                    ? $"Critical damage roll with {weapon.Name}"
+                    : $"Damage roll with {weapon.Name}",
+                AppliedEffects = appliedEffects,
+                IsCriticalDamage = isCritical
             };
         }
         public RollResult? UseSecondWind()
