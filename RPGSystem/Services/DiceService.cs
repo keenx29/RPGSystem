@@ -8,7 +8,6 @@ namespace RPGSystem.Services
         private readonly Random _random = new();
         public int RollD20(AdvantageState advantage = AdvantageState.Normal)
         {
-            return 20;
             if (advantage == AdvantageState.Advantage)
             {
                 int firstRoll = RollOnce();

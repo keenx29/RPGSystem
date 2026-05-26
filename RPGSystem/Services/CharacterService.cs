@@ -21,6 +21,95 @@ namespace RPGSystem.Services
         {
             return _character;
         }
+        private List<string> GetConditionRollEffects(
+    RollType rollType,
+    AbilityType? abilityType = null)
+        {
+            var effects = new List<string>();
+
+            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
+                _character.HasCondition(ConditionType.Poisoned))
+            {
+                effects.Add("Poisoned");
+            }
+
+            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
+                _character.HasCondition(ConditionType.Frightened))
+            {
+                effects.Add("Frightened");
+            }
+
+            if (rollType == RollType.Attack &&
+                _character.HasCondition(ConditionType.Invisible))
+            {
+                effects.Add("Invisible");
+            }
+
+            if (rollType == RollType.Save &&
+                abilityType == AbilityType.Dexterity &&
+                _character.HasCondition(ConditionType.Restrained))
+            {
+                effects.Add("Restrained");
+            }
+
+            return effects;
+        }
+        private AdvantageState ApplyConditionAdvantage(
+    RollType rollType,
+    AdvantageState selectedAdvantage,
+    AbilityType? abilityType = null)
+        {
+            bool grantsAdvantage = false;
+            bool grantsDisadvantage = false;
+
+            if (rollType == RollType.Attack)
+            {
+                if (_character.HasCondition(ConditionType.Poisoned) ||
+                    _character.HasCondition(ConditionType.Frightened))
+                {
+                    grantsDisadvantage = true;
+                }
+
+                if (_character.HasCondition(ConditionType.Invisible))
+                {
+                    grantsAdvantage = true;
+                }
+            }
+
+            if (rollType == RollType.Check)
+            {
+                if (_character.HasCondition(ConditionType.Poisoned) ||
+                    _character.HasCondition(ConditionType.Frightened))
+                {
+                    grantsDisadvantage = true;
+                }
+            }
+
+            if (rollType == RollType.Save && abilityType == AbilityType.Dexterity)
+            {
+                if (_character.HasCondition(ConditionType.Restrained))
+                {
+                    grantsDisadvantage = true;
+                }
+            }
+
+            if (selectedAdvantage == AdvantageState.Advantage)
+                grantsAdvantage = true;
+
+            if (selectedAdvantage == AdvantageState.Disadvantage)
+                grantsDisadvantage = true;
+
+            if (grantsAdvantage && grantsDisadvantage)
+                return AdvantageState.Normal;
+
+            if (grantsAdvantage)
+                return AdvantageState.Advantage;
+
+            if (grantsDisadvantage)
+                return AdvantageState.Disadvantage;
+
+            return AdvantageState.Normal;
+        }
         public void AddCondition(ConditionType condition)
         {
             _character.AddCondition(condition);
@@ -38,43 +127,46 @@ namespace RPGSystem.Services
         public RollResult RollAbility(AbilityType type, AdvantageState adv)
         {
             var ability = _character.GetAbility(type);
-
-            int roll = _diceService.RollD20(adv);
+            var finalAdvantage = ApplyConditionAdvantage(RollType.Check, adv, type);
+            int roll = _diceService.RollD20(finalAdvantage);
 
             return new RollResult
             {
                 Actor = ability.Name,
                 Type = RollType.Check,
                 DiceRoll = roll,
-                Modifier = ability.Modifier
+                Modifier = ability.Modifier,
+                AppliedEffects = GetConditionRollEffects(RollType.Attack)
             };
         }
         public RollResult RollSavingThrow(AbilityType type, AdvantageState adv)
         {
             var ability = _character.GetAbility(type);
-
-            int roll = _diceService.RollD20(adv);
+            var finalAdvantage = ApplyConditionAdvantage(RollType.Save, adv, type);
+            int roll = _diceService.RollD20(finalAdvantage);
 
             return new RollResult
             {
                 Actor = ability.Name,
                 Type = RollType.Save,
                 DiceRoll = roll,
-                Modifier = _character.GetSavingThrowBonus(ability)
+                Modifier = _character.GetSavingThrowBonus(ability),
+                AppliedEffects = GetConditionRollEffects(RollType.Save,type)
             };
         }
         public RollResult RollSkill(SkillType skillType, AdvantageState adv)
         {
             var skill = _character.GetSkill(skillType);
-
-            int roll = _diceService.RollD20(adv);
+            var finalAdvantage = ApplyConditionAdvantage(RollType.Check, adv, skill.RelatedAbility.Type);
+            int roll = _diceService.RollD20(finalAdvantage);
 
             return new RollResult
             {
                 Actor = skill.Name,
                 Type = RollType.Check,
                 DiceRoll = roll,
-                Modifier = skill.GetBonus(_character.GetProficiencyBonus())
+                Modifier = skill.GetBonus(_character.GetProficiencyBonus()),
+                AppliedEffects = GetConditionRollEffects(RollType.Check)
             };
         }
         public RollResult RollAttack(AdvantageState adv)
@@ -84,7 +176,8 @@ namespace RPGSystem.Services
 
             var ability = _character.GetAttackAbility(weapon);
 
-            int roll = _diceService.RollD20(adv);
+            var finalAdvantage = ApplyConditionAdvantage(RollType.Attack, adv);
+            int roll = _diceService.RollD20(finalAdvantage);
 
             int modifier = ability.Modifier + _character.GetProficiencyBonus() + weapon.AttackBonus;
 
@@ -97,6 +190,7 @@ namespace RPGSystem.Services
                 Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} proficiency + {weapon.AttackBonus} weapon",
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
+                AppliedEffects = GetConditionRollEffects(RollType.Attack)
             };
         }
         public RollResult RollDamage(Guid weaponId)
