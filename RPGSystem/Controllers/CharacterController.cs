@@ -30,6 +30,7 @@ namespace RPGSystem.Controllers
             var vm = new CharacterSheetViewModel
             {
                 Character = _characterService.GetCharacter(),
+                HitDie = _characterService.GetHitDie(),
                 RollHistory = _rollHistory,
                 SelectedAdvantageState = _rollState.SelectedAdvantageState
             };
@@ -139,9 +140,13 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult ShortRest()
+        public IActionResult ShortRest(int hitDiceCount)
         {
-            _characterService.ShortRest();
+            var result = _characterService.ShortRest(hitDiceCount);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
             return RedirectToAction("Sheet");
         }
 

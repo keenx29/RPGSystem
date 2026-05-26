@@ -6,6 +6,7 @@ namespace RPGSystem.ViewModels
     public class CharacterSheetViewModel
     {
         public Character Character { get; set; } = new();
+        public int HitDie { get; set; }
         public List<RollResult> RollHistory { get; set; } = new();
         public AdvantageState SelectedAdvantageState { get; set; } = AdvantageState.Normal;
     }

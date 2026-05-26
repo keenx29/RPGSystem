@@ -60,12 +60,12 @@
 
                 <div class="row">
 
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <strong>Level</strong>
                         <p>@Model.Character.Level</p>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <strong>HP</strong>
                         <p>
                             @Model.Character.CurrentHP
@@ -74,27 +74,32 @@
                         </p>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <strong>Armor Class</strong>
                         <p>@Model.Character.GetArmorClass()</p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <strong>Proficiency Bonus</strong>
                         <p>@ModifierFormatter.FormatWithoutSpace(Model.Character.GetProficiencyBonus())</p>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <strong>Initiative</strong>
                         <p>@ModifierFormatter.FormatWithoutSpace(Model.Character.GetInitiative())</p>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <strong>Passive Perception</strong>
                         <p>@Model.Character.GetPassivePerception()</p>
                     </div>
-
+                    <div class="col-md-4">
+                        <strong>Hit Dice</strong>
+                        <p>
+                            @Model.Character.HitDiceRemaining / @(Model.Character.MaxHitDice)d@(Model.HitDie)
+                        </p>
+                    </div>
                 </div>
             </div>
             @* Attack Panel *@
@@ -364,10 +369,23 @@
 
             </div>
             @* Rest Panel*@
+            
             <div class="row">
                 <div class="col">
                     <form asp-action="ShortRest" method="post">
-                        <button class="btn btn-warning">Short Rest</button>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="number"
+                                   name="hitDiceCount"
+                                   value="0"
+                                   min="0"
+                                   max="@Model.Character.HitDiceRemaining"
+                                   class="form-control text-center"
+                                   style="width: 80px;" />
+
+                            <button class="btn btn-warning">
+                                Short Rest
+                            </button>
+                        </div>
                     </form>
                 </div>
                 <div class="col">

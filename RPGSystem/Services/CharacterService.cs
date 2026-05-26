@@ -310,9 +310,50 @@ namespace RPGSystem.Services
                 Modifier = ability.Modifier,
             };
         }
-        public void ShortRest()
+        public int GetHitDie()
+        {
+            var characterClass = CharacterClassFactory.Create(_character.ClassType);
+
+            return characterClass.HitDie;
+        }
+        public RollResult? ShortRest(int hitDiceCount)
         {
             _character.ShortRest();
+
+            if (hitDiceCount <= 0)
+                return null;
+
+            hitDiceCount = Math.Min(hitDiceCount, _character.HitDiceRemaining);
+
+            if (hitDiceCount <= 0)
+                return null;
+
+            int hitDie = GetHitDie();
+            int constitutionModifier = _character.GetAbility(AbilityType.Constitution).Modifier;
+
+            int diceTotal = 0;
+
+            for (int i = 0; i < hitDiceCount; i++)
+            {
+                diceTotal += _diceService.RollDice($"1d{hitDie}");
+            }
+
+            int modifier = constitutionModifier * hitDiceCount;
+            int healAmount = Math.Max(0, diceTotal + modifier);
+
+            _character.SpendHitDice(hitDiceCount);
+            _character.Heal(healAmount);
+
+            return new RollResult
+            {
+                Actor = "Short Rest",
+                Type = RollType.Heal,
+                DiceRoll = diceTotal,
+                Modifier = modifier,
+                Formula = $"{hitDiceCount}d{hitDie} + {modifier} CON",
+                Description = $"Spent {hitDiceCount} hit dice during a short rest.",
+                AppliedEffects = new List<string> { $"Hit Dice" }
+            };
         }
         public void LongRest()
         {
@@ -368,6 +409,7 @@ namespace RPGSystem.Services
             {
                 Name = "Tyrion",
                 Level = 4,
+                HitDiceRemaining = 4,
                 MovementSpeed = 30,
                 ClassType = CharacterClassType.Fighter,
 
@@ -438,6 +480,7 @@ namespace RPGSystem.Services
             {
                 Name = "Vex",
                 Level = 4,
+                HitDiceRemaining = 4,
                 MovementSpeed = 30,
                 ClassType = CharacterClassType.Rogue,
 
@@ -585,6 +628,7 @@ namespace RPGSystem.Services
             {
                 Name = "Grom",
                 Level = 4,
+                HitDiceRemaining = 4,
                 MovementSpeed = 30,
                 ClassType = CharacterClassType.Barbarian,
 
@@ -742,6 +786,7 @@ namespace RPGSystem.Services
             {
                 Name = "Kael",
                 Level = 4,
+                HitDiceRemaining = 4,
                 MovementSpeed = 40,
                 ClassType = CharacterClassType.Monk,
 

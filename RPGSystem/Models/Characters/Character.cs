@@ -17,6 +17,8 @@ namespace RPGSystem.Models.Characters
         public int MaxHP { get; set; } = 20;
         public int CurrentHP { get; set; } = 20;
         public int MovementSpeed { get; set; } = 30;
+        public int HitDiceRemaining { get; set; }
+        public int MaxHitDice => Level;
 
         // Derived stats
         public int Level { get; set; }
@@ -32,6 +34,15 @@ namespace RPGSystem.Models.Characters
         public List<Item> Inventory { get; set; } = new();
         public List<Item> AttunedItems { get; set; } = new();
 
+        public void SpendHitDice(int amount)
+        {
+            HitDiceRemaining = Math.Max(0, HitDiceRemaining - amount);
+        }
+
+        public void RestoreHitDice(int amount)
+        {
+            HitDiceRemaining = Math.Min(MaxHitDice, HitDiceRemaining + amount);
+        }
         public void TakeDamage(int amount)
         {
             CurrentHP = Math.Max(0, CurrentHP - amount);
@@ -107,8 +118,6 @@ namespace RPGSystem.Models.Characters
         }
         public void ShortRest()
         {
-            CurrentHP = Math.Min(MaxHP, CurrentHP + MaxHP / 4); //TODO: Hit die logic
-
             foreach (var feature in ClassFeatures)
             {
                 if (feature.Name == FighterFeatures.SecondWind ||
@@ -128,6 +137,9 @@ namespace RPGSystem.Models.Characters
                 feature.UsesRemaining = feature.MaxUses;
             }
             RestoreAllResources();
+
+            int hitDiceToRestore = Math.Max(1, MaxHitDice / 2);
+            RestoreHitDice(hitDiceToRestore);
         }
         public void LevelUp(int hpGain)
         {
@@ -136,6 +148,8 @@ namespace RPGSystem.Models.Characters
             MaxHP += hpGain;
 
             CurrentHP = MaxHP;
+
+            HitDiceRemaining = Math.Min(MaxHitDice, HitDiceRemaining + 1);
         }
         public Ability GetAttackAbility(Weapon weapon)
         {
