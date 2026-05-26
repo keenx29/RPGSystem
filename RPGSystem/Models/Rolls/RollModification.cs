@@ -3,6 +3,12 @@
     public class RollModification
     {
         public int FlatBonus { get; set; }
-        public string? ExtraDice { get; set; } // "2d6"
+        public string? ExtraDice { get; set; }
+        public string Source { get; set; } = "";
+        public string Description { get; set; } = "";
+
+        public bool HasEffect =>
+            FlatBonus != 0 ||
+            !string.IsNullOrWhiteSpace(ExtraDice);
     }
 }

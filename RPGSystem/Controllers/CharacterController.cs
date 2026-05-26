@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RPGSystem.Models.Characters;
+using RPGSystem.Models.Items;
 using RPGSystem.Models.Rolls;
 using RPGSystem.Services;
 using RPGSystem.ViewModels;
@@ -81,27 +82,18 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult RollDamage()
+        public IActionResult RollDamage(Guid weaponId)
         {
-            var result = _characterService.RollDamage();
+            var result = _characterService.RollDamage(weaponId);
 
             _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult RollDamageFromChat(Guid weaponId)
+        public IActionResult RollCriticalDamage(Guid weaponId)
         {
-            var result = _characterService.RollDamage();
-
-            _rollHistory.Insert(0, result);
-
-            return RedirectToAction("Sheet");
-        }
-        [HttpPost]
-        public IActionResult RollCriticalDamageFromChat()
-        {
-            var result = _characterService.RollCriticalDamage();
+            var result = _characterService.RollCriticalDamage(weaponId);
 
             _rollHistory.Insert(0, result);
 

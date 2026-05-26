@@ -1,4 +1,5 @@
-﻿using RPGSystem.Models.Rolls;
+﻿using RPGSystem.Models.Items;
+using RPGSystem.Models.Rolls;
 
 namespace RPGSystem.Models.Classes.Features
 {
@@ -13,9 +14,24 @@ namespace RPGSystem.Models.Classes.Features
 
         public RollModification Apply(RollContext context)
         {
+            if (context.Type != RollType.Damage)
+                return new RollModification();
+
+            if (context.Weapon == null)
+                return new RollModification();
+
+            bool isValidWeapon =
+                context.Weapon.ScalingType == WeaponScalingType.Dexterity ||
+                context.Weapon.ScalingType == WeaponScalingType.Finesse;
+
+            if (!isValidWeapon)
+                return new RollModification();
+
             return new RollModification
             {
-                ExtraDice = $"{_dice}d6"
+                ExtraDice = $"{_dice}d6",
+                Source = RogueFeatures.SneakAttack,
+                Description = $"{_dice}d6 sneak attack"
             };
         }
     }

@@ -64,7 +64,7 @@
                 @if (roll.CanRollDamage && roll.SourceItemId.HasValue)
                 {
                     <form asp-controller="Character"
-                          asp-action="RollDamageFromChat"
+                          asp-action="RollDamage"
                           method="post"
                           class="mt-2">
                         <input type="hidden" name="weaponId" value="@roll.SourceItemId" />
@@ -76,9 +76,10 @@
                 @if (roll.CanRollCriticalDamage)
                 {
                     <form asp-controller="Character"
-                          asp-action="RollCriticalDamageFromChat"
+                          asp-action="RollCriticalDamage"
                           method="post"
                           class="mt-2">
+                        <input type="hidden" name="weaponId" value="@roll.SourceItemId" />
                         <button class="btn btn-sm btn-warning">
                             Crit Damage
                         </button>

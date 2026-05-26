@@ -14,15 +14,14 @@ namespace RPGSystem.Models.Classes.Features
 
     public RollModification Apply(RollContext context)
     {
-        //TODO: Weapon and WeaponsScalingType validation
         if (context.Type != RollType.Damage)
             return new RollModification();
 
-        if (context.Character.EquippedWeapon == null)
+        if (context.Weapon == null)
             return new RollModification();
 
         bool isStrengthWeapon =
-            context.Character.EquippedWeapon.ScalingType == WeaponScalingType.Strength;
+            context.Weapon.ScalingType == WeaponScalingType.Strength;
 
         if (!isStrengthWeapon)
             return new RollModification();
@@ -30,7 +29,9 @@ namespace RPGSystem.Models.Classes.Features
         return new RollModification
         {
             FlatBonus = _damageBonus,
+            Source = BarbarianFeatures.Rage,
+            Description = $"+{_damageBonus} rage damage"
         };
     }
-}
+    }
 }
