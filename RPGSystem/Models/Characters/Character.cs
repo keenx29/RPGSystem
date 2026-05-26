@@ -23,6 +23,14 @@ namespace RPGSystem.Models.Characters
         // Derived stats
         public int Level { get; set; }
         public int ArmorClass { get; set; } = 10;
+        // Character State
+        public int DeathSaveSuccesses { get; set; }
+        public int DeathSaveFailures { get; set; }
+        public bool IsStable { get; set; }
+        public bool IsDead { get; set; }
+
+        public bool IsUnconscious => CurrentHP == 0;
+        public bool ShouldMakeDeathSaves => CurrentHP == 0 && !IsStable && !IsDead;
 
         // Class Data
         public List<ClassFeatureInstance> ClassFeatures { get; set; } = new();
@@ -34,6 +42,13 @@ namespace RPGSystem.Models.Characters
         public List<Item> Inventory { get; set; } = new();
         public List<Item> AttunedItems { get; set; } = new();
 
+        public void ResetDeathSaves()
+        {
+            DeathSaveSuccesses = 0;
+            DeathSaveFailures = 0;
+            IsStable = false;
+            IsDead = false;
+        }
         public void SpendHitDice(int amount)
         {
             HitDiceRemaining = Math.Max(0, HitDiceRemaining - amount);
@@ -49,7 +64,13 @@ namespace RPGSystem.Models.Characters
         }
         public void Heal(int amount)
         {
+            if (amount <= 0 || IsDead)
+                return;
+
             CurrentHP = Math.Min(MaxHP, CurrentHP + amount);
+
+            if (CurrentHP > 0)
+                ResetDeathSaves();
         }
         public void EquipWeapon(Weapon weapon)
         {
@@ -140,6 +161,7 @@ namespace RPGSystem.Models.Characters
 
             int hitDiceToRestore = Math.Max(1, MaxHitDice / 2);
             RestoreHitDice(hitDiceToRestore);
+            ResetDeathSaves();
         }
         public void LevelUp(int hpGain)
         {
