@@ -38,6 +38,29 @@ namespace RPGSystem.Controllers
             return View(vm);
         }
         [HttpPost]
+        public IActionResult AddCondition(ConditionType condition)
+        {
+            _characterService.AddCondition(condition);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveCondition(ConditionType condition)
+        {
+            _characterService.RemoveCondition(condition);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult ClearConditions()
+        {
+            _characterService.ClearConditions();
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult SetAdvantageState(string state)
         {
             Enum.TryParse(state, out AdvantageState parsed);

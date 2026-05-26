@@ -1,5 +1,6 @@
 ﻿@using RPGSystem.Helpers
 @using RPGSystem.Models
+@using RPGSystem.Models.Characters
 @using RPGSystem.Models.Classes.Features
 @using RPGSystem.Models.Rolls
 @using RPGSystem.ViewModels
@@ -510,6 +511,61 @@
 
                     </div>
                 }
+
+            </div>
+            @* Conditions Panel *@
+            <div class="card mt-4 p-3">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">Conditions</h3>
+
+                    @if (Model.Character.Conditions.Any())
+                    {
+                        <form asp-action="ClearConditions" method="post" class="m-0">
+                            <button class="btn btn-sm btn-outline-secondary">
+                                Clear
+                            </button>
+                        </form>
+                    }
+                </div>
+
+                @if (Model.Character.Conditions.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        @foreach (var condition in Model.Character.Conditions)
+                        {
+                            <form asp-action="RemoveCondition" method="post" class="m-0">
+                                <input type="hidden" name="condition" value="@condition" />
+
+                                <button class="btn btn-sm btn-outline-danger">
+                                    @condition ✕
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-3">No active conditions.</p>
+                }
+
+                <form asp-action="AddCondition" method="post">
+                    <div class="d-flex gap-2">
+                        <select name="condition" class="form-select">
+                            @foreach (var condition in Enum.GetValues<ConditionType>())
+                            {
+                                if (!Model.Character.Conditions.Contains(condition))
+                                {
+                                    <option value="@condition">@condition</option>
+                                }
+                            }
+                        </select>
+
+                        <button class="btn btn-dark">
+                            Add
+                        </button>
+                    </div>
+                </form>
 
             </div>
         </div>

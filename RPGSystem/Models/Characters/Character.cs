@@ -24,6 +24,7 @@ namespace RPGSystem.Models.Characters
         public int Level { get; set; }
         public int ArmorClass { get; set; } = 10;
         // Character State
+        public List<ConditionType> Conditions { get; set; } = new();
         public int DeathSaveSuccesses { get; set; }
         public int DeathSaveFailures { get; set; }
         public bool IsStable { get; set; }
@@ -41,7 +42,25 @@ namespace RPGSystem.Models.Characters
         public Armor? EquippedArmor { get; set; }
         public List<Item> Inventory { get; set; } = new();
         public List<Item> AttunedItems { get; set; } = new();
+        public void ClearConditions()
+        {
+            Conditions.Clear();
+        }
+        public bool HasCondition(ConditionType condition)
+        {
+            return Conditions.Contains(condition);
+        }
 
+        public void AddCondition(ConditionType condition)
+        {
+            if (!Conditions.Contains(condition))
+                Conditions.Add(condition);
+        }
+
+        public void RemoveCondition(ConditionType condition)
+        {
+            Conditions.Remove(condition);
+        }
         public void ResetDeathSaves()
         {
             DeathSaveSuccesses = 0;

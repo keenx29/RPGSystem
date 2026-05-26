@@ -21,6 +21,20 @@ namespace RPGSystem.Services
         {
             return _character;
         }
+        public void AddCondition(ConditionType condition)
+        {
+            _character.AddCondition(condition);
+        }
+
+        public void RemoveCondition(ConditionType condition)
+        {
+            _character.RemoveCondition(condition);
+        }
+
+        public void ClearConditions()
+        {
+            _character.ClearConditions();
+        }
         public RollResult RollAbility(AbilityType type, AdvantageState adv)
         {
             var ability = _character.GetAbility(type);
