@@ -252,17 +252,25 @@ namespace RPGSystem.Models.Characters
         {
             int dexModifier = GetAbility(AbilityType.Dexterity).Modifier;
 
-            if (EquippedArmor == null)
-                return 10 + dexModifier;
-
-            return EquippedArmor.ArmorType switch
+            if (EquippedArmor != null)
             {
-                ArmorType.Light => EquippedArmor.BaseArmorClass + dexModifier,
-                ArmorType.Medium => EquippedArmor.BaseArmorClass + Math.Min(dexModifier, 2),
-                ArmorType.Heavy => EquippedArmor.BaseArmorClass,
-                ArmorType.Shield => 10 + dexModifier + 2,
-                _ => ArmorClass
-            };
+                return EquippedArmor.ArmorType switch
+                {
+                    ArmorType.Light => EquippedArmor.BaseArmorClass + dexModifier,
+                    ArmorType.Medium => EquippedArmor.BaseArmorClass + Math.Min(dexModifier, 2),
+                    ArmorType.Heavy => EquippedArmor.BaseArmorClass,
+                    _ => EquippedArmor.BaseArmorClass
+                };
+            }
+
+            var characterClass = CharacterClassFactory.Create(ClassType);
+            var unarmoredAc = characterClass.GetUnarmoredArmorClass(this);
+
+            return unarmoredAc ?? 10 + dexModifier;
+        }
+        public bool IsWearingArmor()
+        {
+            return EquippedArmor != null;
         }
     }
 }

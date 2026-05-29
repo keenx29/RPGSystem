@@ -114,6 +114,7 @@
                 </div>
                 <div class="col">
                     <form asp-action="RollDamage" method="post" class="mt-2">
+                        <input type="hidden" name="weaponId" value="@Model.Character.EquippedWeapon.Id" />
                         <button class="btn btn-warning">
                             Damage Roll
                         </button>
@@ -237,7 +238,7 @@
                             }
                             else
                             {
-                                <span class="text-muted">Empty</span>
+                                <span class="text-muted">Unarmored</span>
                             }
                         </div>
 

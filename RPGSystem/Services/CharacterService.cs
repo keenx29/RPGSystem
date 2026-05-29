@@ -15,7 +15,7 @@ namespace RPGSystem.Services
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetRogueTestCharacter();
+            _character = GetMonkTestCharacter();
         }
         public Character GetCharacter()
         {
@@ -955,11 +955,6 @@ namespace RPGSystem.Services
                     ScalingType = WeaponScalingType.Dexterity
                 },
 
-                EquippedArmor = new Armor
-                {
-                    Name = "Cloth Robes",
-                    BaseArmorClass = 10
-                },
 
                 Inventory = new List<Item>
         {
@@ -980,11 +975,17 @@ namespace RPGSystem.Services
                 DamageType = "piercing",
                 ScalingType = WeaponScalingType.Dexterity
             },
+            new Armor
+            {
+                Name = "Cloth Robes",
+                BaseArmorClass = 10,
+                ArmorType = ArmorType.Light,
+            },
 
             new Item
             {
                 Name = "Healing Potion",
-                Type = ItemType.Consumable,
+                Type = ItemType.Consumable, 
                 Effect = new HealEffect("2d4+2")
             }
         },

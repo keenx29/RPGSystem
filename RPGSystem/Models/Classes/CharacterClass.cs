@@ -1,4 +1,5 @@
-﻿using RPGSystem.Models.Classes.Features;
+﻿using RPGSystem.Models.Characters;
+using RPGSystem.Models.Classes.Features;
 
 namespace RPGSystem.Models.Classes
 {
@@ -9,5 +10,9 @@ namespace RPGSystem.Models.Classes
         public abstract int HitDie { get; }
 
         public abstract List<ClassFeatureInstance> GetFeaturesForLevel(int level);
+        public virtual int? GetUnarmoredArmorClass(Character character)
+        {
+            return null;
+        }
     }
 }

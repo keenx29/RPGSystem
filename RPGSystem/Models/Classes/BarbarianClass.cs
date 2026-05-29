@@ -1,4 +1,5 @@
-﻿using RPGSystem.Models.Classes.Features;
+﻿using RPGSystem.Models.Characters;
+using RPGSystem.Models.Classes.Features;
 
 namespace RPGSystem.Models.Classes
 {
@@ -26,6 +27,13 @@ namespace RPGSystem.Models.Classes
             }
 
             return features;
+        }
+        public override int? GetUnarmoredArmorClass(Character character)
+        {
+            int dex = character.GetAbility(AbilityType.Dexterity).Modifier;
+            int con = character.GetAbility(AbilityType.Constitution).Modifier;
+
+            return 10 + dex + con;
         }
     }
 }
