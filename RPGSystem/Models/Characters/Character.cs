@@ -250,10 +250,19 @@ namespace RPGSystem.Models.Characters
 
         public int GetArmorClass()
         {
-            if (EquippedArmor != null)
-                return EquippedArmor.BaseArmorClass;
+            int dexModifier = GetAbility(AbilityType.Dexterity).Modifier;
 
-            return ArmorClass;
+            if (EquippedArmor == null)
+                return 10 + dexModifier;
+
+            return EquippedArmor.ArmorType switch
+            {
+                ArmorType.Light => EquippedArmor.BaseArmorClass + dexModifier,
+                ArmorType.Medium => EquippedArmor.BaseArmorClass + Math.Min(dexModifier, 2),
+                ArmorType.Heavy => EquippedArmor.BaseArmorClass,
+                ArmorType.Shield => 10 + dexModifier + 2,
+                _ => ArmorClass
+            };
         }
     }
 }

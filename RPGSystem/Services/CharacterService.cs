@@ -642,7 +642,8 @@ namespace RPGSystem.Services
                 EquippedArmor = new Armor
                 {
                     Name = "Leather Armor",
-                    BaseArmorClass = 11
+                    BaseArmorClass = 11,
+                    ArmorType = ArmorType.Light
                 },
 
                 Inventory = new List<Item>
@@ -668,7 +669,14 @@ namespace RPGSystem.Services
             new Armor
             {
                 Name = "Studded Leather",
-                BaseArmorClass = 12
+                BaseArmorClass = 12,
+                ArmorType = ArmorType.Light
+            },
+            new Armor
+            {
+                Name = "Chain Shirt",
+                BaseArmorClass = 13,
+                ArmorType = ArmorType.Medium
             },
 
             new Item
