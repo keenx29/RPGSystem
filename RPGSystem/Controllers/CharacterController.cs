@@ -136,6 +136,13 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult EquipShield(Guid shieldId)
+        {
+            _characterService.EquipShield(shieldId);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult UseItem(Guid itemId)
         {
             var result = _characterService.UseItem(itemId);

@@ -15,7 +15,7 @@ namespace RPGSystem.Services
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetMonkTestCharacter();
+            _character = GetFighterTestCharacter();
         }
         public Character GetCharacter()
         {
@@ -502,8 +502,20 @@ namespace RPGSystem.Services
         {
             _character.UnequipArmor();
         }
-        
-        public Character GetTestCharacter()
+        public void EquipShield(Guid shieldId)
+        {
+            var shield = _character.Inventory
+                .OfType<Armor>()
+                .First(a => a.Id == shieldId && a.ArmorType == ArmorType.Shield);
+
+            _character.EquipShield(shield);
+        }
+
+        public void UnequipShield()
+        {
+            _character.UnequipShield();
+        }
+        public Character GetFighterTestCharacter()
         {
             var strength = new Ability { Name = "Strength", Type=AbilityType.Strength, Score = 16, IsSavingThrowProficient=true};
             var dexterity = new Ability { Name = "Dexterity", Type=AbilityType.Dexterity, Score = 14 };
@@ -545,7 +557,8 @@ namespace RPGSystem.Services
                 EquippedArmor = new Armor
                 {
                     Name = "Leather Tunic",
-                    BaseArmorClass = 13
+                    BaseArmorClass = 13,
+                    ArmorType = ArmorType.Light,
                     
                 },
                 Inventory = new List<Item>
@@ -558,7 +571,17 @@ namespace RPGSystem.Services
                         DamageType="piercing",
                         ScalingType= WeaponScalingType.Finesse,
                     },
-                    new Armor { Name="Chainmail", BaseArmorClass=15},
+                    new Armor 
+                    { 
+                        Name="Chainmail", 
+                        BaseArmorClass=15
+                    },
+                    new Armor
+                    {
+                        Name = "Shield",
+                        BaseArmorClass = 2,
+                        ArmorType = ArmorType.Shield
+                    },
                     new Item
                     {
                         Name="Healing Potion",

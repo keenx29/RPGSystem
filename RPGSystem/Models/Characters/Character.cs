@@ -40,8 +40,26 @@ namespace RPGSystem.Models.Characters
         // Equipment
         public Weapon? EquippedWeapon { get; set; }
         public Armor? EquippedArmor { get; set; }
+        public Armor? EquippedShield { get; set; }
         public List<Item> Inventory { get; set; } = new();
         public List<Item> AttunedItems { get; set; } = new();
+        public void EquipShield(Armor shield)
+        {
+            if (EquippedShield != null)
+                Inventory.Add(EquippedShield);
+
+            EquippedShield = shield;
+            Inventory.Remove(shield);
+        }
+
+        public void UnequipShield()
+        {
+            if (EquippedShield != null)
+            {
+                Inventory.Add(EquippedShield);
+                EquippedShield = null;
+            }
+        }
         public void ClearConditions()
         {
             Conditions.Clear();
@@ -256,21 +274,25 @@ namespace RPGSystem.Models.Characters
             {
                 return EquippedArmor.ArmorType switch
                 {
-                    ArmorType.Light => EquippedArmor.BaseArmorClass + dexModifier,
-                    ArmorType.Medium => EquippedArmor.BaseArmorClass + Math.Min(dexModifier, 2),
-                    ArmorType.Heavy => EquippedArmor.BaseArmorClass,
-                    _ => EquippedArmor.BaseArmorClass
+                    ArmorType.Light => EquippedArmor.BaseArmorClass + dexModifier + GetShieldBonus(),
+                    ArmorType.Medium => EquippedArmor.BaseArmorClass + Math.Min(dexModifier, 2) + GetShieldBonus(),
+                    ArmorType.Heavy => EquippedArmor.BaseArmorClass + GetShieldBonus(),
+                    _ => EquippedArmor.BaseArmorClass + GetShieldBonus()
                 };
             }
 
             var characterClass = CharacterClassFactory.Create(ClassType);
             var unarmoredAc = characterClass.GetUnarmoredArmorClass(this);
 
-            return unarmoredAc ?? 10 + dexModifier;
+            return unarmoredAc ?? 10 + dexModifier+ GetShieldBonus();
         }
         public bool IsWearingArmor()
         {
             return EquippedArmor != null;
+        }
+        private int GetShieldBonus()
+        {
+            return EquippedShield != null ? EquippedShield.BaseArmorClass : 0;
         }
     }
 }

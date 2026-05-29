@@ -218,7 +218,29 @@
                         </div>
 
                     </div>
+                    <!-- SHIELD SLOT -->
+                    <div class="equipped-slot">
+                        <div class="slot-label">
+                            Shield
+                        </div>
 
+                        <div class="slot-value">
+                            @if (Model.Character.EquippedShield != null)
+                            {
+                                <span class="equipped-name">
+                                    @Model.Character.EquippedShield.Name
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Empty</span>
+                            }
+                        </div>
+
+                        <div class="slot-state @(Model.Character.EquippedShield != null ? "active" : "empty")">
+                            @(Model.Character.EquippedShield != null ? "Equipped" : "Not equipped")
+                        </div>
+                    </div>
                     <!-- ARMOR SLOT -->
                     <div class="equipped-slot">
 
@@ -258,8 +280,12 @@
                 @foreach (var item in Model.Character.Inventory)
                 {
                     var isWeapon = item is Weapon;
+                    var weapon = item as Weapon;
                     var isArmor = item is Armor;
+                    var armor = item as Armor;
                     var isConsumable = item.Type == ItemType.Consumable;
+                    
+                    var isShield = armor?.ArmorType == ArmorType.Shield;
 
                     <div class="inventory-item @(Model.Character.EquippedWeapon?.Id == item.Id || Model.Character.EquippedArmor?.Id == item.Id ? "equipped" : "")">
 
@@ -272,19 +298,15 @@
 
                                 @if (isWeapon)
                                 {
-                                    <span class="badge bg-secondary">Weapon</span>
+                                    <span class="badge bg-secondary">@(weapon.ScalingType) Weapon</span>
                                 }
                                 else if (isArmor)
                                 {
-                                    <span class="badge bg-secondary">Armor</span>
-                                }
-                                else if (isConsumable)
-                                {
-                                    <span class="badge bg-secondary">Consumable</span>
+                                    <span class="badge bg-secondary">@(armor.ArmorType) Armor</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-light text-dark border">Item</span>
+                                    <span class="badge bg-secondary">@item.Type</span>
                                 }
 
                             </div>
@@ -310,7 +332,16 @@
                                 </form>
                             }
 
-                            @if (isArmor)
+                            @if (isShield)
+                            {
+                                <form asp-action="EquipShield" method="post">
+                                    <input type="hidden" name="shieldId" value="@item.Id" />
+
+                                    <button class="btn btn-sm @(Model.Character.EquippedShield?.Id == item.Id ? "btn-success" : "btn-dark")">
+                                        @(Model.Character.EquippedShield?.Id == item.Id ? "Equipped" : "Equip")
+                                    </button>
+                                </form>
+                            }else if (isArmor)
                             {
                                 <form asp-action="EquipArmor" method="post">
                                     <input type="hidden" name="armorId" value="@item.Id" />
