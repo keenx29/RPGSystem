@@ -38,7 +38,18 @@ namespace RPGSystem.Models.Characters
         public List<FeatureResource> FeatureResources { get; set; } = new();
 
         // Equipment
-        public Weapon? EquippedWeapon { get; set; }
+        public List<Weapon> EquippedWeapons { get; set; } = new();
+        public Weapon? EquippedWeapon
+        {
+            get => EquippedWeapons.FirstOrDefault();
+            set
+            {
+                EquippedWeapons.Clear();
+
+                if (value != null)
+                    EquippedWeapons.Add(value);
+            }
+        }
         public Armor? EquippedArmor { get; set; }
         public Armor? EquippedShield { get; set; }
         public List<Item> Inventory { get; set; } = new();
@@ -111,19 +122,21 @@ namespace RPGSystem.Models.Characters
         }
         public void EquipWeapon(Weapon weapon)
         {
-            if (EquippedWeapon != null)
-                Inventory.Add(EquippedWeapon);
+            if (EquippedWeapons.Any(w => w.Id == weapon.Id))
+                return;
 
-            EquippedWeapon = weapon;
+            EquippedWeapons.Add(weapon);
             Inventory.Remove(weapon);
         }
-        public void UnequipWeapon()
+        public void UnequipWeapon(Guid weaponId)
         {
-            if (EquippedWeapon != null)
-            {
-                Inventory.Add(EquippedWeapon);
-                EquippedWeapon = null;
-            }
+            var weapon = EquippedWeapons.FirstOrDefault(w => w.Id == weaponId);
+
+            if (weapon == null)
+                return;
+
+            EquippedWeapons.Remove(weapon);
+            Inventory.Add(weapon);
         }
         public void EquipArmor(Armor armor)
         {

@@ -21,6 +21,18 @@ namespace RPGSystem.Services
         {
             return _character;
         }
+        private Weapon? FindWeapon(Guid weaponId)
+        {
+            var equippedWeapon = _character.EquippedWeapons
+                .FirstOrDefault(w => w.Id == weaponId);
+
+            if (equippedWeapon != null)
+                return equippedWeapon;
+
+            return _character.Inventory
+                .OfType<Weapon>()
+                .FirstOrDefault(w => w.Id == weaponId);
+        }
         private List<string> GetConditionRollEffects(
     RollType rollType,
     AbilityType? abilityType = null)
@@ -171,8 +183,20 @@ namespace RPGSystem.Services
         }
         public RollResult RollAttack(AdvantageState adv)
         {
+            var weapon = _character.EquippedWeapons.FirstOrDefault();
+
+            if (weapon == null)
+                throw new InvalidOperationException("Character has no equipped weapon.");
+
+            return RollAttack(weapon.Id, adv);
+        }
+        public RollResult RollAttack(Guid weaponId, AdvantageState adv)
+        {
             // TODO: STR/DEX logic // TODO: Weapon Proficiencies
-            var weapon = _character.EquippedWeapon;
+            var weapon = FindWeapon(weaponId);
+
+            if (weapon == null)
+                throw new InvalidOperationException("Weapon not found.");
 
             var ability = _character.GetAttackAbility(weapon);
 
@@ -187,7 +211,7 @@ namespace RPGSystem.Services
                 Type = RollType.Attack,
                 DiceRoll = roll,
                 Modifier = modifier,
-                Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} proficiency + {weapon.AttackBonus} weapon",
+                Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} Proficiency + {weapon.AttackBonus} Weapon Bonus",
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
                 AppliedEffects = GetConditionRollEffects(RollType.Attack)
@@ -205,11 +229,7 @@ namespace RPGSystem.Services
 
         private RollResult RollDamage(Guid weaponId,bool isCritical)
         {
-            var weapon = _character.EquippedWeapon?.Id == weaponId
-                ? _character.EquippedWeapon
-                : _character.Inventory
-                .OfType<Weapon>()
-                .FirstOrDefault(w => w.Id == weaponId);
+            var weapon = FindWeapon(weaponId);
 
             if (weapon == null)
                 throw new InvalidOperationException("Weapon not found.");
@@ -488,9 +508,9 @@ namespace RPGSystem.Services
 
             _character.EquipWeapon(weapon);
         }
-        public void UnequipWeapon()
+        public void UnequipWeapon(Guid weaponId)
         {
-            _character.UnequipWeapon();
+            _character.UnequipWeapon(weaponId);
         }
         public void EquipArmor(Guid armorId)
         {

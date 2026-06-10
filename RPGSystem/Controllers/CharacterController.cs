@@ -97,9 +97,11 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult RollAttack()
+        public IActionResult RollAttack(Guid? weaponId)
         {
-            var result = _characterService.RollAttack( _rollState.SelectedAdvantageState);
+            var result = weaponId.HasValue
+                ? _characterService.RollAttack(weaponId.Value, _rollState.SelectedAdvantageState)
+                : _characterService.RollAttack(_rollState.SelectedAdvantageState);
 
             _rollHistory.Insert(0, result);
 
@@ -127,6 +129,13 @@ namespace RPGSystem.Controllers
         public IActionResult EquipWeapon(Guid weaponId)
         {
             _characterService.EquipWeapon(weaponId);
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
+        public IActionResult UnequipWeapon(Guid weaponId)
+        {
+            _characterService.UnequipWeapon(weaponId);
+
             return RedirectToAction("Sheet");
         }
         [HttpPost]
