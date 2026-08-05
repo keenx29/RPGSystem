@@ -15,7 +15,7 @@ namespace RPGSystem.Services
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetFighterTestCharacter();
+            _character = GetBarbarianTestCharacter();
         }
         public Character GetCharacter()
         {
@@ -147,8 +147,12 @@ namespace RPGSystem.Services
                 Actor = ability.Name,
                 Type = RollType.Check,
                 DiceRoll = roll,
+                NaturalRoll = roll,
                 Modifier = ability.Modifier,
-                AppliedEffects = GetConditionRollEffects(RollType.Attack)
+                AdvantageType = finalAdvantage,
+                Formula = $"1d20 + {ability.Modifier} {ability.Name}",
+                Description = $"Ability check",
+                AppliedEffects = GetConditionRollEffects(RollType.Check, type)
             };
         }
         public RollResult RollSavingThrow(AbilityType type, AdvantageState adv)
@@ -162,8 +166,12 @@ namespace RPGSystem.Services
                 Actor = ability.Name,
                 Type = RollType.Save,
                 DiceRoll = roll,
+                NaturalRoll = roll,
                 Modifier = _character.GetSavingThrowBonus(ability),
-                AppliedEffects = GetConditionRollEffects(RollType.Save,type)
+                AdvantageType = finalAdvantage,
+                Formula = $"1d20 + {_character.GetSavingThrowBonus(ability)} {ability.Name} save",
+                Description = $"Saving throw",
+                AppliedEffects = GetConditionRollEffects(RollType.Save, type)
             };
         }
         public RollResult RollSkill(SkillType skillType, AdvantageState adv)
@@ -177,8 +185,12 @@ namespace RPGSystem.Services
                 Actor = skill.Name,
                 Type = RollType.Check,
                 DiceRoll = roll,
+                NaturalRoll = roll,
                 Modifier = skill.GetBonus(_character.GetProficiencyBonus()),
-                AppliedEffects = GetConditionRollEffects(RollType.Check)
+                AdvantageType = finalAdvantage,
+                Formula = $"1d20 + {skill.GetBonus(_character.GetProficiencyBonus())} {skill.Name}",
+                Description = $"{skill.Name} skill check",
+                AppliedEffects = GetConditionRollEffects(RollType.Check, skill.RelatedAbility.Type)
             };
         }
         public RollResult RollAttack(AdvantageState adv)
@@ -210,11 +222,13 @@ namespace RPGSystem.Services
                 Actor = weapon.Name,
                 Type = RollType.Attack,
                 DiceRoll = roll,
+                NaturalRoll = roll,
                 Modifier = modifier,
                 Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} Proficiency + {weapon.AttackBonus} Weapon Bonus",
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
-                AppliedEffects = GetConditionRollEffects(RollType.Attack)
+                AppliedEffects = GetConditionRollEffects(RollType.Attack),
+                AdvantageType = finalAdvantage,
             };
         }
         public RollResult RollDamage(Guid weaponId)

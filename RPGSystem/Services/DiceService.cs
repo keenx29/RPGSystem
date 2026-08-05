@@ -41,7 +41,7 @@ namespace RPGSystem.Services
 
             for (int i = 0; i < count; i++)
             {
-                total += new Random().Next(1, sides + 1);
+                total += _random.Next(1, sides + 1);
             }
 
             return total;

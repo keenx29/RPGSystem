@@ -20,8 +20,13 @@ namespace RPGSystem.Models.Rolls
         public string Description { get; set; } = "";
         public List<string> AppliedEffects { get; set; } = new();
         public Guid? SourceItemId { get; set; }
-        public bool IsCriticalSuccess => DiceRoll == 20;
-        public bool IsCriticalFailure => DiceRoll == 1;
+        public int? NaturalRoll { get; set; }
+
+        public bool IsCriticalSuccess =>
+            Type == RollType.Attack && NaturalRoll == 20;
+
+        public bool IsCriticalFailure =>
+            Type == RollType.Attack && NaturalRoll == 1;
         public bool CanRollDamage => Type == RollType.Attack;
         public bool CanRollCriticalDamage => CanRollDamage && IsCriticalSuccess;
         public bool IsCriticalDamage { get; set; }
