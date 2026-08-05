@@ -19,6 +19,7 @@ namespace RPGSystem.Models.Rolls
         public string Formula { get; set; } = "";
         public string Description { get; set; } = "";
         public List<string> AppliedEffects { get; set; } = new();
+        public List<RollExplanation> Explanations { get; set; } = new();
         public Guid? SourceItemId { get; set; }
         public int? NaturalRoll { get; set; }
 

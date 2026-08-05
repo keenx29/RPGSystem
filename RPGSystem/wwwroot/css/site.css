@@ -171,3 +171,18 @@ input[type=number] {
     margin-top: 0.5rem;
     margin-right: 0.25rem;
 }
+.roll-explanations {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}
+
+    .roll-explanations summary {
+        cursor: pointer;
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .roll-explanations ul {
+        padding-left: 1.1rem;
+        color: #6c757d;
+    }

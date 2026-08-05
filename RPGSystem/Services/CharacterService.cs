@@ -15,11 +15,19 @@ namespace RPGSystem.Services
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetBarbarianTestCharacter();
+            _character = GetRogueTestCharacter();
         }
         public Character GetCharacter()
         {
             return _character;
+        }
+        private class AdvantageResolution
+        {
+            public AdvantageState FinalState { get; set; } = AdvantageState.Normal;
+
+            public List<string> AppliedEffects { get; set; } = new();
+
+            public List<RollExplanation> Explanations { get; set; } = new();
         }
         private Weapon? FindWeapon(Guid weaponId)
         {
@@ -66,61 +74,111 @@ namespace RPGSystem.Services
 
             return effects;
         }
-        private AdvantageState ApplyConditionAdvantage(
+        private AdvantageResolution ResolveAdvantage(
     RollType rollType,
     AdvantageState selectedAdvantage,
     AbilityType? abilityType = null)
         {
+            var result = new AdvantageResolution();
+
             bool grantsAdvantage = false;
             bool grantsDisadvantage = false;
 
-            if (rollType == RollType.Attack)
-            {
-                if (_character.HasCondition(ConditionType.Poisoned) ||
-                    _character.HasCondition(ConditionType.Frightened))
-                {
-                    grantsDisadvantage = true;
-                }
-
-                if (_character.HasCondition(ConditionType.Invisible))
-                {
-                    grantsAdvantage = true;
-                }
-            }
-
-            if (rollType == RollType.Check)
-            {
-                if (_character.HasCondition(ConditionType.Poisoned) ||
-                    _character.HasCondition(ConditionType.Frightened))
-                {
-                    grantsDisadvantage = true;
-                }
-            }
-
-            if (rollType == RollType.Save && abilityType == AbilityType.Dexterity)
-            {
-                if (_character.HasCondition(ConditionType.Restrained))
-                {
-                    grantsDisadvantage = true;
-                }
-            }
-
             if (selectedAdvantage == AdvantageState.Advantage)
+            {
                 grantsAdvantage = true;
+                result.Explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Advantage,
+                    Source = "Manual Roll Mode",
+                    Text = "Player selected advantage for this roll."
+                });
+            }
 
             if (selectedAdvantage == AdvantageState.Disadvantage)
+            {
                 grantsDisadvantage = true;
+                result.Explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Disadvantage,
+                    Source = "Manual Roll Mode",
+                    Text = "Player selected disadvantage for this roll."
+                });
+            }
+
+            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
+                _character.HasCondition(ConditionType.Poisoned))
+            {
+                grantsDisadvantage = true;
+                result.AppliedEffects.Add("Poisoned");
+                result.Explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Condition,
+                    Source = "Poisoned",
+                    Text = "Poisoned gives disadvantage on attack rolls and ability checks."
+                });
+            }
+
+            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
+                _character.HasCondition(ConditionType.Frightened))
+            {
+                grantsDisadvantage = true;
+                result.AppliedEffects.Add("Frightened");
+                result.Explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Condition,
+                    Source = "Frightened",
+                    Text = "Frightened gives disadvantage on attack rolls and ability checks."
+                });
+            }
+
+            if (rollType == RollType.Attack &&
+                _character.HasCondition(ConditionType.Invisible))
+            {
+                grantsAdvantage = true;
+                result.AppliedEffects.Add("Invisible");
+                result.Explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Condition,
+                    Source = "Invisible",
+                    Text = "Invisible gives advantage on attack rolls."
+                });
+            }
+
+            if (rollType == RollType.Save &&
+                abilityType == AbilityType.Dexterity &&
+                _character.HasCondition(ConditionType.Restrained))
+            {
+                grantsDisadvantage = true;
+                result.AppliedEffects.Add("Restrained");
+                result.Explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Condition,
+                    Source = "Restrained",
+                    Text = "Restrained gives disadvantage on Dexterity saving throws."
+                });
+            }
 
             if (grantsAdvantage && grantsDisadvantage)
-                return AdvantageState.Normal;
+            {
+                result.FinalState = AdvantageState.Normal;
+                result.Explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Cancellation,
+                    Source = "Advantage Rules",
+                    Text = "Advantage and disadvantage cancel each other out."
+                });
 
-            if (grantsAdvantage)
-                return AdvantageState.Advantage;
+                return result;
+            }
 
-            if (grantsDisadvantage)
-                return AdvantageState.Disadvantage;
+            result.FinalState = grantsAdvantage
+                ? AdvantageState.Advantage
+                : grantsDisadvantage
+                    ? AdvantageState.Disadvantage
+                    : AdvantageState.Normal;
 
-            return AdvantageState.Normal;
+            return result;
         }
         public void AddCondition(ConditionType condition)
         {
@@ -139,9 +197,8 @@ namespace RPGSystem.Services
         public RollResult RollAbility(AbilityType type, AdvantageState adv)
         {
             var ability = _character.GetAbility(type);
-            var finalAdvantage = ApplyConditionAdvantage(RollType.Check, adv, type);
-            int roll = _diceService.RollD20(finalAdvantage);
-
+            var advantage = ResolveAdvantage(RollType.Check, adv, type);
+            int roll = _diceService.RollD20(advantage.FinalState);
             return new RollResult
             {
                 Actor = ability.Name,
@@ -149,18 +206,18 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = ability.Modifier,
-                AdvantageType = finalAdvantage,
                 Formula = $"1d20 + {ability.Modifier} {ability.Name}",
                 Description = $"Ability check",
-                AppliedEffects = GetConditionRollEffects(RollType.Check, type)
+                AdvantageType = advantage.FinalState,
+                AppliedEffects = advantage.AppliedEffects,
+                Explanations = advantage.Explanations
             };
         }
         public RollResult RollSavingThrow(AbilityType type, AdvantageState adv)
         {
             var ability = _character.GetAbility(type);
-            var finalAdvantage = ApplyConditionAdvantage(RollType.Save, adv, type);
-            int roll = _diceService.RollD20(finalAdvantage);
-
+            var advantage = ResolveAdvantage(RollType.Save, adv, type);
+            int roll = _diceService.RollD20(advantage.FinalState);
             return new RollResult
             {
                 Actor = ability.Name,
@@ -168,17 +225,18 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = _character.GetSavingThrowBonus(ability),
-                AdvantageType = finalAdvantage,
                 Formula = $"1d20 + {_character.GetSavingThrowBonus(ability)} {ability.Name} save",
                 Description = $"Saving throw",
-                AppliedEffects = GetConditionRollEffects(RollType.Save, type)
+                AdvantageType = advantage.FinalState,
+                AppliedEffects = advantage.AppliedEffects,
+                Explanations = advantage.Explanations
             };
         }
         public RollResult RollSkill(SkillType skillType, AdvantageState adv)
         {
             var skill = _character.GetSkill(skillType);
-            var finalAdvantage = ApplyConditionAdvantage(RollType.Check, adv, skill.RelatedAbility.Type);
-            int roll = _diceService.RollD20(finalAdvantage);
+            var advantage = ResolveAdvantage(RollType.Check, adv, skill.RelatedAbility.Type);
+            int roll = _diceService.RollD20(advantage.FinalState);
 
             return new RollResult
             {
@@ -187,10 +245,11 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = skill.GetBonus(_character.GetProficiencyBonus()),
-                AdvantageType = finalAdvantage,
                 Formula = $"1d20 + {skill.GetBonus(_character.GetProficiencyBonus())} {skill.Name}",
                 Description = $"{skill.Name} skill check",
-                AppliedEffects = GetConditionRollEffects(RollType.Check, skill.RelatedAbility.Type)
+                AdvantageType = advantage.FinalState,
+                AppliedEffects = advantage.AppliedEffects,
+                Explanations = advantage.Explanations
             };
         }
         public RollResult RollAttack(AdvantageState adv)
@@ -212,8 +271,8 @@ namespace RPGSystem.Services
 
             var ability = _character.GetAttackAbility(weapon);
 
-            var finalAdvantage = ApplyConditionAdvantage(RollType.Attack, adv);
-            int roll = _diceService.RollD20(finalAdvantage);
+            var advantage = ResolveAdvantage(RollType.Attack, adv);
+            int roll = _diceService.RollD20(advantage.FinalState);
 
             int modifier = ability.Modifier + _character.GetProficiencyBonus() + weapon.AttackBonus;
 
@@ -227,8 +286,9 @@ namespace RPGSystem.Services
                 Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} Proficiency + {weapon.AttackBonus} Weapon Bonus",
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
-                AppliedEffects = GetConditionRollEffects(RollType.Attack),
-                AdvantageType = finalAdvantage,
+                AppliedEffects = advantage.AppliedEffects,
+                Explanations = advantage.Explanations,
+                AdvantageType = advantage.FinalState
             };
         }
         public RollResult RollDamage(Guid weaponId)
@@ -254,6 +314,18 @@ namespace RPGSystem.Services
                 ? _diceService.DoubleDiceExpression(weapon.DamageDice)
                 : weapon.DamageDice;
 
+            var explanations = new List<RollExplanation>();
+            if (isCritical)
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Critical,
+                    Source = "Critical Hit",
+                    Text = "Critical damage doubles the weapon damage dice.",
+                    Dice = damageDice
+                });
+            }
+
             int roll = _diceService.RollDice(damageDice);
 
             int modifier = ability.Modifier;
@@ -264,6 +336,7 @@ namespace RPGSystem.Services
                 damageDice,
                 $"{ability.Modifier} {ability.Name}"
               };
+            
 
             var context = new RollContext
             {
@@ -282,7 +355,19 @@ namespace RPGSystem.Services
                     continue;
                 modifier += mod.FlatBonus;
                 if (mod.FlatBonus != 0)
+                {
                     formulaParts.Add($"{mod.FlatBonus} {mod.Source}");
+
+                    explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Bonus,
+                        Source = mod.Source,
+                        Text = string.IsNullOrWhiteSpace(mod.Description)
+                            ? $"{mod.Source} adds {mod.FlatBonus} damage."
+                            : mod.Description,
+                        Value = mod.FlatBonus
+                    });
+                }
 
                 if (!string.IsNullOrEmpty(mod.ExtraDice))
                 {
@@ -291,6 +376,16 @@ namespace RPGSystem.Services
                         : mod.ExtraDice;
                     formulaParts.Add($"{extraDice} {mod.Source}");
                     extraDamage += _diceService.RollDice(extraDice);
+
+                    explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.ExtraDice,
+                        Source = mod.Source,
+                        Text = string.IsNullOrWhiteSpace(mod.Description)
+                            ? $"{mod.Source} adds extra damage dice."
+                            : mod.Description,
+                        Dice = extraDice
+                    });
                 }
 
                 appliedEffects.Add(feature.Name);
@@ -308,7 +403,8 @@ namespace RPGSystem.Services
                     ? $"Critical damage roll with {weapon.Name}"
                     : $"Damage roll with {weapon.Name}",
                 AppliedEffects = appliedEffects,
-                IsCriticalDamage = isCritical
+                IsCriticalDamage = isCritical,
+                Explanations = explanations,
             };
         }
         public RollResult? UseSecondWind()
