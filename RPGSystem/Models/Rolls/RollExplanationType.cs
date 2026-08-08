@@ -11,6 +11,7 @@
         Critical,
         Condition,
         Feature,
-        Item
+        Item,
+        Ignored
     }
 }

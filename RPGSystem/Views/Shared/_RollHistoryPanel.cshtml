@@ -69,7 +69,7 @@
                     <ul class="mb-0 mt-2">
                         @foreach (var explanation in roll.Explanations)
                         {
-                            <li>
+                            <li class="@(explanation.Type == RollExplanationType.Ignored ? "text-muted" : "")">
                                 <strong>@explanation.Source:</strong>
                                 @explanation.Text
 

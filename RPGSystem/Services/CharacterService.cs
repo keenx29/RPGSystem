@@ -41,39 +41,6 @@ namespace RPGSystem.Services
                 .OfType<Weapon>()
                 .FirstOrDefault(w => w.Id == weaponId);
         }
-        private List<string> GetConditionRollEffects(
-    RollType rollType,
-    AbilityType? abilityType = null)
-        {
-            var effects = new List<string>();
-
-            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
-                _character.HasCondition(ConditionType.Poisoned))
-            {
-                effects.Add("Poisoned");
-            }
-
-            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
-                _character.HasCondition(ConditionType.Frightened))
-            {
-                effects.Add("Frightened");
-            }
-
-            if (rollType == RollType.Attack &&
-                _character.HasCondition(ConditionType.Invisible))
-            {
-                effects.Add("Invisible");
-            }
-
-            if (rollType == RollType.Save &&
-                abilityType == AbilityType.Dexterity &&
-                _character.HasCondition(ConditionType.Restrained))
-            {
-                effects.Add("Restrained");
-            }
-
-            return effects;
-        }
         private AdvantageResolution ResolveAdvantage(
     RollType rollType,
     AdvantageState selectedAdvantage,
@@ -336,13 +303,15 @@ namespace RPGSystem.Services
                 damageDice,
                 $"{ability.Modifier} {ability.Name}"
               };
-            
+
 
             var context = new RollContext
             {
                 Character = _character,
                 Weapon = weapon,
-                Type = RollType.Damage
+                Ability = ability,
+                Type = RollType.Damage,
+                IsCriticalDamage = isCritical
             };
 
             foreach (var feature in _character.ClassFeatures)
@@ -351,20 +320,35 @@ namespace RPGSystem.Services
                     continue;
 
                 var mod = feature.Modifier.Apply(context);
+
+                var source = string.IsNullOrWhiteSpace(mod.Source)
+                    ? feature.Name
+                    : mod.Source;
+
+                if (mod.WasIgnored)
+                {
+                    explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Ignored,
+                        Source = source,
+                        Text = mod.IgnoreReason
+                    });
+                }
+
                 if (!mod.HasEffect)
                     continue;
+
                 modifier += mod.FlatBonus;
+
                 if (mod.FlatBonus != 0)
                 {
-                    formulaParts.Add($"{mod.FlatBonus} {mod.Source}");
+                    formulaParts.Add($"{mod.FlatBonus} {source}");
 
                     explanations.Add(new RollExplanation
                     {
                         Type = RollExplanationType.Bonus,
-                        Source = mod.Source,
-                        Text = string.IsNullOrWhiteSpace(mod.Description)
-                            ? $"{mod.Source} adds {mod.FlatBonus} damage."
-                            : mod.Description,
+                        Source = source,
+                        Text = mod.Description,
                         Value = mod.FlatBonus
                     });
                 }
@@ -374,21 +358,22 @@ namespace RPGSystem.Services
                     var extraDice = isCritical
                         ? _diceService.DoubleDiceExpression(mod.ExtraDice)
                         : mod.ExtraDice;
-                    formulaParts.Add($"{extraDice} {mod.Source}");
+
+                    formulaParts.Add($"{extraDice} {source}");
                     extraDamage += _diceService.RollDice(extraDice);
 
                     explanations.Add(new RollExplanation
                     {
                         Type = RollExplanationType.ExtraDice,
-                        Source = mod.Source,
-                        Text = string.IsNullOrWhiteSpace(mod.Description)
-                            ? $"{mod.Source} adds extra damage dice."
+                        Source = source,
+                        Text = isCritical
+                            ? $"{mod.Description} Critical damage doubles these extra dice."
                             : mod.Description,
                         Dice = extraDice
                     });
                 }
 
-                appliedEffects.Add(feature.Name);
+                appliedEffects.Add(source);
             }
 
             return new RollResult
@@ -803,6 +788,14 @@ namespace RPGSystem.Services
         {
             new Weapon
             {
+                Name = "Greataxe",
+                AttackBonus = 1,
+                DamageDice = "1d12",
+                DamageType = "slashing",
+                ScalingType = WeaponScalingType.Strength
+            },
+            new Weapon
+            {
                 Name = "Shortbow",
                 AttackBonus = 1,
                 DamageDice = "1d6",
@@ -974,6 +967,14 @@ namespace RPGSystem.Services
                 DamageDice = "1d6",
                 DamageType = "piercing",
                 ScalingType = WeaponScalingType.Strength
+            },
+            new Weapon
+            {
+                Name = "Shortbow",
+                AttackBonus = 1,
+                DamageDice = "1d6",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Dexterity
             },
 
             new Armor

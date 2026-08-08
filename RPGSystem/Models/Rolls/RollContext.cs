@@ -8,6 +8,7 @@ namespace RPGSystem.Models.Rolls
         public Character Character { get; set; }
         public RollType Type { get; set; }
         public Weapon? Weapon { get; set; }
+        public Ability? Ability { get; set; }
         public bool IsCriticalDamage { get; set; }
     }
 }

@@ -15,23 +15,31 @@ namespace RPGSystem.Models.Classes.Features
         public RollModification Apply(RollContext context)
         {
             if (context.Type != RollType.Damage)
-                return new RollModification();
+                return RollModification.None();
 
             if (context.Weapon == null)
-                return new RollModification();
+            {
+                return RollModification.Ignored(
+                    RogueFeatures.SneakAttack,
+                    "Sneak Attack could not be applied because no weapon was found for this damage roll.");
+            }
 
             bool isValidWeapon =
                 context.Weapon.ScalingType == WeaponScalingType.Dexterity ||
                 context.Weapon.ScalingType == WeaponScalingType.Finesse;
 
             if (!isValidWeapon)
-                return new RollModification();
+            {
+                return RollModification.Ignored(
+                    RogueFeatures.SneakAttack,
+                    "Sneak Attack requires a finesse or dexterity-based weapon in this simplified rules model.");
+            }
 
             return new RollModification
             {
                 ExtraDice = $"{_dice}d6",
                 Source = RogueFeatures.SneakAttack,
-                Description = $"{_dice}d6 sneak attack"
+                Description = $"Sneak Attack adds {_dice}d6 extra damage."
             };
         }
     }
