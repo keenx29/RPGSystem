@@ -27,6 +27,24 @@ namespace RPGSystem.Services
 
             _character = _characters.First();
         }
+        private RollResult CreateFeatureResult(
+            string featureName,
+            string description,
+            List<string>? appliedEffects = null,
+            List<RollExplanation>? explanations = null)
+        {
+            return new RollResult
+            {
+                Actor = featureName,
+                Type = RollType.Feature,
+                DiceRoll = 0,
+                Modifier = 0,
+                Formula = "",
+                Description = description,
+                AppliedEffects = appliedEffects ?? new List<string>(),
+                Explanations = explanations ?? new List<RollExplanation>()
+            };
+        }
         public IReadOnlyList<Character> GetCharacters()
         {
             return _characters;
@@ -435,6 +453,18 @@ namespace RPGSystem.Services
                 Type = RollType.Heal,
                 DiceRoll = roll,
                 Modifier = _character.Level,
+                Formula = $"1d10 + {_character.Level} Fighter level",
+                Description = $"Heal roll using Second Wind",
+                AppliedEffects = new List<string> { FighterFeatures.SecondWind },
+                Explanations = new List<RollExplanation>
+                {
+                    new RollExplanation
+                    {
+                        Type = RollExplanationType.Feature,
+                        Source = FighterFeatures.SecondWind,
+                        Text = "Second Wind restores 1d10 + fighter level hit points."
+                    }
+                }
             };
         }
         public void ToggleFeature(string name)
@@ -521,7 +551,19 @@ namespace RPGSystem.Services
                     return result;
 
                 case FighterFeatures.ActionSurge:
-                    break;
+                    return CreateFeatureResult(
+                        FighterFeatures.ActionSurge,
+                        "You gain one additional action on your turn.",
+                        new List<string> { "Additional Action" },
+                        new List<RollExplanation>
+                        {
+                            new RollExplanation
+                            {
+                                Type = RollExplanationType.Feature,
+                                Source = FighterFeatures.ActionSurge,
+                                Text = "Action Surge lets the fighter take one additional action on their turn."
+                            }
+                        });
 
                 case MonkFeatures.FlurryOfBlows:
                     break;
@@ -667,7 +709,7 @@ namespace RPGSystem.Services
             var character = new Character
             {
                 Name = "Tyrion",
-                Level = 4,
+                Level = 5,
                 HitDiceRemaining = 4,
                 MovementSpeed = 30,
                 ClassType = CharacterClassType.Fighter,

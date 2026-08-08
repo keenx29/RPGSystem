@@ -30,13 +30,16 @@
                 </div>
             }
 
-            <div class="roll-total">
-                @roll.Total
-            </div>
+            @if (roll.Type != RollType.Feature)
+            {
+                <div class="roll-total">
+                    @roll.Total
+                </div>
 
-            <div class="roll-breakdown">
-                @roll.DiceRoll + @roll.Modifier
-            </div>
+                <div class="roll-breakdown">
+                    @roll.DiceRoll + @roll.Modifier
+                </div>
+            }
 
             @if (!string.IsNullOrWhiteSpace(roll.Formula))
             {

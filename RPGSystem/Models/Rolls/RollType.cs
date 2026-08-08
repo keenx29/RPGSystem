@@ -9,5 +9,6 @@
         Save,
         Initiative,
         MaxHP,
+        Feature
     }
 }
