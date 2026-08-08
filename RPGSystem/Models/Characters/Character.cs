@@ -8,6 +8,7 @@ namespace RPGSystem.Models.Characters
     public class Character
     {
         // Identity
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = "";
         public CharacterClassType ClassType { get; set; }
 

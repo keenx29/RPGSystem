@@ -42,8 +42,27 @@
 
                 </div>
             </form>
-            <div>
-                <h1>@Model.Character.Name</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h1 class="mb-0">@Model.Character.Name</h1>
+                    <small class="text-muted">
+                        Level @Model.Character.Level @Model.Character.ClassType
+                    </small>
+                </div>
+
+                <form asp-action="SelectCharacter" method="post" class="m-0">
+                    <select name="characterId"
+                            class="form-select"
+                            onchange="this.form.submit()">
+                        @foreach (var character in Model.AvailableCharacters)
+                        {
+                            <option value="@character.Id"
+                                    selected="@(character.Id == Model.SelectedCharacterId)">
+                                @character.Name - Level @character.Level @character.ClassType
+                            </option>
+                        }
+                    </select>
+                </form>
             </div>
             @* Ability Cards *@
             <div class="d-flex flex-wrap">

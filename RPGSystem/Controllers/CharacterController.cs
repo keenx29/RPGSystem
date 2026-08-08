@@ -27,15 +27,28 @@ namespace RPGSystem.Controllers
         [HttpGet]
         public IActionResult Sheet()
         {
+            var character = _characterService.GetCharacter();
             var vm = new CharacterSheetViewModel
             {
-                Character = _characterService.GetCharacter(),
+                Character = character,
                 HitDie = _characterService.GetHitDie(),
                 RollHistory = _rollHistory,
-                SelectedAdvantageState = _rollState.SelectedAdvantageState
+                SelectedAdvantageState = _rollState.SelectedAdvantageState,
+                AvailableCharacters = _characterService.GetCharacters().ToList(),
+                SelectedCharacterId = character.Id
             };
             
             return View(vm);
+        }
+        [HttpPost]
+        public IActionResult SelectCharacter(Guid characterId)
+        {
+            _characterService.SelectCharacter(characterId);
+
+            _rollHistory.Clear();
+            _rollState.SelectedAdvantageState = AdvantageState.Normal;
+
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult AddCondition(ConditionType condition)

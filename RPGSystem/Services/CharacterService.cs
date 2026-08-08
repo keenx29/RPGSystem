@@ -9,13 +9,37 @@ namespace RPGSystem.Services
 {
     public class CharacterService
     {
-        private readonly Character _character;
+        private readonly List<Character> _characters;
+        private Character _character;
         private readonly DiceService _diceService;
 
         public CharacterService(DiceService diceService)
         {
             _diceService = diceService;
-            _character = GetRogueTestCharacter();
+
+            _characters = new List<Character>
+            {
+                GetFighterTestCharacter(),
+                GetRogueTestCharacter(),
+                GetBarbarianTestCharacter(),
+                GetMonkTestCharacter()
+            };
+
+            _character = _characters.First();
+        }
+        public IReadOnlyList<Character> GetCharacters()
+        {
+            return _characters;
+        }
+
+        public void SelectCharacter(Guid characterId)
+        {
+            var character = _characters.FirstOrDefault(c => c.Id == characterId);
+
+            if (character == null)
+                return;
+
+            _character = character;
         }
         public Character GetCharacter()
         {
