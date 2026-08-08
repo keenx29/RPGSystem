@@ -92,7 +92,63 @@ namespace RPGSystem.Services
 
             bool grantsAdvantage = false;
             bool grantsDisadvantage = false;
+            var recklessAttack = _character.GetFeature(BarbarianFeatures.RecklessAttack);
 
+            if (rollType == RollType.Attack && recklessAttack?.IsActive == true)
+            {
+                if (abilityType == AbilityType.Strength)
+                {
+                    grantsAdvantage = true;
+                    result.AppliedEffects.Add(BarbarianFeatures.RecklessAttack);
+                    result.Explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Advantage,
+                        Source = BarbarianFeatures.RecklessAttack,
+                        Text = "Reckless Attack gives advantage on Strength-based melee weapon attack rolls."
+                    });
+                }
+                else
+                {
+                    result.Explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Ignored,
+                        Source = BarbarianFeatures.RecklessAttack,
+                        Text = "Reckless Attack was active but did not apply because this attack does not use Strength."
+                    });
+                }
+            }
+            var dangerSense = _character.GetFeature(BarbarianFeatures.DangerSense);
+
+            if (rollType == RollType.Save &&
+                abilityType == AbilityType.Dexterity &&
+                dangerSense != null)
+            {
+                bool blocked =
+                    _character.HasCondition(ConditionType.Blinded) ||
+                    _character.HasCondition(ConditionType.Deafened) ||
+                    _character.HasCondition(ConditionType.Incapacitated);
+
+                if (blocked)
+                {
+                    result.Explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Ignored,
+                        Source = BarbarianFeatures.DangerSense,
+                        Text = "Danger Sense did not apply because the character is blinded, deafened, or incapacitated."
+                    });
+                }
+                else
+                {
+                    grantsAdvantage = true;
+                    result.AppliedEffects.Add(BarbarianFeatures.DangerSense);
+                    result.Explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Advantage,
+                        Source = BarbarianFeatures.DangerSense,
+                        Text = "Danger Sense gives advantage on Dexterity saving throws in this simplified rules model."
+                    });
+                }
+            }
             if (selectedAdvantage == AdvantageState.Advantage)
             {
                 grantsAdvantage = true;
@@ -280,7 +336,7 @@ namespace RPGSystem.Services
 
             var ability = _character.GetAttackAbility(weapon);
 
-            var advantage = ResolveAdvantage(RollType.Attack, adv);
+            var advantage = ResolveAdvantage(RollType.Attack, adv, ability.Type);
             int roll = _diceService.RollD20(advantage.FinalState);
 
             int modifier = ability.Modifier + _character.GetProficiencyBonus() + weapon.AttackBonus;
@@ -467,21 +523,39 @@ namespace RPGSystem.Services
                 }
             };
         }
-        public void ToggleFeature(string name)
+        public RollResult? ToggleFeature(string name)
         {
             var feature = _character.ClassFeatures
                 .FirstOrDefault(f => f.Name == name);
 
             if (feature == null)
-                return;
-            if (!feature.IsActive && !feature.IsAvailable && feature.MaxUses > 0)
-                return;
-            if (!feature.IsActive)
+                return null;
+            if (!feature.IsActive && feature.MaxUses > 0)
             {
+                if (!feature.IsAvailable)
+                    return null;
+
                 feature.UsesRemaining--;
             }
-            
+
             feature.IsActive = !feature.IsActive;
+            return CreateFeatureResult(
+                feature.Name,
+                feature.IsActive
+                    ? $"{feature.Name} is now active."
+                    : $"{feature.Name} is no longer active.",
+                new List<string> { feature.IsActive ? "Active" : "Inactive" },
+                new List<RollExplanation>
+                {
+                    new RollExplanation
+                    {
+                        Type = RollExplanationType.Feature,
+                        Source = feature.Name,
+                        Text = feature.IsActive
+                            ? $"{feature.Name} has been enabled."
+                            : $"{feature.Name} has been disabled."
+                    }
+                });
         }
         public RollResult? UseItem(Guid itemId)
         {

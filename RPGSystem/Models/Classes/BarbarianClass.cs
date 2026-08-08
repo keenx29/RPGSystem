@@ -26,6 +26,23 @@ namespace RPGSystem.Models.Classes
                     ResetType = FeatureResetType.LongRest
                 });
             }
+            if (level >= 2)
+            {
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = BarbarianFeatures.RecklessAttack,
+                    ActionType = FeatureActionType.Toggle,
+                    IsActive = false,
+                    ResetType = FeatureResetType.None
+                });
+
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = BarbarianFeatures.DangerSense,
+                    ActionType = FeatureActionType.None,
+                    ResetType = FeatureResetType.None
+                });
+            }
 
             return features;
         }

@@ -221,7 +221,10 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult ToggleFeature(string featureName)
         {
-            _characterService.ToggleFeature(featureName);
+            var result = _characterService.ToggleFeature(featureName);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
         }
