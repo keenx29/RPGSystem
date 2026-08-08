@@ -1174,7 +1174,8 @@ namespace RPGSystem.Services
             {
                 Name = "Ki",
                 Current = 4,
-                Max = 4
+                Max = 4,
+                ResetType = FeatureResetType.ShortRest
             }
         }
             };

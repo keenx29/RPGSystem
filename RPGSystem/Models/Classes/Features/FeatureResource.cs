@@ -7,5 +7,6 @@
         public int Current { get; set; }
 
         public int Max { get; set; }
+        public FeatureResetType ResetType { get; set; } = FeatureResetType.None;
     }
 }

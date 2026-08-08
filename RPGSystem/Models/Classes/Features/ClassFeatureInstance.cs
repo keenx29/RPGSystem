@@ -11,7 +11,7 @@ namespace RPGSystem.Models.Classes.Features
         public int MaxUses { get; set; }
         public string? ResourceName { get; set; }
         public int ResourceCost { get; set; }
-
+        public FeatureResetType ResetType { get; set; } = FeatureResetType.None;
         public bool IsAvailable => (UsesRemaining > 0);
         public bool IsActive { get; set; }
         public ICombatModifier? Modifier { get; set; }

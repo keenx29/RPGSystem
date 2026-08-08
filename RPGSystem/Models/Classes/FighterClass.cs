@@ -20,6 +20,7 @@ namespace RPGSystem.Models.Classes
                     UsesRemaining = 1,
                     MaxUses = 1,
                     ActionType = FeatureActionType.Use,
+                    ResetType = FeatureResetType.ShortRest,
                 });
 
             if (level >= 2)
@@ -29,6 +30,7 @@ namespace RPGSystem.Models.Classes
                     UsesRemaining = 1,
                     MaxUses = 1,
                     ActionType = FeatureActionType.Use,
+                    ResetType = FeatureResetType.ShortRest,
                 });
 
             if (level >= 5)
@@ -38,6 +40,7 @@ namespace RPGSystem.Models.Classes
                     UsesRemaining = 0,
                     MaxUses = 0,
                     ActionType = FeatureActionType.None,
+                    ResetType = FeatureResetType.None
                 });
 
             return features;

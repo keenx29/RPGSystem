@@ -186,32 +186,24 @@ namespace RPGSystem.Models.Characters
         }
         public void UseFeature(string name, Action<ClassFeatureInstance> effect)
         {
-            //TODO: future generic feature system
+            //TODO: future generic feature system (maybe)
         }
         public void ShortRest()
         {
-            foreach (var feature in ClassFeatures)
-            {
-                if (feature.Name == FighterFeatures.SecondWind ||
-                    feature.Name == FighterFeatures.ActionSurge)
-                {
-                    feature.UsesRemaining = feature.MaxUses;
-                }
-            }
-            RestoreAllResources();
+            //TODO: Hit Dice System
+            RestoreFeatureUsesForShortRest();
+            RestoreResourcesForShortRest();
         }
         public void LongRest()
         {
             CurrentHP = MaxHP;
 
-            foreach (var feature in ClassFeatures)
-            {
-                feature.UsesRemaining = feature.MaxUses;
-            }
-            RestoreAllResources();
+            RestoreFeatureUsesForLongRest();
+            RestoreResourcesForLongRest();
 
             int hitDiceToRestore = Math.Max(1, MaxHitDice / 2);
             RestoreHitDice(hitDiceToRestore);
+
             ResetDeathSaves();
         }
         public void LevelUp(int hpGain)
@@ -307,6 +299,51 @@ namespace RPGSystem.Models.Characters
         private int GetShieldBonus()
         {
             return EquippedShield != null ? EquippedShield.BaseArmorClass : 0;
+        }
+        private static bool ResetsOnShortRest(FeatureResetType resetType)
+        {
+            return resetType == FeatureResetType.ShortRest;
+        }
+
+        private static bool ResetsOnLongRest(FeatureResetType resetType)
+        {
+            return resetType == FeatureResetType.ShortRest ||
+                   resetType == FeatureResetType.LongRest;
+        }
+        private void RestoreFeatureUsesForShortRest()
+        {
+            foreach (var feature in ClassFeatures)
+            {
+                if (ResetsOnShortRest(feature.ResetType))
+                    feature.UsesRemaining = feature.MaxUses;
+            }
+        }
+
+        private void RestoreFeatureUsesForLongRest()
+        {
+            foreach (var feature in ClassFeatures)
+            {
+                if (ResetsOnLongRest(feature.ResetType))
+                    feature.UsesRemaining = feature.MaxUses;
+            }
+        }
+
+        private void RestoreResourcesForShortRest()
+        {
+            foreach (var resource in FeatureResources)
+            {
+                if (ResetsOnShortRest(resource.ResetType))
+                    resource.Current = resource.Max;
+            }
+        }
+
+        private void RestoreResourcesForLongRest()
+        {
+            foreach (var resource in FeatureResources)
+            {
+                if (ResetsOnLongRest(resource.ResetType))
+                    resource.Current = resource.Max;
+            }
         }
     }
 }

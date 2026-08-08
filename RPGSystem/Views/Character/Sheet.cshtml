@@ -512,7 +512,8 @@
                                 <small class="text-muted">
                                     (@feature.UsesRemaining / @feature.MaxUses)
                                 </small>
-                            }else if ((feature.ResourceCost > 0 && Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current > 0))
+                            }
+                            else if ((feature.ResourceCost > 0 && Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current > 0))
                             {
                                 <small class="text-muted">
                                     (@Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current / @Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Max)
@@ -524,6 +525,13 @@
                                 <span class="badge @(feature.IsActive ? "bg-success" : "bg-secondary")">
                                     @(feature.IsActive ? "ON" : "OFF")
                                 </span>
+                            }
+
+                            @if (feature.ResetType != FeatureResetType.None)
+                            {
+                                <small class="text-muted">
+                                    Resets on @feature.ResetType
+                                </small>
                             }
 
                         </div>
@@ -581,7 +589,12 @@
                         <span>
                             @resource.Current / @resource.Max
                         </span>
-
+                        @if (resource.ResetType != FeatureResetType.None)
+                        {
+                            <small class="text-muted">
+                                Resets on @resource.ResetType
+                            </small>
+                        }
                     </div>
                 }
 

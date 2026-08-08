@@ -22,7 +22,8 @@ namespace RPGSystem.Models.Classes
                     IsActive = false,
                     UsesRemaining = 2,
                     MaxUses = 2,
-                    Modifier = new RageModifier(2)
+                    Modifier = new RageModifier(2),
+                    ResetType = FeatureResetType.LongRest
                 });
             }
 
