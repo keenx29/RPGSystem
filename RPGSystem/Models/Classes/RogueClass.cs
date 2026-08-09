@@ -22,6 +22,15 @@ namespace RPGSystem.Models.Classes
                     Modifier = new SneakAttackModifier(GetSneakAttackDice(level)),
                 });
             }
+            if (level >= 2)
+            {
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = RogueFeatures.CunningAction,
+                    ActionType = FeatureActionType.Use,
+                    ResetType = FeatureResetType.None
+                });
+            }
 
             return features;
         }

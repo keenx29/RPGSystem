@@ -302,19 +302,50 @@ namespace RPGSystem.Services
             var skill = _character.GetSkill(skillType);
             var advantage = ResolveAdvantage(RollType.Check, adv, skill.RelatedAbility.Type);
             int roll = _diceService.RollD20(advantage.FinalState);
+            var proficiencyBonus = _character.GetProficiencyBonus();
+            var skillBonus = skill.GetBonus(proficiencyBonus);
 
+            var formula = $"1d20 + {skill.RelatedAbility.Modifier} {skill.RelatedAbility.Name}";
+
+            if (skill.IsExpertise)
+                formula += $" + {proficiencyBonus * 2} Expertise";
+            else if (skill.IsProficient)
+                formula += $" + {proficiencyBonus} Proficiency";
+
+            var explanations = advantage.Explanations;
+
+            if (skill.IsExpertise)
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Bonus,
+                    Source = RogueFeatures.Expertise,
+                    Text = "Expertise doubles the proficiency bonus for this skill.",
+                    Value = proficiencyBonus * 2
+                });
+            }
+            else if (skill.IsProficient)
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Bonus,
+                    Source = "Proficiency",
+                    Text = "Proficiency bonus is added to this skill check.",
+                    Value = proficiencyBonus
+                });
+            }
             return new RollResult
             {
                 Actor = skill.Name,
                 Type = RollType.Check,
                 DiceRoll = roll,
                 NaturalRoll = roll,
-                Modifier = skill.GetBonus(_character.GetProficiencyBonus()),
-                Formula = $"1d20 + {skill.GetBonus(_character.GetProficiencyBonus())} {skill.Name}",
+                Modifier = skillBonus,
+                Formula = formula,
                 Description = $"{skill.Name} skill check",
                 AdvantageType = advantage.FinalState,
                 AppliedEffects = advantage.AppliedEffects,
-                Explanations = advantage.Explanations
+                Explanations = explanations,
             };
         }
         public RollResult RollAttack(AdvantageState adv)
@@ -590,7 +621,8 @@ namespace RPGSystem.Services
                     if (!feature.IsAvailable)
                         return null;
 
-                    feature.UsesRemaining--;
+                    if (feature.MaxUses > 0)
+                        feature.UsesRemaining--;
 
                     var result = HandleFeatureEffect(feature);
 
@@ -636,6 +668,21 @@ namespace RPGSystem.Services
                                 Type = RollExplanationType.Feature,
                                 Source = FighterFeatures.ActionSurge,
                                 Text = "Action Surge lets the fighter take one additional action on their turn."
+                            }
+                        });
+
+                case RogueFeatures.CunningAction:
+                    return CreateFeatureResult(
+                        RogueFeatures.CunningAction,
+                        "You can take Dash, Disengage, or Hide as a bonus action.",
+                        new List<string> { "Bonus Action" },
+                        new List<RollExplanation>
+                        {
+                            new RollExplanation
+                            {
+                                Type = RollExplanationType.Feature,
+                                Source = RogueFeatures.CunningAction,
+                                Text = "Cunning Action lets the rogue use Dash, Disengage, or Hide as a bonus action."
                             }
                         });
 
@@ -883,7 +930,8 @@ namespace RPGSystem.Services
                 Name = "Stealth",
                 Type = SkillType.Stealth,
                 RelatedAbility = dexterity,
-                IsProficient = true
+                IsProficient = true,
+                IsExpertise = true
             },
             new Skill
             {
@@ -904,7 +952,8 @@ namespace RPGSystem.Services
                 Name = "Sleight of Hand",
                 Type = SkillType.SleightOfHand,
                 RelatedAbility = dexterity,
-                IsProficient = true
+                IsProficient = true,
+                IsExpertise = true
             }
         },
 
