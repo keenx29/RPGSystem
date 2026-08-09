@@ -389,15 +389,15 @@ namespace RPGSystem.Services
         }
         public RollResult RollDamage(Guid weaponId)
         {
-            return RollDamage(weaponId,isCritical: false);
+            return RollDamage(weaponId, isCritical: false);
         }
 
         public RollResult RollCriticalDamage(Guid weaponId)
         {
-            return RollDamage(weaponId,isCritical: true);
+            return RollDamage(weaponId, isCritical: true);
         }
 
-        private RollResult RollDamage(Guid weaponId,bool isCritical)
+        private RollResult RollDamage(Guid weaponId, bool isCritical)
         {
             var weapon = FindWeapon(weaponId);
 
@@ -525,7 +525,7 @@ namespace RPGSystem.Services
         {
             var feature = _character.GetFeature(FighterFeatures.SecondWind);
 
-            if (feature == null )
+            if (feature == null)
                 return null;
 
             int roll = _diceService.RollDice("1d10");
@@ -596,7 +596,7 @@ namespace RPGSystem.Services
                 Character = _character,
                 DiceService = _diceService,
             };
-            if (item != null && item.Effect != null)    
+            if (item != null && item.Effect != null)
             {
                 var result = item.Effect.Apply(context);
                 if (result != null)
@@ -687,13 +687,49 @@ namespace RPGSystem.Services
                         });
 
                 case MonkFeatures.FlurryOfBlows:
-                    break;
+                    return CreateFeatureResult(
+                        MonkFeatures.FlurryOfBlows,
+                        "Spent 1 Ki to make two unarmed strikes as a bonus action after taking the Attack action.",
+                        new List<string> { "Bonus Action" },
+                        new List<RollExplanation>
+                        {
+                            new RollExplanation
+                            {
+                                Type = RollExplanationType.Feature,
+                                Source = MonkFeatures.FlurryOfBlows,
+                                Text = "Flurry of Blows lets the monk spend 1 Ki to make two unarmed strikes as a bonus action."
+                            }
+                        });
 
                 case MonkFeatures.PatientDefense:
-                    break;
+                    return CreateFeatureResult(
+                        MonkFeatures.PatientDefense,
+                        "Spent 1 Ki to take the Dodge action as a bonus action.",
+                        new List<string> { "Bonus Action" },,
+                        new List<RollExplanation>
+                        {
+                            new RollExplanation
+                            {
+                                Type = RollExplanationType.Feature,
+                                Source = MonkFeatures.PatientDefense,
+                                Text = "Patient Defense lets the monk spend 1 Ki to take the Dodge action as a bonus action."
+                            }
+                        });
 
                 case MonkFeatures.StepOfTheWind:
-                    break;
+                    return CreateFeatureResult(
+                        MonkFeatures.StepOfTheWind,
+                        "Spent 1 Ki to Dash or Disengage as a bonus action.",
+                        new List<string> { "Bonus Action" },
+                        new List<RollExplanation>
+                        {
+                            new RollExplanation
+                            {
+                                Type = RollExplanationType.Feature,
+                                Source = MonkFeatures.StepOfTheWind,
+                                Text = "Step of the Wind lets the monk spend 1 Ki to Dash or Disengage as a bonus action."
+                            }
+                        });
                 default:
                     break;
             }
@@ -819,10 +855,10 @@ namespace RPGSystem.Services
         }
         public Character GetFighterTestCharacter()
         {
-            var strength = new Ability { Name = "Strength", Type=AbilityType.Strength, Score = 16, IsSavingThrowProficient=true};
-            var dexterity = new Ability { Name = "Dexterity", Type=AbilityType.Dexterity, Score = 14 };
-            var constitution = new Ability { Name = "Constitution", Type=AbilityType.Constitution, Score = 14, IsSavingThrowProficient = true };
-            var intelligence = new Ability { Name = "Intelligence",Type=AbilityType.Intelligence, Score = 10 };
+            var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 16, IsSavingThrowProficient = true };
+            var dexterity = new Ability { Name = "Dexterity", Type = AbilityType.Dexterity, Score = 14 };
+            var constitution = new Ability { Name = "Constitution", Type = AbilityType.Constitution, Score = 14, IsSavingThrowProficient = true };
+            var intelligence = new Ability { Name = "Intelligence", Type = AbilityType.Intelligence, Score = 10 };
             var wisdom = new Ability { Name = "Wisdom", Type = AbilityType.Wisdom, Score = 12 };
             var charisma = new Ability { Name = "Charisma", Type = AbilityType.Charisma, Score = 8 };
 
@@ -861,21 +897,21 @@ namespace RPGSystem.Services
                     Name = "Leather Tunic",
                     BaseArmorClass = 13,
                     ArmorType = ArmorType.Light,
-                    
+
                 },
                 Inventory = new List<Item>
                 {
-                    new Weapon 
-                    { 
+                    new Weapon
+                    {
                         Name= "Rapier",
                         AttackBonus = 1,
                         DamageDice = "1d8",
                         DamageType="piercing",
                         ScalingType= WeaponScalingType.Finesse,
                     },
-                    new Armor 
-                    { 
-                        Name="Chainmail", 
+                    new Armor
+                    {
+                        Name="Chainmail",
                         BaseArmorClass=15
                     },
                     new Armor
@@ -1250,46 +1286,48 @@ namespace RPGSystem.Services
                 ClassType = CharacterClassType.Monk,
 
                 Abilities = new List<Ability>
-        {
-            strength, dexterity, constitution,
-            intelligence, wisdom, charisma
-        },
+                {
+                    strength, dexterity, constitution,
+                    intelligence, wisdom, charisma
+                },
 
                 Skills = new List<Skill>
-        {
-            new Skill
-            {
-                Name = "Acrobatics",
-                Type = SkillType.Acrobatics,
-                RelatedAbility = dexterity,
-                IsProficient = true
-            },
+                {
+                    new Skill
+                    {
+                        Name = "Acrobatics",
+                        Type = SkillType.Acrobatics,
+                        RelatedAbility = dexterity,
+                        IsProficient = true
+                    },
 
-            new Skill
-            {
-                Name = "Stealth",
-                Type = SkillType.Stealth,
-                RelatedAbility = dexterity,
-                IsProficient = true
-            },
+                    new Skill
+                    {
+                        Name = "Stealth",
+                        Type = SkillType.Stealth,
+                        RelatedAbility = dexterity,
+                        IsProficient = true
+                    },
 
-            new Skill
-            {
-                Name = "Perception",
-                Type = SkillType.Perception,
-                RelatedAbility = wisdom,
-                IsProficient = true
-            },
+                    new Skill
+                    {
+                        Name = "Perception",
+                        Type = SkillType.Perception,
+                        RelatedAbility = wisdom,
+                        IsProficient = true
+                    },
 
-            new Skill
-            {
-                Name = "Athletics",
-                Type = SkillType.Athletics,
-                RelatedAbility = strength
-            }
-        },
+                    new Skill
+                    {
+                        Name = "Athletics",
+                        Type = SkillType.Athletics,
+                        RelatedAbility = strength
+                    }
+                },
 
-                EquippedWeapon = new Weapon
+                EquippedWeapons = new List<Weapon>
+            {
+                new Weapon
                 {
                     Name = "Quarterstaff",
                     AttackBonus = 1,
@@ -1297,6 +1335,15 @@ namespace RPGSystem.Services
                     DamageType = "bludgeoning",
                     ScalingType = WeaponScalingType.Dexterity
                 },
+                new Weapon
+                {
+                    Name = "Unarmed Strike",
+                    AttackBonus = 0,
+                    DamageDice = "1d4",
+                    DamageType = "bludgeoning",
+                    ScalingType = WeaponScalingType.Dexterity
+                }
+            },
 
 
                 Inventory = new List<Item>
@@ -1328,7 +1375,7 @@ namespace RPGSystem.Services
             new Item
             {
                 Name = "Healing Potion",
-                Type = ItemType.Consumable, 
+                Type = ItemType.Consumable,
                 Effect = new HealEffect("2d4+2")
             }
         },

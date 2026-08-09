@@ -12,9 +12,24 @@ namespace RPGSystem.Models.Classes
         public override List<ClassFeatureInstance> GetFeaturesForLevel(int level)
         {
             var features = new List<ClassFeatureInstance>();
-
+            if (level >= 1)
+            {
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = MonkFeatures.MartialArts,
+                    ActionType = FeatureActionType.None,
+                    ResetType = FeatureResetType.None
+                });
+            }
             if (level >= 2)
             {
+                features.Add(new ClassFeatureInstance
+                {
+                    Name = MonkFeatures.UnarmoredMovement,
+                    ActionType = FeatureActionType.None,
+                    ResetType = FeatureResetType.None
+                });
+
                 features.Add(new ClassFeatureInstance
                 {
                     Name = MonkFeatures.FlurryOfBlows,
