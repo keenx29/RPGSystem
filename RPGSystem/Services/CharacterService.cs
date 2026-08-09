@@ -624,9 +624,16 @@ namespace RPGSystem.Services
                     if (feature.MaxUses > 0)
                         feature.UsesRemaining--;
 
-                    var result = HandleFeatureEffect(feature);
+                    if (feature.Action != null)
+                    {
+                        return feature.Action.Execute(
+                            _character,
+                            feature,
+                            _diceService);
+                    }
 
-                    return result;
+                    return HandleFeatureEffect(feature);
+
 
                 case FeatureActionType.ResourceUse:
 
@@ -642,10 +649,17 @@ namespace RPGSystem.Services
                     if (!success)
                         return null;
 
-                    result = HandleFeatureEffect(feature);
+                    if (feature.Action != null)
+                    {
+                        return feature.Action.Execute(
+                            _character,
+                            feature,
+                            _diceService);
+                    }
 
-                    return result;
+                    return HandleFeatureEffect(feature);
             }
+
             return null;
         }
         private RollResult? HandleFeatureEffect(ClassFeatureInstance feature)
@@ -705,7 +719,7 @@ namespace RPGSystem.Services
                     return CreateFeatureResult(
                         MonkFeatures.PatientDefense,
                         "Spent 1 Ki to take the Dodge action as a bonus action.",
-                        new List<string> { "Bonus Action" },,
+                        new List<string> { "Bonus Action" },
                         new List<RollExplanation>
                         {
                             new RollExplanation

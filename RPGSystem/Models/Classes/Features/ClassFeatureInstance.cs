@@ -15,6 +15,7 @@ namespace RPGSystem.Models.Classes.Features
         public bool IsAvailable => MaxUses == 0 || UsesRemaining > 0;
         public bool IsActive { get; set; }
         public ICombatModifier? Modifier { get; set; }
+        public IFeatureAction? Action { get; set; }
         public FeatureActionType ActionType { get; set; }
 
     }

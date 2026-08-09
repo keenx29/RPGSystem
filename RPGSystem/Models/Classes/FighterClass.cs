@@ -1,4 +1,5 @@
 ﻿using RPGSystem.Models.Classes.Features;
+using RPGSystem.Models.Classes.Features.Actions;
 
 namespace RPGSystem.Models.Classes
 {
@@ -21,6 +22,7 @@ namespace RPGSystem.Models.Classes
                     MaxUses = 1,
                     ActionType = FeatureActionType.Use,
                     ResetType = FeatureResetType.ShortRest,
+                    Action = new SecondWindAction()
                 });
 
             if (level >= 2)
