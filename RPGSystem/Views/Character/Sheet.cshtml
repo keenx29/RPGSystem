@@ -228,6 +228,20 @@
                                         <span class="equipped-name">@weapon.Name
                                             <span class="text-muted">@weapon.ScalingType</span>
                                         </span>
+                                        @{
+                                            var attackBonus = Model.Character.GetAttackBonus(weapon);
+                                            var damageBonus = Model.Character.GetDamageBonus(weapon);
+                                        }
+
+                                        <div class="small text-muted">
+                                            Attack @ModifierFormatter.FormatWithoutSpace(attackBonus)
+                                            · Damage @weapon.DamageDice @ModifierFormatter.FormatWithoutSpace(damageBonus)
+                                            @weapon.DamageType
+                                        </div>
+
+                                        <div class="small text-muted">
+                                            @WeaponScalingFormatter.Explain(weapon.ScalingType)
+                                        </div>
                                         <div class="d-flex gap-2">
                                             <form asp-action="RollAttack" method="post" class="m-0">
                                                 <input type="hidden" name="weaponId" value="@weapon.Id" />

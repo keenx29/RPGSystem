@@ -254,7 +254,19 @@ namespace RPGSystem.Models.Characters
         {
             return Skills.First(s => s.Type == type);
         }
+        public int GetAttackBonus(Weapon weapon)
+        {
+            var ability = GetAttackAbility(weapon);
 
+            return ability.Modifier + GetProficiencyBonus() + weapon.AttackBonus;
+        }
+
+        public int GetDamageBonus(Weapon weapon)
+        {
+            var ability = GetAttackAbility(weapon);
+
+            return ability.Modifier;
+        }
         public int GetSavingThrowBonus(Ability ability)
         {
             int bonus = ability.Modifier;

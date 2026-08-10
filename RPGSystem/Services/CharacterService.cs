@@ -371,6 +371,15 @@ namespace RPGSystem.Services
             int roll = _diceService.RollD20(advantage.FinalState);
 
             int modifier = ability.Modifier + _character.GetProficiencyBonus() + weapon.AttackBonus;
+            
+            var explanations = advantage.Explanations;
+
+            explanations.Add(new RollExplanation
+            {
+                Type = RollExplanationType.Info,
+                Source = weapon.Name,
+                Text = $"{weapon.Name} uses {ability.Name} for this attack based on its scaling type."
+            });
 
             return new RollResult
             {
@@ -383,7 +392,7 @@ namespace RPGSystem.Services
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
                 AppliedEffects = advantage.AppliedEffects,
-                Explanations = advantage.Explanations,
+                Explanations = explanations,
                 AdvantageType = advantage.FinalState
             };
         }
@@ -404,13 +413,22 @@ namespace RPGSystem.Services
             if (weapon == null)
                 throw new InvalidOperationException("Weapon not found.");
 
+            var explanations = new List<RollExplanation>();
+
             var ability = _character.GetAttackAbility(weapon);
+
+            explanations.Add(new RollExplanation
+            {
+                Type = RollExplanationType.Info,
+                Source = weapon.Name,
+                Text = $"{weapon.Name} damage uses {ability.Name} because of the weapon scaling type."
+            });
 
             var damageDice = isCritical
                 ? _diceService.DoubleDiceExpression(weapon.DamageDice)
                 : weapon.DamageDice;
 
-            var explanations = new List<RollExplanation>();
+            
             if (isCritical)
             {
                 explanations.Add(new RollExplanation
