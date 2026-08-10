@@ -30,7 +30,9 @@ namespace RPGSystem.Models.Classes
                     Name = RogueFeatures.CunningAction,
                     ActionType = FeatureActionType.Use,
                     ResetType = FeatureResetType.None,
-                    Action = new CunningActionAction()
+                    Action = new CunningActionAction(),
+                    ActivationType = FeatureActivationType.BonusAction,
+                    Details = "Dash, Disengage, or Hide as a bonus action.",
                 });
             }
 

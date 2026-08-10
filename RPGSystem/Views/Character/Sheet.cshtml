@@ -488,97 +488,84 @@
 
                 <h5>Class Features</h5>
 
-                @foreach (var feature in Model.Character.ClassFeatures)
+                @foreach (var group in Enum.GetValues<FeatureActivationType>())
                 {
-                    <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
+                    var features = Model.Character.ClassFeatures
+                    .Where(f => f.ActivationType == group)
+                    .ToList();
 
-                        <!-- LEFT -->
-                        <div class="d-flex align-items-center gap-2">
+                    if (!features.Any())
+                        continue;
 
-                            @if (feature.IsAvailable || feature.IsActive || 
-                            (feature.ResourceCost > 0 && Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current > 0))
+                    <h6 class="mt-3">@group</h6>
+
+                    <table class="table table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Details</th>
+                                <th class="text-end"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var feature in features)
                             {
-                                <span class="text-success">✔</span>
+                                <tr>
+                                    <td>
+                                        <strong>@feature.Name</strong>
+
+                                        @if (feature.MaxUses > 0)
+                                        {
+                                            <div class="text-muted small">
+                                                @feature.UsesRemaining / @feature.MaxUses
+                                            </div>
+                                        }
+
+                                        @if (feature.ResourceCost > 0)
+                                        {
+                                            <div class="text-muted small">
+                                                Cost: @feature.ResourceCost @feature.ResourceName
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <span class="small">@feature.Details</span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @switch (feature.ActionType)
+                                        {
+                                            case FeatureActionType.Use:
+                                            case FeatureActionType.ResourceUse:
+                                                <form asp-action="UseFeature" method="post" class="m-0">
+                                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                                    <button class="btn btn-sm btn-warning"
+                                                            disabled="@(!feature.IsAvailable)">
+                                                        Use
+                                                    </button>
+                                                </form>
+                                                break;
+
+                                            case FeatureActionType.Toggle:
+                                                <form asp-action="ToggleFeature" method="post" class="m-0">
+                                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                                    <button class="btn btn-sm @(feature.IsActive ? "btn-success" : "btn-primary")">
+                                                        @(feature.IsActive ? "ON" : "Toggle")
+                                                    </button>
+                                                </form>
+                                                break;
+
+                                            case FeatureActionType.None:
+                                                <span class="badge bg-secondary">Passive</span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
                             }
-                            else
-                            {
-                                <span class="text-danger">✖</span>
-                            }
-
-                            <strong>@feature.Name</strong>
-
-                            @if (feature.MaxUses > 0)
-                            {
-                                <small class="text-muted">
-                                    (@feature.UsesRemaining / @feature.MaxUses)
-                                </small>
-                            }
-                            else if ((feature.ResourceCost > 0 && Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current > 0))
-                            {
-                                <small class="text-muted">
-                                    (@Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current / @Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Max)
-                                </small>
-                            }
-
-                            @if (feature.ActionType == FeatureActionType.Toggle)
-                            {
-                                <span class="badge @(feature.IsActive ? "bg-success" : "bg-secondary")">
-                                    @(feature.IsActive ? "ON" : "OFF")
-                                </span>
-                            }
-
-                            @if (feature.ResetType != FeatureResetType.None)
-                            {
-                                <small class="text-muted">
-                                    Resets on @feature.ResetType
-                                </small>
-                            }
-
-                        </div>
-
-                        <!-- RIGHT -->
-                        @switch (feature.ActionType)
-                        {
-                            case FeatureActionType.Use:
-                                <form asp-action="UseFeature" method="post">
-                                    <input type="hidden" name="featureName" value="@feature.Name" />
-                                    <button class="btn btn-sm btn-warning"
-                                            disabled="@(!feature.IsAvailable)">
-                                        Use
-                                    </button>
-                                </form>
-                                break;
-                            case FeatureActionType.ResourceUse:
-                                <form asp-action="UseFeature" method="post">
-                                    <input type="hidden" name="featureName" value="@feature.Name" />
-                                    <button class="btn btn-sm btn-warning"
-                                            disabled="@(feature.ResourceCost > Model.Character.FeatureResources.First(r => r.Name == feature.ResourceName).Current)">
-                                        Use
-                                    </button>
-                                </form>
-                                break;
-
-                            case FeatureActionType.Toggle:
-                                <form asp-action="ToggleFeature" method="post">
-                                    <input type="hidden" name="featureName" value="@feature.Name" />
-                                    <button class="btn btn-sm btn-primary"
-                                            disabled="@(feature.MaxUses > 0 && 
-                                                        !feature.IsAvailable && 
-                                                        !feature.IsActive)">
-                                        Toggle
-                                    </button>
-                                </form>
-                                break;
-                            case FeatureActionType.None:
-                                <span class="badge bg-secondary">
-                                    Passive
-                                </span>
-                                break;
-                        }
-
-                    </div>
+                        </tbody>
+                    </table>
                 }
-
             </div>
             @* Resource Panel *@
             <div class="card p-3 mt-3">

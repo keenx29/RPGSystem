@@ -23,7 +23,9 @@ namespace RPGSystem.Models.Classes
                     UsesRemaining = 2,
                     MaxUses = 2,
                     Modifier = new RageModifier(2),
-                    ResetType = FeatureResetType.LongRest
+                    ResetType = FeatureResetType.LongRest,
+                    ActivationType = FeatureActivationType.BonusAction,
+                    Details = "Toggle Rage. Adds damage to Strength-based melee attacks.",
                 });
             }
             if (level >= 2)
@@ -33,14 +35,18 @@ namespace RPGSystem.Models.Classes
                     Name = BarbarianFeatures.RecklessAttack,
                     ActionType = FeatureActionType.Toggle,
                     IsActive = false,
-                    ResetType = FeatureResetType.None
+                    ResetType = FeatureResetType.None,
+                    ActivationType = FeatureActivationType.FreeAction,
+                    Details = "Toggle to gain advantage on Strength-based attack rolls.",
                 });
 
                 features.Add(new ClassFeatureInstance
                 {
                     Name = BarbarianFeatures.DangerSense,
                     ActionType = FeatureActionType.None,
-                    ResetType = FeatureResetType.None
+                    ResetType = FeatureResetType.None,
+                    ActivationType = FeatureActivationType.Passive,
+                    Details = "Advantage on Dexterity saving throws unless blinded, deafened, or incapacitated.",
                 });
             }
 

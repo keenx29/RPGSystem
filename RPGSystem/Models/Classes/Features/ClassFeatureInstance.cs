@@ -17,6 +17,8 @@ namespace RPGSystem.Models.Classes.Features
         public ICombatModifier? Modifier { get; set; }
         public IFeatureAction? Action { get; set; }
         public FeatureActionType ActionType { get; set; }
+        public FeatureActivationType ActivationType { get; set; } = FeatureActivationType.Passive;
+        public string Details { get; set; } = "";
 
     }
 }

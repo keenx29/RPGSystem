@@ -37,7 +37,9 @@ namespace RPGSystem.Models.Classes
                     ActionType = FeatureActionType.ResourceUse,
                     ResourceName = "Ki",
                     ResourceCost = 1,
-                    Action = new FlurryOfBlowsAction()
+                    Action = new FlurryOfBlowsAction(),
+                    ActivationType = FeatureActivationType.BonusAction,
+                    Details = "Spend 1 Ki to make two unarmed strikes as a bonus action after taking the Attack action.",
                 });
 
                 features.Add(new ClassFeatureInstance
@@ -46,7 +48,9 @@ namespace RPGSystem.Models.Classes
                     ActionType = FeatureActionType.ResourceUse,
                     ResourceName = "Ki",
                     ResourceCost = 1,
-                    Action = new PatientDefenseAction()
+                    Action = new PatientDefenseAction(),
+                    ActivationType = FeatureActivationType.BonusAction,
+                    Details = "Spend 1 Ki to take the Dodge action as a bonus action.",
                 });
 
                 features.Add(new ClassFeatureInstance
@@ -55,7 +59,9 @@ namespace RPGSystem.Models.Classes
                     ActionType = FeatureActionType.ResourceUse,
                     ResourceName = "Ki",
                     ResourceCost = 1,
-                    Action = new StepOfTheWindAction()
+                    Action = new StepOfTheWindAction(),
+                    ActivationType = FeatureActivationType.BonusAction,
+                    Details = "Spend 1 Ki to Dash or Disengage as a bonus action.",
                 });
             }
 

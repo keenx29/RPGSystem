@@ -22,7 +22,9 @@ namespace RPGSystem.Models.Classes
                     MaxUses = 1,
                     ActionType = FeatureActionType.Use,
                     ResetType = FeatureResetType.ShortRest,
-                    Action = new SecondWindAction()
+                    Action = new SecondWindAction(),
+                    ActivationType = FeatureActivationType.BonusAction,
+                    Details = "Regain 1d10 + Fighter level HP. Recharges on short rest.",
                 });
 
             if (level >= 2)
@@ -33,7 +35,9 @@ namespace RPGSystem.Models.Classes
                     MaxUses = 1,
                     ActionType = FeatureActionType.Use,
                     ResetType = FeatureResetType.ShortRest,
-                    Action = new ActionSurgeAction()
+                    Action = new ActionSurgeAction(),
+                    ActivationType = FeatureActivationType.FreeAction,
+                    Details = "Gain one additional action on your turn. Recharges on short rest.",
                 });
 
             if (level >= 5)
@@ -43,7 +47,9 @@ namespace RPGSystem.Models.Classes
                     UsesRemaining = 0,
                     MaxUses = 0,
                     ActionType = FeatureActionType.None,
-                    ResetType = FeatureResetType.None
+                    ResetType = FeatureResetType.None,
+                    ActivationType = FeatureActivationType.Passive,
+                    Details = "When you take the Attack action, you can attack twice.",
                 });
 
             return features;
