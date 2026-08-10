@@ -1,5 +1,6 @@
 ﻿using RPGSystem.Models.Characters;
 using RPGSystem.Models.Classes.Features;
+using RPGSystem.Models.Classes.Features.Actions;
 
 namespace RPGSystem.Models.Classes
 {
@@ -35,7 +36,8 @@ namespace RPGSystem.Models.Classes
                     Name = MonkFeatures.FlurryOfBlows,
                     ActionType = FeatureActionType.ResourceUse,
                     ResourceName = "Ki",
-                    ResourceCost = 1
+                    ResourceCost = 1,
+                    Action = new FlurryOfBlowsAction()
                 });
 
                 features.Add(new ClassFeatureInstance
@@ -43,7 +45,8 @@ namespace RPGSystem.Models.Classes
                     Name = MonkFeatures.PatientDefense,
                     ActionType = FeatureActionType.ResourceUse,
                     ResourceName = "Ki",
-                    ResourceCost = 1
+                    ResourceCost = 1,
+                    Action = new PatientDefenseAction()
                 });
 
                 features.Add(new ClassFeatureInstance
@@ -51,7 +54,8 @@ namespace RPGSystem.Models.Classes
                     Name = MonkFeatures.StepOfTheWind,
                     ActionType = FeatureActionType.ResourceUse,
                     ResourceName = "Ki",
-                    ResourceCost = 1
+                    ResourceCost = 1,
+                    Action = new StepOfTheWindAction()
                 });
             }
 

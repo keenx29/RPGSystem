@@ -33,6 +33,7 @@ namespace RPGSystem.Models.Classes
                     MaxUses = 1,
                     ActionType = FeatureActionType.Use,
                     ResetType = FeatureResetType.ShortRest,
+                    Action = new ActionSurgeAction()
                 });
 
             if (level >= 5)

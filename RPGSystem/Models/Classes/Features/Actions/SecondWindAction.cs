@@ -12,7 +12,7 @@ public class SecondWindAction : IFeatureAction
         ClassFeatureInstance feature,
         DiceService diceService)
     {
-        var rollResult = new DiceService().RollDiceDetailed("1d10");
+        var rollResult = diceService.RollDiceDetailed("1d10");
 
         int oldHp = character.CurrentHP;
 

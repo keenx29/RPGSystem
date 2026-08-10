@@ -607,6 +607,25 @@ namespace RPGSystem.Services
             }
             return null;
         }
+        private RollResult? ExecuteFeatureAction(ClassFeatureInstance feature)
+        {
+            if (feature.Action == null)
+                return CreateFeatureResult(
+                    feature.Name,
+                    $"{feature.Name} was used.",
+                    new List<string> { feature.Name },
+                    new List<RollExplanation>
+                    {
+                new RollExplanation
+                {
+                    Type = RollExplanationType.Feature,
+                    Source = feature.Name,
+                    Text = "This feature does not have a custom action yet."
+                }
+                    });
+
+            return feature.Action.Execute(_character, feature, _diceService);
+        }
         public RollResult? UseFeature(string featureName)
         {
             var feature = _character.GetFeature(featureName);
@@ -617,136 +636,28 @@ namespace RPGSystem.Services
             switch (feature.ActionType)
             {
                 case FeatureActionType.Use:
-
                     if (!feature.IsAvailable)
                         return null;
 
                     if (feature.MaxUses > 0)
                         feature.UsesRemaining--;
 
-                    if (feature.Action != null)
-                    {
-                        return feature.Action.Execute(
-                            _character,
-                            feature,
-                            _diceService);
-                    }
-
-                    return HandleFeatureEffect(feature);
-
+                    return ExecuteFeatureAction(feature);
 
                 case FeatureActionType.ResourceUse:
-
                     if (feature.ResourceName == null)
                         return null;
 
-                    bool success =
-                        _character.SpendResource(
-                            feature.ResourceName,
-                            feature.ResourceCost
-                        );
+                    bool success = _character.SpendResource(
+                        feature.ResourceName,
+                        feature.ResourceCost);
 
                     if (!success)
                         return null;
 
-                    if (feature.Action != null)
-                    {
-                        return feature.Action.Execute(
-                            _character,
-                            feature,
-                            _diceService);
-                    }
-
-                    return HandleFeatureEffect(feature);
+                    return ExecuteFeatureAction(feature);
             }
 
-            return null;
-        }
-        private RollResult? HandleFeatureEffect(ClassFeatureInstance feature)
-        {
-            switch (feature.Name)
-            {
-                case FighterFeatures.SecondWind:
-                    var result = UseSecondWind();
-                    return result;
-
-                case FighterFeatures.ActionSurge:
-                    return CreateFeatureResult(
-                        FighterFeatures.ActionSurge,
-                        "You gain one additional action on your turn.",
-                        new List<string> { "Additional Action" },
-                        new List<RollExplanation>
-                        {
-                            new RollExplanation
-                            {
-                                Type = RollExplanationType.Feature,
-                                Source = FighterFeatures.ActionSurge,
-                                Text = "Action Surge lets the fighter take one additional action on their turn."
-                            }
-                        });
-
-                case RogueFeatures.CunningAction:
-                    return CreateFeatureResult(
-                        RogueFeatures.CunningAction,
-                        "You can take Dash, Disengage, or Hide as a bonus action.",
-                        new List<string> { "Bonus Action" },
-                        new List<RollExplanation>
-                        {
-                            new RollExplanation
-                            {
-                                Type = RollExplanationType.Feature,
-                                Source = RogueFeatures.CunningAction,
-                                Text = "Cunning Action lets the rogue use Dash, Disengage, or Hide as a bonus action."
-                            }
-                        });
-
-                case MonkFeatures.FlurryOfBlows:
-                    return CreateFeatureResult(
-                        MonkFeatures.FlurryOfBlows,
-                        "Spent 1 Ki to make two unarmed strikes as a bonus action after taking the Attack action.",
-                        new List<string> { "Bonus Action" },
-                        new List<RollExplanation>
-                        {
-                            new RollExplanation
-                            {
-                                Type = RollExplanationType.Feature,
-                                Source = MonkFeatures.FlurryOfBlows,
-                                Text = "Flurry of Blows lets the monk spend 1 Ki to make two unarmed strikes as a bonus action."
-                            }
-                        });
-
-                case MonkFeatures.PatientDefense:
-                    return CreateFeatureResult(
-                        MonkFeatures.PatientDefense,
-                        "Spent 1 Ki to take the Dodge action as a bonus action.",
-                        new List<string> { "Bonus Action" },
-                        new List<RollExplanation>
-                        {
-                            new RollExplanation
-                            {
-                                Type = RollExplanationType.Feature,
-                                Source = MonkFeatures.PatientDefense,
-                                Text = "Patient Defense lets the monk spend 1 Ki to take the Dodge action as a bonus action."
-                            }
-                        });
-
-                case MonkFeatures.StepOfTheWind:
-                    return CreateFeatureResult(
-                        MonkFeatures.StepOfTheWind,
-                        "Spent 1 Ki to Dash or Disengage as a bonus action.",
-                        new List<string> { "Bonus Action" },
-                        new List<RollExplanation>
-                        {
-                            new RollExplanation
-                            {
-                                Type = RollExplanationType.Feature,
-                                Source = MonkFeatures.StepOfTheWind,
-                                Text = "Step of the Wind lets the monk spend 1 Ki to Dash or Disengage as a bonus action."
-                            }
-                        });
-                default:
-                    break;
-            }
             return null;
         }
         public RollResult? LevelUp()

@@ -1,4 +1,5 @@
 ﻿using RPGSystem.Models.Classes.Features;
+using RPGSystem.Models.Classes.Features.Actions;
 
 namespace RPGSystem.Models.Classes
 {
@@ -28,7 +29,8 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = RogueFeatures.CunningAction,
                     ActionType = FeatureActionType.Use,
-                    ResetType = FeatureResetType.None
+                    ResetType = FeatureResetType.None,
+                    Action = new CunningActionAction()
                 });
             }
 
