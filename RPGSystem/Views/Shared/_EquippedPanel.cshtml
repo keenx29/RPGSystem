@@ -1,0 +1,67 @@
+﻿@using RPGSystem.Helpers
+@using RPGSystem.Models.Items
+@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel equipped-panel">
+
+    <h2 class="sheet-panel-title">Equipped</h2>
+
+    <h3 class="sheet-subtitle">Weapons</h3>
+
+    @if (Model.EquippedWeapons.Any())
+    {
+        foreach (var weapon in Model.EquippedWeapons)
+        {
+            var attackBonus = Model.GetAttackBonus(weapon);
+            var damageBonus = Model.GetDamageBonus(weapon);
+
+            <div class="equipment-row">
+                <div>
+                    <strong>@weapon.Name</strong>
+                    <div class="text-muted small">
+                        Attack @ModifierFormatter.FormatWithoutSpace(attackBonus)
+                        · Damage @weapon.DamageDice @ModifierFormatter.FormatWithoutSpace(damageBonus)
+                        @weapon.DamageType
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <form asp-controller="Character" asp-action="RollAttack" method="post" class="m-0">
+                        <input type="hidden" name="weaponId" value="@weapon.Id" />
+                        <button class="btn btn-sm btn-danger">Attack</button>
+                    </form>
+
+                    <form asp-controller="Character" asp-action="UnequipWeapon" method="post" class="m-0">
+                        <input type="hidden" name="weaponId" value="@weapon.Id" />
+                        <button class="btn btn-sm btn-outline-secondary">Unequip</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted mb-0">No weapons equipped.</p>
+    }
+
+    <h3 class="sheet-subtitle mt-3">Armor</h3>
+
+    <div class="equipment-row">
+        <div>
+            <strong>@(Model.EquippedArmor?.Name ?? "Unarmored")</strong>
+            @if (Model.EquippedArmor != null)
+            {
+                <div class="text-muted small">@Model.EquippedArmor.ArmorType armor</div>
+            }
+        </div>
+    </div>
+
+    <h3 class="sheet-subtitle mt-3">Shield</h3>
+
+    <div class="equipment-row">
+        <div>
+            <strong>@(Model.EquippedShield?.Name ?? "No shield equipped")</strong>
+        </div>
+    </div>
+
+</section>

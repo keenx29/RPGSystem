@@ -1,0 +1,40 @@
+﻿@using RPGSystem.Helpers
+@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel skills-panel">
+
+    <h2 class="sheet-panel-title">Skills</h2>
+
+    @foreach (var skill in Model.Skills)
+    {
+        int bonus = Model.GetSkillBonus(skill);
+
+        <div class="skill-row">
+            <div>
+                <strong>@skill.Name</strong>
+                <span class="text-muted small">(@skill.RelatedAbility.Name)</span>
+
+                @if (skill.IsExpertise)
+                {
+                    <span class="badge bg-success">Expertise</span>
+                }
+                else if (skill.IsProficient)
+                {
+                    <span class="badge bg-secondary">Proficient</span>
+                }
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <strong>@ModifierFormatter.FormatWithoutSpace(bonus)</strong>
+
+                <form asp-controller="Character" asp-action="RollSkill" method="post" class="m-0">
+                    <input type="hidden" name="skillType" value="@skill.Type" />
+                    <button class="btn btn-sm btn-dark">
+                        Roll
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+
+</section>

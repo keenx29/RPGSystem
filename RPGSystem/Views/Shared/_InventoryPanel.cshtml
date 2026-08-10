@@ -1,0 +1,101 @@
+﻿@using RPGSystem.Models.Items
+@model RPGSystem.Models.Characters.Character
+<section class="sheet-panel inventory-panel">
+    <h2 class="sheet-panel-title">Inventory</h2>
+    @foreach (var item in Model.Inventory)
+    {
+        var isWeapon = item is Weapon;
+        var weapon = item as Weapon;
+        var isArmor = item is Armor;
+        var armor = item as Armor;
+        var isConsumable = item.Type == ItemType.Consumable;
+
+        var isShield = armor?.ArmorType == ArmorType.Shield;
+
+        <div class="inventory-item @(Model.EquippedWeapon?.Id == item.Id || Model.EquippedArmor?.Id == item.Id ? "equipped" : "")">
+
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div class="d-flex align-items-center gap-2">
+
+                    <strong>@item.Name</strong>
+
+                    @if (isWeapon)
+                    {
+                        <span class="badge bg-secondary">@(weapon.ScalingType) Weapon</span>
+                    }
+                    else if (isArmor)
+                    {
+                        <span class="badge bg-secondary">@(armor.ArmorType) Armor</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@item.Type</span>
+                    }
+
+                </div>
+
+                <!-- small weight / meta (future-proof feel) -->
+                <small class="text-muted">
+                    @item.Weight lb
+                </small>
+
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="mt-2 d-flex gap-2">
+
+                @if (isWeapon)
+                {
+                    <form asp-action="EquipWeapon" method="post">
+                        <input type="hidden" name="weaponId" value="@item.Id" />
+
+                        <button class="btn btn-sm @(Model.EquippedWeapon?.Id == item.Id ? "btn-success" : "btn-dark")">
+                            @(Model.EquippedWeapon?.Id == item.Id ? "Equipped" : "Equip")
+                        </button>
+                    </form>
+                }
+
+                @if (isShield)
+                {
+                    <form asp-action="EquipShield" method="post">
+                        <input type="hidden" name="shieldId" value="@item.Id" />
+
+                        <button class="btn btn-sm @(Model.EquippedShield?.Id == item.Id ? "btn-success" : "btn-dark")">
+                            @(Model.EquippedShield?.Id == item.Id ? "Equipped" : "Equip")
+                        </button>
+                    </form>
+                }
+                else if (isArmor)
+                {
+                    <form asp-action="EquipArmor" method="post">
+                        <input type="hidden" name="armorId" value="@item.Id" />
+
+                        <button class="btn btn-sm @(Model.EquippedArmor?.Id == item.Id ? "btn-success" : "btn-dark")">
+                            @(Model.EquippedArmor?.Id == item.Id ? "Equipped" : "Equip")
+                        </button>
+                    </form>
+                }
+                @if (isConsumable)
+                {
+                    <form asp-action="UseItem" method="post">
+                        <input type="hidden" name="itemId" value="@item.Id" />
+
+                        <button class="btn btn-sm btn-dark">
+                            Use
+                        </button>
+                    </form>
+                }
+
+                @if (!isWeapon && !isArmor && !isConsumable)
+                {
+                    <span class="text-muted small">No actions</span>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</section>

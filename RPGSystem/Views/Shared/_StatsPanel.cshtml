@@ -1,0 +1,30 @@
+﻿@using RPGSystem.Helpers
+@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel stats-panel">
+
+    <h2 class="sheet-panel-title">Stats</h2>
+
+    <div class="stats-grid">
+        <div>
+            <strong>AC</strong>
+            <span>@Model.GetArmorClass()</span>
+        </div>
+
+        <div>
+            <strong>Speed</strong>
+            <span>@Model.MovementSpeed ft.</span>
+        </div>
+
+        <div>
+            <strong>Initiative</strong>
+            <span>@ModifierFormatter.FormatWithoutSpace(Model.GetInitiative())</span>
+        </div>
+
+        <div>
+            <strong>Passive Perception</strong>
+            <span>@Model.GetPassivePerception()</span>
+        </div>
+    </div>
+
+</section>

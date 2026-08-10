@@ -1,0 +1,29 @@
+﻿@using RPGSystem.Models.Rolls
+@model AdvantageState
+
+<div class="sheet-roll-mode">
+    <form asp-controller="Character" asp-action="SetAdvantageState" method="post">
+        <div class="btn-group" role="group">
+            <button type="submit"
+                    name="state"
+                    value="Normal"
+                    class="btn btn-sm @(Model == AdvantageState.Normal ? "btn-danger active" : "btn-outline-secondary")">
+                Automatic
+            </button>
+
+            <button type="submit"
+                    name="state"
+                    value="Advantage"
+                    class="btn btn-sm @(Model == AdvantageState.Advantage ? "btn-danger active" : "btn-outline-secondary")">
+                Advantage
+            </button>
+
+            <button type="submit"
+                    name="state"
+                    value="Disadvantage"
+                    class="btn btn-sm @(Model == AdvantageState.Disadvantage ? "btn-danger active" : "btn-outline-secondary")">
+                Disadvantage
+            </button>
+        </div>
+    </form>
+</div>

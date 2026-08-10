@@ -1,0 +1,14 @@
+﻿@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel abilities-panel">
+
+    <h2 class="sheet-panel-title">Abilities</h2>
+
+    <div class="d-flex flex-wrap">
+        @foreach (var ability in Model.Abilities)
+        {
+            <partial name="_AbilityCard" model="ability" />
+        }
+    </div>
+
+</section>

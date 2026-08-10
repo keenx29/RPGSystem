@@ -1,0 +1,81 @@
+﻿@using RPGSystem.Models.Classes.Features
+@model RPGSystem.Models.Characters.Character
+
+@foreach (var group in Enum.GetValues<FeatureActivationType>())
+{
+    var features = Model.ClassFeatures
+    .Where(f => f.ActivationType == group)
+    .ToList();
+
+    if (!features.Any())
+        continue;
+
+    <h6 class="mt-3">@group</h6>
+
+    <table class="table table-sm align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Details</th>
+                <th class="text-end"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var feature in features)
+            {
+                <tr>
+                    <td>
+                        <strong>@feature.Name</strong>
+
+                        @if (feature.MaxUses > 0)
+                        {
+                            <div class="text-muted small">
+                                @feature.UsesRemaining / @feature.MaxUses
+                            </div>
+                        }
+
+                        @if (feature.ResourceCost > 0)
+                        {
+                            <div class="text-muted small">
+                                Cost: @feature.ResourceCost @feature.ResourceName
+                            </div>
+                        }
+                    </td>
+
+                    <td>
+                        <span class="small">@feature.Details</span>
+                    </td>
+
+                    <td class="text-end">
+                        @switch (feature.ActionType)
+                        {
+                            case FeatureActionType.Use:
+                            case FeatureActionType.ResourceUse:
+                                <form asp-action="UseFeature" method="post" class="m-0">
+                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                    <button class="btn btn-sm btn-warning"
+                                            disabled="@(!feature.IsAvailable)">
+                                        Use
+                                    </button>
+                                </form>
+                                break;
+
+                            case FeatureActionType.Toggle:
+                                <form asp-action="ToggleFeature" method="post" class="m-0">
+                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                    <button class="btn btn-sm @(feature.IsActive ? "btn-success" : "btn-primary")">
+                                        @(feature.IsActive ? "ON" : "Toggle")
+                                    </button>
+                                </form>
+                                break;
+
+                            case FeatureActionType.None:
+                                <span class="badge bg-secondary">Passive</span>
+                                break;
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

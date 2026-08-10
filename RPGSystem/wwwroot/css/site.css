@@ -186,3 +186,108 @@ input[type=number] {
         padding-left: 1.1rem;
         color: #6c757d;
     }
+
+.sheet-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 1rem;
+}
+
+.sheet-top {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 420px;
+    gap: 1rem;
+}
+
+.sheet-main {
+    min-width: 0;
+}
+
+.sheet-side {
+    min-width: 0;
+}
+
+.sheet-section {
+    margin-bottom: 1rem;
+}
+.sheet-page {
+    padding: 1rem;
+}
+
+.sheet-roll-mode {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.sheet-header-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 480px);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.sheet-body-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 1rem;
+}
+
+.sheet-main-column,
+.sheet-side-column {
+    min-width: 0;
+}
+
+.sheet-panel {
+    border: 1px solid #3a3328;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.sheet-panel-title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+}
+
+.sheet-subtitle {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.sheet-character-name {
+    font-size: 1.4rem;
+    margin-bottom: 0.25rem;
+}
+
+.hp-current {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 2rem;
+    font-weight: 700;
+    align-items: baseline;
+}
+
+.sheet-divider {
+    border-top: 1px solid #3a3328;
+    margin: 0.75rem 0;
+}
+
+.skill-row,
+.equipment-row,
+.resource-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+    .skill-row:last-child,
+    .equipment-row:last-child,
+    .resource-row:last-child {
+        border-bottom: 0;
+    }

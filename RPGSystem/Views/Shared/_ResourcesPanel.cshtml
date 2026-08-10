@@ -1,0 +1,31 @@
+﻿@using RPGSystem.Models.Classes.Features
+@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel resources-panel">
+
+    <h2 class="sheet-panel-title">Resources</h2>
+
+    @if (Model.FeatureResources.Any())
+    {
+        @foreach (var resource in Model.FeatureResources)
+        {
+            <div class="resource-row">
+                <strong>@resource.Name</strong>
+
+                <span>@resource.Current / @resource.Max</span>
+
+                @if (resource.ResetType != FeatureResetType.None)
+                {
+                    <small class="text-muted">
+                        @resource.ResetType
+                    </small>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted mb-0">No resources.</p>
+    }
+
+</section>
