@@ -65,5 +65,7 @@ namespace RPGSystem.Models.Classes
 
             return 10 + dex + con;
         }
+        public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
+    new[] { AbilityType.Strength, AbilityType.Constitution };
     }
 }

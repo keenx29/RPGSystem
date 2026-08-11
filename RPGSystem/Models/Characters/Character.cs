@@ -337,6 +337,13 @@ namespace RPGSystem.Models.Characters
             var characterClass = CharacterClassFactory.Create(ClassType);
             return characterClass.IsProficientWithWeapon(weapon);
         }
+        public void ApplySavingThrowProficiencies(IReadOnlyCollection<AbilityType> proficiencies)
+        {
+            foreach (var ability in Abilities)
+            {
+                ability.IsSavingThrowProficient = proficiencies.Contains(ability.Type);
+            }
+        }
         private int GetShieldBonus()
         {
             return EquippedShield != null ? EquippedShield.BaseArmorClass : 0;

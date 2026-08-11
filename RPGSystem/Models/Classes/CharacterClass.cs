@@ -23,5 +23,6 @@ namespace RPGSystem.Models.Classes
         {
             return false;
         }
+        public abstract IReadOnlyCollection<AbilityType> SavingThrowProficiencies { get; }
     }
 }

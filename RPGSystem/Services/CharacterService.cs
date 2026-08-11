@@ -283,6 +283,7 @@ namespace RPGSystem.Services
             var ability = _character.GetAbility(type);
             var advantage = ResolveAdvantage(RollType.Save, adv, type);
             int roll = _diceService.RollD20(advantage.FinalState);
+            var proficiencyBonus =  _character.GetSavingThrowBonus(ability) - ability.Modifier;
             return new RollResult
             {
                 Actor = ability.Name,
@@ -290,7 +291,7 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = _character.GetSavingThrowBonus(ability),
-                Formula = $"1d20 + {_character.GetSavingThrowBonus(ability)} {ability.Name} save",
+                Formula = $"1d20 + {ability.Modifier} {ability.Name} Save + {proficiencyBonus} Proficiency",
                 Description = $"Saving throw",
                 AdvantageType = advantage.FinalState,
                 AppliedEffects = advantage.AppliedEffects,
@@ -804,9 +805,9 @@ namespace RPGSystem.Services
         }
         public Character GetFighterTestCharacter()
         {
-            var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 16, IsSavingThrowProficient = true };
+            var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 16 };
             var dexterity = new Ability { Name = "Dexterity", Type = AbilityType.Dexterity, Score = 14 };
-            var constitution = new Ability { Name = "Constitution", Type = AbilityType.Constitution, Score = 14, IsSavingThrowProficient = true };
+            var constitution = new Ability { Name = "Constitution", Type = AbilityType.Constitution, Score = 14 };
             var intelligence = new Ability { Name = "Intelligence", Type = AbilityType.Intelligence, Score = 10 };
             var wisdom = new Ability { Name = "Wisdom", Type = AbilityType.Wisdom, Score = 12 };
             var charisma = new Ability { Name = "Charisma", Type = AbilityType.Charisma, Score = 8 };
@@ -886,16 +887,18 @@ namespace RPGSystem.Services
             var characterClass = CharacterClassFactory.Create(character.ClassType);
 
             character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
-
+            
+            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
+            
             return character;
         }
         public Character GetRogueTestCharacter()
         {
             var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 10 };
-            var dexterity = new Ability { Name = "Dexterity", Type = AbilityType.Dexterity, Score = 16, IsSavingThrowProficient = true };
+            var dexterity = new Ability { Name = "Dexterity", Type = AbilityType.Dexterity, Score = 16 };
             var constitution = new Ability { Name = "Constitution", Type = AbilityType.Constitution, Score = 14 };
             var intelligence = new Ability { Name = "Intelligence", Type = AbilityType.Intelligence, Score = 12 };
-            var wisdom = new Ability { Name = "Wisdom", Type = AbilityType.Wisdom, Score = 13, IsSavingThrowProficient = true };
+            var wisdom = new Ability { Name = "Wisdom", Type = AbilityType.Wisdom, Score = 13 };
             var charisma = new Ability { Name = "Charisma", Type = AbilityType.Charisma, Score = 8 };
 
             var character = new Character
@@ -1023,7 +1026,9 @@ namespace RPGSystem.Services
             var characterClass = CharacterClassFactory.Create(character.ClassType);
 
             character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
-
+            
+            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
+            
             return character;
         }
         public Character GetBarbarianTestCharacter()
@@ -1032,8 +1037,7 @@ namespace RPGSystem.Services
             {
                 Name = "Strength",
                 Type = AbilityType.Strength,
-                Score = 18,
-                IsSavingThrowProficient = true
+                Score = 18
             };
 
             var dexterity = new Ability
@@ -1047,8 +1051,7 @@ namespace RPGSystem.Services
             {
                 Name = "Constitution",
                 Type = AbilityType.Constitution,
-                Score = 16,
-                IsSavingThrowProficient = true
+                Score = 16
             };
 
             var intelligence = new Ability
@@ -1198,6 +1201,8 @@ namespace RPGSystem.Services
             character.ClassFeatures =
                 characterClass.GetFeaturesForLevel(character.Level);
 
+            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
+
             return character;
         }
         public Character GetMonkTestCharacter()
@@ -1213,8 +1218,7 @@ namespace RPGSystem.Services
             {
                 Name = "Dexterity",
                 Type = AbilityType.Dexterity,
-                Score = 18,
-                IsSavingThrowProficient = true
+                Score = 18
             };
 
             var constitution = new Ability
@@ -1235,8 +1239,7 @@ namespace RPGSystem.Services
             {
                 Name = "Wisdom",
                 Type = AbilityType.Wisdom,
-                Score = 16,
-                IsSavingThrowProficient = true
+                Score = 16
             };
 
             var charisma = new Ability
@@ -1376,6 +1379,9 @@ namespace RPGSystem.Services
 
             character.FeatureResources = 
                 characterClass.GetResourcesForLevel(character.Level);
+
+            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
+            
             return character;
         }
     }

@@ -1,4 +1,5 @@
-﻿using RPGSystem.Models.Classes.Features;
+﻿using RPGSystem.Models.Characters;
+using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Classes.Features.Actions;
 using RPGSystem.Models.Items;
 
@@ -60,5 +61,7 @@ namespace RPGSystem.Models.Classes
             return weapon.ProficiencyType == WeaponProficiencyType.Simple
                 || weapon.ProficiencyType == WeaponProficiencyType.Martial;
         }
+        public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
+    new[] { AbilityType.Strength, AbilityType.Constitution };
     }
 }

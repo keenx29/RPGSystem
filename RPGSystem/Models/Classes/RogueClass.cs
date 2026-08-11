@@ -1,4 +1,5 @@
-﻿using RPGSystem.Models.Classes.Features;
+﻿using RPGSystem.Models.Characters;
+using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Classes.Features.Actions;
 using RPGSystem.Models.Items;
 
@@ -57,5 +58,7 @@ namespace RPGSystem.Models.Classes
                 || name == "Longsword"
                 || name == "Hand Crossbow";
         }
+        public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
+    new[] { AbilityType.Dexterity, AbilityType.Intelligence };
     }
 }

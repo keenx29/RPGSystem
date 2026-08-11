@@ -107,5 +107,7 @@ namespace RPGSystem.Models.Classes
 
             return name == "Shortsword";
         }
+        public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
+    new[] { AbilityType.Strength, AbilityType.Dexterity };
     }
 }
