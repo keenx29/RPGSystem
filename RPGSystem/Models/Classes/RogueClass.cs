@@ -59,6 +59,22 @@ namespace RPGSystem.Models.Classes
                 || name == "Hand Crossbow";
         }
         public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
-    new[] { AbilityType.Dexterity, AbilityType.Intelligence };
+            new[] { AbilityType.Dexterity, AbilityType.Intelligence };
+
+        public override IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
+            new[]
+            {
+                SkillType.Acrobatics,
+                SkillType.Athletics,
+                SkillType.Deception,
+                SkillType.Insight,
+                SkillType.Intimidation,
+                SkillType.Investigation,
+                SkillType.Perception,
+                SkillType.Performance,
+                SkillType.Persuasion,
+                SkillType.SleightOfHand,
+                SkillType.Stealth
+            };
     }
 }

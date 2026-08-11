@@ -62,6 +62,18 @@ namespace RPGSystem.Models.Classes
                 || weapon.ProficiencyType == WeaponProficiencyType.Martial;
         }
         public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
-    new[] { AbilityType.Strength, AbilityType.Constitution };
+            new[] { AbilityType.Strength, AbilityType.Constitution };
+        public override IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
+            new[]
+            {
+                SkillType.Acrobatics,
+                SkillType.AnimalHandling,
+                SkillType.Athletics,
+                SkillType.History,
+                SkillType.Insight,
+                SkillType.Intimidation,
+                SkillType.Perception,
+                SkillType.Survival
+            };
     }
 }

@@ -66,6 +66,16 @@ namespace RPGSystem.Models.Classes
             return 10 + dex + con;
         }
         public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
-    new[] { AbilityType.Strength, AbilityType.Constitution };
+            new[] { AbilityType.Strength, AbilityType.Constitution };
+        public override IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
+            new[]
+            {
+                SkillType.AnimalHandling,
+                SkillType.Athletics,
+                SkillType.Intimidation,
+                SkillType.Nature,
+                SkillType.Perception,
+                SkillType.Survival
+            };
     }
 }

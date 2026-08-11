@@ -344,6 +344,25 @@ namespace RPGSystem.Models.Characters
                 ability.IsSavingThrowProficient = proficiencies.Contains(ability.Type);
             }
         }
+        public void ApplySkillProficiencies(IEnumerable<SkillType> skillTypes)
+        {
+            foreach (var skill in Skills)
+            {
+                skill.IsProficient = skillTypes.Contains(skill.Type);
+            }
+        }
+
+        public void ApplySkillExpertise(IEnumerable<SkillType> skillTypes)
+        {
+            foreach (var skill in Skills)
+            {
+                if (skillTypes.Contains(skill.Type))
+                {
+                    skill.IsExpertise = true;
+                    skill.IsProficient = true;
+                }
+            }
+        }
         private int GetShieldBonus()
         {
             return EquippedShield != null ? EquippedShield.BaseArmorClass : 0;

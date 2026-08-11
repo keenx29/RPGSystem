@@ -108,6 +108,16 @@ namespace RPGSystem.Models.Classes
             return name == "Shortsword";
         }
         public override IReadOnlyCollection<AbilityType> SavingThrowProficiencies =>
-    new[] { AbilityType.Strength, AbilityType.Dexterity };
+            new[] { AbilityType.Strength, AbilityType.Dexterity };
+        public override IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
+            new[]
+            {
+                SkillType.Acrobatics,
+                SkillType.Athletics,
+                SkillType.History,
+                SkillType.Insight,
+                SkillType.Religion,
+                SkillType.Stealth
+            };
     }
 }

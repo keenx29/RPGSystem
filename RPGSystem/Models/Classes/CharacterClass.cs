@@ -24,5 +24,7 @@ namespace RPGSystem.Models.Classes
             return false;
         }
         public abstract IReadOnlyCollection<AbilityType> SavingThrowProficiencies { get; }
+        public virtual IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
+            Array.Empty<SkillType>();
     }
 }

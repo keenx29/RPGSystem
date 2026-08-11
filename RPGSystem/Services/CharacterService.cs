@@ -284,6 +284,11 @@ namespace RPGSystem.Services
             var advantage = ResolveAdvantage(RollType.Save, adv, type);
             int roll = _diceService.RollD20(advantage.FinalState);
             var proficiencyBonus =  _character.GetSavingThrowBonus(ability) - ability.Modifier;
+            var formula = $"1d20 + {ability.Modifier} {ability.Name} Save";
+            if (proficiencyBonus != 0)
+            {
+                formula += $" + {proficiencyBonus} Proficiency";
+            }
             return new RollResult
             {
                 Actor = ability.Name,
@@ -291,7 +296,7 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = _character.GetSavingThrowBonus(ability),
-                Formula = $"1d20 + {ability.Modifier} {ability.Name} Save + {proficiencyBonus} Proficiency",
+                Formula = formula,
                 Description = $"Saving throw",
                 AdvantageType = advantage.FinalState,
                 AppliedEffects = advantage.AppliedEffects,
@@ -375,7 +380,17 @@ namespace RPGSystem.Services
                 ? _character.GetProficiencyBonus()
                 : 0;
             int modifier = ability.Modifier + proficiencyBonus + weapon.AttackBonus;
-           
+
+            var formula = $"1d20 + {ability.Modifier} {ability.Name}";
+
+            if (proficiencyBonus != 0)
+            {
+                formula += $" + {proficiencyBonus} Proficiency";
+            }
+            if (weapon.AttackBonus != 0) 
+            {
+                formula += $" + {weapon.AttackBonus} Weapon Bonus";
+            }
             var explanations = advantage.Explanations;
 
             explanations.Add(new RollExplanation
@@ -392,7 +407,7 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = modifier,
-                Formula = $"1d20 + {ability.Modifier} {ability.Name} + {proficiencyBonus} Proficiency + {weapon.AttackBonus} Weapon Bonus",
+                Formula = formula,
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
                 AppliedEffects = advantage.AppliedEffects,
@@ -829,9 +844,9 @@ namespace RPGSystem.Services
 
                 Skills = new List<Skill>
                 {
-                    new Skill { Name = "Athletics", Type = SkillType.Athletics, RelatedAbility = strength, IsProficient = true },
+                    new Skill { Name = "Athletics", Type = SkillType.Athletics, RelatedAbility = strength},
                     new Skill { Name = "Perception", Type = SkillType.Perception, RelatedAbility = wisdom },
-                    new Skill { Name = "Stealth", Type = SkillType.Stealth, RelatedAbility = dexterity, IsProficient = true }
+                    new Skill { Name = "Stealth", Type = SkillType.Stealth, RelatedAbility = dexterity }
                 },
 
                 EquippedWeapon = new Weapon
@@ -883,13 +898,12 @@ namespace RPGSystem.Services
                 },
 
             };
-
-            var characterClass = CharacterClassFactory.Create(character.ClassType);
-
-            character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
-            
-            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
-            
+            character.ApplySkillProficiencies(new[]
+                {
+                    SkillType.Athletics,
+                    SkillType.Perception
+                });
+            ApplyClassSetup(character);
             return character;
         }
         public Character GetRogueTestCharacter()
@@ -922,30 +936,24 @@ namespace RPGSystem.Services
                 Name = "Stealth",
                 Type = SkillType.Stealth,
                 RelatedAbility = dexterity,
-                IsProficient = true,
-                IsExpertise = true
             },
             new Skill
             {
                 Name = "Perception",
                 Type = SkillType.Perception,
                 RelatedAbility = wisdom,
-                IsProficient = true
             },
             new Skill
             {
                 Name = "Acrobatics",
                 Type = SkillType.Acrobatics,
                 RelatedAbility = dexterity,
-                IsProficient = true
             },
             new Skill
             {
                 Name = "Sleight of Hand",
                 Type = SkillType.SleightOfHand,
                 RelatedAbility = dexterity,
-                IsProficient = true,
-                IsExpertise = true
             }
         },
 
@@ -1022,13 +1030,20 @@ namespace RPGSystem.Services
             }
         }
             };
+            character.ApplySkillProficiencies(new[]
+            {
+                SkillType.Stealth,
+                SkillType.Perception,
+                SkillType.Acrobatics,
+                SkillType.SleightOfHand
+            });
 
-            var characterClass = CharacterClassFactory.Create(character.ClassType);
-
-            character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
-            
-            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
-            
+            character.ApplySkillExpertise(new[]
+            {
+                SkillType.Stealth,
+                SkillType.SleightOfHand
+            });
+            ApplyClassSetup(character);
             return character;
         }
         public Character GetBarbarianTestCharacter()
@@ -1096,7 +1111,6 @@ namespace RPGSystem.Services
                 Name = "Athletics",
                 Type = SkillType.Athletics,
                 RelatedAbility = strength,
-                IsProficient = true
             },
 
             new Skill
@@ -1104,7 +1118,6 @@ namespace RPGSystem.Services
                 Name = "Intimidation",
                 Type = SkillType.Intimidation,
                 RelatedAbility = charisma,
-                IsProficient = true
             },
 
             new Skill
@@ -1112,7 +1125,6 @@ namespace RPGSystem.Services
                 Name = "Survival",
                 Type = SkillType.Survival,
                 RelatedAbility = wisdom,
-                IsProficient = true
             },
 
             new Skill
@@ -1195,14 +1207,13 @@ namespace RPGSystem.Services
             }
         }
             };
-
-            var characterClass = CharacterClassFactory.Create(character.ClassType);
-
-            character.ClassFeatures =
-                characterClass.GetFeaturesForLevel(character.Level);
-
-            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
-
+            character.ApplySkillProficiencies(new[]
+            {
+                SkillType.Athletics,
+                SkillType.Intimidation,
+                SkillType.Survival
+            });
+            ApplyClassSetup(character);
             return character;
         }
         public Character GetMonkTestCharacter()
@@ -1270,7 +1281,6 @@ namespace RPGSystem.Services
                         Name = "Acrobatics",
                         Type = SkillType.Acrobatics,
                         RelatedAbility = dexterity,
-                        IsProficient = true
                     },
 
                     new Skill
@@ -1278,7 +1288,6 @@ namespace RPGSystem.Services
                         Name = "Stealth",
                         Type = SkillType.Stealth,
                         RelatedAbility = dexterity,
-                        IsProficient = true
                     },
 
                     new Skill
@@ -1286,7 +1295,6 @@ namespace RPGSystem.Services
                         Name = "Perception",
                         Type = SkillType.Perception,
                         RelatedAbility = wisdom,
-                        IsProficient = true
                     },
 
                     new Skill
@@ -1370,19 +1378,22 @@ namespace RPGSystem.Services
             }
         },
             };
-
-            var characterClass =
-                CharacterClassFactory.Create(character.ClassType);
-
-            character.ClassFeatures =
-                characterClass.GetFeaturesForLevel(character.Level);
-
-            character.FeatureResources = 
-                characterClass.GetResourcesForLevel(character.Level);
+            character.ApplySkillProficiencies(new[]
+            {
+                SkillType.Acrobatics,
+                SkillType.Stealth,
+                SkillType.Perception
+            });
+            ApplyClassSetup(character);
+            return character;
+        }
+        private void ApplyClassSetup(Character character)
+        {
+            var characterClass = CharacterClassFactory.Create(character.ClassType);
 
             character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
-            
-            return character;
+            character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
+            character.FeatureResources = characterClass.GetResourcesForLevel(character.Level);
         }
     }
 }
