@@ -782,9 +782,9 @@ namespace RPGSystem.Services
 
             _character.EquipArmor(armor);
         }
-        public void UnequipArmor()
+        public void UnequipArmor(Guid armorId)
         {
-            _character.UnequipArmor();
+            _character.UnequipArmor(armorId);
         }
         public void EquipShield(Guid shieldId)
         {
@@ -795,9 +795,9 @@ namespace RPGSystem.Services
             _character.EquipShield(shield);
         }
 
-        public void UnequipShield()
+        public void UnequipShield(Guid shieldId)
         {
-            _character.UnequipShield();
+            _character.UnequipShield(shieldId);
         }
         public Character GetFighterTestCharacter()
         {
@@ -1228,7 +1228,7 @@ namespace RPGSystem.Services
                 Name = "Kael",
                 Level = 4,
                 HitDiceRemaining = 4,
-                MovementSpeed = 40,
+                MovementSpeed = 30,
                 ClassType = CharacterClassType.Monk,
 
                 Abilities = new List<Ability>

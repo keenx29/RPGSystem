@@ -18,6 +18,22 @@ namespace RPGSystem.Models.Characters
         public int MaxHP { get; set; } = 20;
         public int CurrentHP { get; set; } = 20;
         public int MovementSpeed { get; set; } = 30;
+        public int TotalMovementSpeed
+        {
+            get
+            {
+                var speed = MovementSpeed;
+
+                if (HasFeature(MonkFeatures.UnarmoredMovement) 
+                    && EquippedArmor == null 
+                    && EquippedShield == null)
+                {
+                    speed += 10;
+                }
+
+                return speed;
+            }
+        }
         public int HitDiceRemaining { get; set; }
         public int MaxHitDice => Level;
 
@@ -64,9 +80,9 @@ namespace RPGSystem.Models.Characters
             Inventory.Remove(shield);
         }
 
-        public void UnequipShield()
+        public void UnequipShield(Guid shieldId)
         {
-            if (EquippedShield != null)
+            if (EquippedShield != null && EquippedShield.Id == shieldId)
             {
                 Inventory.Add(EquippedShield);
                 EquippedShield = null;
@@ -147,9 +163,9 @@ namespace RPGSystem.Models.Characters
             EquippedArmor = armor;
             Inventory.Remove(armor);
         }
-        public void UnequipArmor()
+        public void UnequipArmor(Guid armorId)
         {
-            if (EquippedArmor != null)
+            if (EquippedArmor != null && EquippedArmor.Id == armorId)
             {
                 Inventory.Add(EquippedArmor);
                 EquippedArmor = null;
@@ -307,6 +323,10 @@ namespace RPGSystem.Models.Characters
         public bool IsWearingArmor()
         {
             return EquippedArmor != null;
+        }
+        public bool HasFeature(string featureName)
+        {
+            return ClassFeatures.Any(f => f.Name == featureName);
         }
         private int GetShieldBonus()
         {

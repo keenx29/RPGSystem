@@ -54,6 +54,16 @@
                 <div class="text-muted small">@Model.EquippedArmor.ArmorType armor</div>
             }
         </div>
+        @if (Model.EquippedArmor != null)
+        {
+            <div>
+                <form asp-controller="Character" asp-action="UnequipArmor" method="post" class="m-0">
+                    <input type="hidden" name="armorId" value="@Model.EquippedArmor?.Id" />
+                    <button class="btn btn-sm btn-outline-secondary">Unequip</button>
+                </form>
+            </div>
+        }
+        
     </div>
 
     <h3 class="sheet-subtitle mt-3">Shield</h3>
@@ -62,6 +72,16 @@
         <div>
             <strong>@(Model.EquippedShield?.Name ?? "No shield equipped")</strong>
         </div>
+        @if (Model.EquippedShield != null)
+        {
+            <div>
+                <form asp-controller="Character" asp-action="UnequipShield" method="post" class="m-0">
+                    <input type="hidden" name="shieldId" value="@Model.EquippedShield?.Id" />
+                    <button class="btn btn-sm btn-outline-secondary">Unequip</button>
+                </form>
+            </div>
+        }
+        
     </div>
 
 </section>

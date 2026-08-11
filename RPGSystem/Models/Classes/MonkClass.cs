@@ -19,7 +19,9 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = MonkFeatures.MartialArts,
                     ActionType = FeatureActionType.None,
-                    ResetType = FeatureResetType.None
+                    ResetType = FeatureResetType.None,
+                    ActivationType = FeatureActivationType.Passive,
+                    Details = "..."
                 });
             }
             if (level >= 2)
@@ -28,7 +30,9 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = MonkFeatures.UnarmoredMovement,
                     ActionType = FeatureActionType.None,
-                    ResetType = FeatureResetType.None
+                    ResetType = FeatureResetType.None,
+                    ActivationType = FeatureActivationType.Passive,
+                    Details = "Your speed increases by 10 ft while you are not wearing armor or wielding a shield."
                 });
 
                 features.Add(new ClassFeatureInstance
