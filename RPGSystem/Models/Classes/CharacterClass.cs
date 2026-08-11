@@ -1,5 +1,6 @@
 ﻿using RPGSystem.Models.Characters;
 using RPGSystem.Models.Classes.Features;
+using RPGSystem.Models.Items;
 
 namespace RPGSystem.Models.Classes
 {
@@ -17,6 +18,10 @@ namespace RPGSystem.Models.Classes
         public virtual List<FeatureResource> GetResourcesForLevel(int level)
         {
             return new List<FeatureResource>();
+        }
+        public virtual bool IsProficientWithWeapon(Weapon weapon)
+        {
+            return false;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Classes.Features.Actions;
+using RPGSystem.Models.Items;
 
 namespace RPGSystem.Models.Classes
 {
@@ -53,6 +54,11 @@ namespace RPGSystem.Models.Classes
                 });
 
             return features;
+        }
+        public override bool IsProficientWithWeapon(Weapon weapon)
+        {
+            return weapon.ProficiencyType == WeaponProficiencyType.Simple
+                || weapon.ProficiencyType == WeaponProficiencyType.Martial;
         }
     }
 }

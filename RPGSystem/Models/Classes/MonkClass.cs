@@ -1,6 +1,7 @@
 ﻿using RPGSystem.Models.Characters;
 using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Classes.Features.Actions;
+using RPGSystem.Models.Items;
 
 namespace RPGSystem.Models.Classes
 {
@@ -94,6 +95,17 @@ namespace RPGSystem.Models.Classes
             int wis = character.GetAbility(AbilityType.Wisdom).Modifier;
 
             return 10 + dex + wis;
+        }
+        public override bool IsProficientWithWeapon(Weapon weapon)
+        {
+            if (weapon.ProficiencyType == WeaponProficiencyType.Simple)
+            {
+                return true;
+            }
+
+            var name = weapon.ProficiencyName ?? weapon.Name;
+
+            return name == "Shortsword";
         }
     }
 }

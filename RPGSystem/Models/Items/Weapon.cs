@@ -10,5 +10,8 @@ namespace RPGSystem.Models.Items
 
         public int AttackBonus { get; set; }
         public WeaponScalingType ScalingType { get; set; } = WeaponScalingType.Strength;
+        public WeaponProficiencyType ProficiencyType { get; set; }
+
+        public string? ProficiencyName { get; set; }
     }
 }

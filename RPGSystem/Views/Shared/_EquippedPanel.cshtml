@@ -18,6 +18,14 @@
             <div class="equipment-row">
                 <div>
                     <strong>@weapon.Name</strong>
+                    @if (Model.IsProficientWithWeapon(weapon))
+                    {
+                        <span class="badge bg-secondary">Proficient</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Not proficient</span>
+                    }
                     <div class="text-muted small">
                         Attack @ModifierFormatter.FormatWithoutSpace(attackBonus)
                         · Damage @weapon.DamageDice @ModifierFormatter.FormatWithoutSpace(damageBonus)

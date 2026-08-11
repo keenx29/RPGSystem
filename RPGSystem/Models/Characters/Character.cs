@@ -273,8 +273,12 @@ namespace RPGSystem.Models.Characters
         public int GetAttackBonus(Weapon weapon)
         {
             var ability = GetAttackAbility(weapon);
+            var proficiencyBonus = IsProficientWithWeapon(weapon)
+                ? GetProficiencyBonus()
+                : 0;
+            int bonus = ability.Modifier + proficiencyBonus + weapon.AttackBonus;
 
-            return ability.Modifier + GetProficiencyBonus() + weapon.AttackBonus;
+            return bonus;
         }
 
         public int GetDamageBonus(Weapon weapon)
@@ -327,6 +331,11 @@ namespace RPGSystem.Models.Characters
         public bool HasFeature(string featureName)
         {
             return ClassFeatures.Any(f => f.Name == featureName);
+        }
+        public bool IsProficientWithWeapon(Weapon weapon)
+        {
+            var characterClass = CharacterClassFactory.Create(ClassType);
+            return characterClass.IsProficientWithWeapon(weapon);
         }
         private int GetShieldBonus()
         {

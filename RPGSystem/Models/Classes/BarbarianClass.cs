@@ -1,5 +1,6 @@
 ﻿using RPGSystem.Models.Characters;
 using RPGSystem.Models.Classes.Features;
+using RPGSystem.Models.Items;
 
 namespace RPGSystem.Models.Classes
 {
@@ -51,6 +52,11 @@ namespace RPGSystem.Models.Classes
             }
 
             return features;
+        }
+        public override bool IsProficientWithWeapon(Weapon weapon)
+        {
+            return weapon.ProficiencyType == WeaponProficiencyType.Simple
+                || weapon.ProficiencyType == WeaponProficiencyType.Martial;
         }
         public override int? GetUnarmoredArmorClass(Character character)
         {

@@ -359,7 +359,6 @@ namespace RPGSystem.Services
         }
         public RollResult RollAttack(Guid weaponId, AdvantageState adv)
         {
-            // TODO: STR/DEX logic // TODO: Weapon Proficiencies
             var weapon = FindWeapon(weaponId);
 
             if (weapon == null)
@@ -368,10 +367,14 @@ namespace RPGSystem.Services
             var ability = _character.GetAttackAbility(weapon);
 
             var advantage = ResolveAdvantage(RollType.Attack, adv, ability.Type);
+            
             int roll = _diceService.RollD20(advantage.FinalState);
 
-            int modifier = ability.Modifier + _character.GetProficiencyBonus() + weapon.AttackBonus;
-            
+            var proficiencyBonus = _character.IsProficientWithWeapon(weapon)
+                ? _character.GetProficiencyBonus()
+                : 0;
+            int modifier = ability.Modifier + proficiencyBonus + weapon.AttackBonus;
+           
             var explanations = advantage.Explanations;
 
             explanations.Add(new RollExplanation
@@ -388,7 +391,7 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = modifier,
-                Formula = $"1d20 + {ability.Modifier} {ability.Name} + {_character.GetProficiencyBonus()} Proficiency + {weapon.AttackBonus} Weapon Bonus",
+                Formula = $"1d20 + {ability.Modifier} {ability.Name} + {proficiencyBonus} Proficiency + {weapon.AttackBonus} Weapon Bonus",
                 Description = $"Attack roll with {weapon.Name}",
                 SourceItemId = weapon.Id,
                 AppliedEffects = advantage.AppliedEffects,
@@ -837,6 +840,8 @@ namespace RPGSystem.Services
                     DamageDice = "1d8",
                     DamageType = "slashing",
                     ScalingType = WeaponScalingType.Strength,
+                    ProficiencyType = WeaponProficiencyType.Simple,
+                    ProficiencyName = "Longsword"
                 },
                 EquippedArmor = new Armor
                 {
@@ -854,6 +859,8 @@ namespace RPGSystem.Services
                         DamageDice = "1d8",
                         DamageType="piercing",
                         ScalingType= WeaponScalingType.Finesse,
+                        ProficiencyType = WeaponProficiencyType.Martial,
+                        ProficiencyName = "Rapier"
                     },
                     new Armor
                     {
@@ -945,7 +952,9 @@ namespace RPGSystem.Services
                     AttackBonus = 1,
                     DamageDice = "1d8",
                     DamageType = "piercing",
-                    ScalingType = WeaponScalingType.Finesse
+                    ScalingType = WeaponScalingType.Finesse,
+                    ProficiencyType = WeaponProficiencyType.Martial,
+                    ProficiencyName = "Rapier"
                 },
 
                 EquippedArmor = new Armor
@@ -963,7 +972,9 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d12",
                 DamageType = "slashing",
-                ScalingType = WeaponScalingType.Strength
+                ScalingType = WeaponScalingType.Strength,
+                ProficiencyType = WeaponProficiencyType.Martial,
+                ProficiencyName = "Greataxe"
             },
             new Weapon
             {
@@ -971,7 +982,9 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d6",
                 DamageType = "piercing",
-                ScalingType = WeaponScalingType.Dexterity
+                ScalingType = WeaponScalingType.Dexterity,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Shortbow"
             },
 
             new Weapon
@@ -980,7 +993,9 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d4",
                 DamageType = "piercing",
-                ScalingType = WeaponScalingType.Finesse
+                ScalingType = WeaponScalingType.Finesse,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Dagger"
             },
 
             new Armor
@@ -1111,7 +1126,9 @@ namespace RPGSystem.Services
                     AttackBonus = 1,
                     DamageDice = "1d12",
                     DamageType = "slashing",
-                    ScalingType = WeaponScalingType.Strength
+                    ScalingType = WeaponScalingType.Strength,
+                    ProficiencyType = WeaponProficiencyType.Martial,
+                    ProficiencyName = "Greataxe"
                 },
 
                 EquippedArmor = new Armor
@@ -1128,7 +1145,9 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d6",
                 DamageType = "slashing",
-                ScalingType = WeaponScalingType.Strength
+                ScalingType = WeaponScalingType.Strength,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Handaxe"
             },
 
             new Weapon
@@ -1137,7 +1156,9 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d6",
                 DamageType = "piercing",
-                ScalingType = WeaponScalingType.Strength
+                ScalingType = WeaponScalingType.Strength,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Javelin"
             },
             new Weapon
             {
@@ -1145,7 +1166,9 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d6",
                 DamageType = "piercing",
-                ScalingType = WeaponScalingType.Dexterity
+                ScalingType = WeaponScalingType.Dexterity,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Shortbow"
             },
 
             new Armor
@@ -1279,7 +1302,9 @@ namespace RPGSystem.Services
                     AttackBonus = 1,
                     DamageDice = "1d8",
                     DamageType = "bludgeoning",
-                    ScalingType = WeaponScalingType.Dexterity
+                    ScalingType = WeaponScalingType.Dexterity,
+                    ProficiencyType = WeaponProficiencyType.Simple,
+                    ProficiencyName = "Quarterstaff"
                 },
                 new Weapon
                 {
@@ -1287,7 +1312,9 @@ namespace RPGSystem.Services
                     AttackBonus = 0,
                     DamageDice = "1d4",
                     DamageType = "bludgeoning",
-                    ScalingType = WeaponScalingType.Dexterity
+                    ScalingType = WeaponScalingType.Dexterity,
+                    ProficiencyType = WeaponProficiencyType.Simple,
+                    ProficiencyName = "Unarmed Strike"
                 }
             },
 
@@ -1300,7 +1327,19 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d6",
                 DamageType = "piercing",
-                ScalingType = WeaponScalingType.Dexterity
+                ScalingType = WeaponScalingType.Dexterity,
+                ProficiencyType = WeaponProficiencyType.Martial,
+                ProficiencyName = "Shortsword"
+            },
+            new Weapon
+            {
+                Name= "Rapier",
+                AttackBonus = 1,
+                DamageDice = "1d8",
+                DamageType="piercing",
+                ScalingType= WeaponScalingType.Finesse,
+                ProficiencyType = WeaponProficiencyType.Martial,
+                ProficiencyName = "Rapier"
             },
 
             new Weapon
@@ -1309,7 +1348,9 @@ namespace RPGSystem.Services
                 AttackBonus = 1,
                 DamageDice = "1d4",
                 DamageType = "piercing",
-                ScalingType = WeaponScalingType.Dexterity
+                ScalingType = WeaponScalingType.Dexterity,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Dart"
             },
             new Armor
             {

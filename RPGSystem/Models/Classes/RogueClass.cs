@@ -1,5 +1,6 @@
 ﻿using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Classes.Features.Actions;
+using RPGSystem.Models.Items;
 
 namespace RPGSystem.Models.Classes
 {
@@ -41,6 +42,20 @@ namespace RPGSystem.Models.Classes
         public int GetSneakAttackDice(int level)
         {
             return ((level - 1) / 2) + 1;
+        }
+        public override bool IsProficientWithWeapon(Weapon weapon)
+        {
+            if (weapon.ProficiencyType == WeaponProficiencyType.Simple)
+            {
+                return true;
+            }
+
+            var name = weapon.ProficiencyName ?? weapon.Name;
+
+            return name == "Rapier"
+                || name == "Shortsword"
+                || name == "Longsword"
+                || name == "Hand Crossbow";
         }
     }
 }
