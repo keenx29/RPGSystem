@@ -691,6 +691,9 @@ namespace RPGSystem.Services
             _character.LevelUp(hpGain);
 
             _character.ClassFeatures = characterClass.GetFeaturesForLevel(_character.Level);
+
+            _character.FeatureResources = characterClass.GetResourcesForLevel(_character.Level);
+            
             return new RollResult
             {
                 Actor = "Level Up",
@@ -1322,17 +1325,6 @@ namespace RPGSystem.Services
                 Effect = new HealEffect("2d4+2")
             }
         },
-
-                FeatureResources = new List<FeatureResource>
-        {
-            new FeatureResource
-            {
-                Name = "Ki",
-                Current = 4,
-                Max = 4,
-                ResetType = FeatureResetType.ShortRest
-            }
-        }
             };
 
             var characterClass =
@@ -1341,6 +1333,8 @@ namespace RPGSystem.Services
             character.ClassFeatures =
                 characterClass.GetFeaturesForLevel(character.Level);
 
+            character.FeatureResources = 
+                characterClass.GetResourcesForLevel(character.Level);
             return character;
         }
     }

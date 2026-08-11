@@ -35,7 +35,7 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = MonkFeatures.FlurryOfBlows,
                     ActionType = FeatureActionType.ResourceUse,
-                    ResourceName = "Ki",
+                    ResourceName = FeatureResourceNames.Ki,
                     ResourceCost = 1,
                     Action = new FlurryOfBlowsAction(),
                     ActivationType = FeatureActivationType.BonusAction,
@@ -46,7 +46,7 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = MonkFeatures.PatientDefense,
                     ActionType = FeatureActionType.ResourceUse,
-                    ResourceName = "Ki",
+                    ResourceName = FeatureResourceNames.Ki,
                     ResourceCost = 1,
                     Action = new PatientDefenseAction(),
                     ActivationType = FeatureActivationType.BonusAction,
@@ -57,7 +57,7 @@ namespace RPGSystem.Models.Classes
                 {
                     Name = MonkFeatures.StepOfTheWind,
                     ActionType = FeatureActionType.ResourceUse,
-                    ResourceName = "Ki",
+                    ResourceName = FeatureResourceNames.Ki,
                     ResourceCost = 1,
                     Action = new StepOfTheWindAction(),
                     ActivationType = FeatureActivationType.BonusAction,
@@ -66,6 +66,23 @@ namespace RPGSystem.Models.Classes
             }
 
             return features;
+        }
+        public override List<FeatureResource> GetResourcesForLevel(int level)
+        {
+            var resources = new List<FeatureResource>();
+
+            if (level >= 2)
+            {
+                resources.Add(new FeatureResource
+                {
+                    Name = FeatureResourceNames.Ki,
+                    Current = level,
+                    Max = level,
+                    ResetType = FeatureResetType.ShortRest
+                });
+            }
+
+            return resources;
         }
         public override int? GetUnarmoredArmorClass(Character character)
         {

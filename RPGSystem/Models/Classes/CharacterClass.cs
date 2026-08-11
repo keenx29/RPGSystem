@@ -14,5 +14,9 @@ namespace RPGSystem.Models.Classes
         {
             return null;
         }
+        public virtual List<FeatureResource> GetResourcesForLevel(int level)
+        {
+            return new List<FeatureResource>();
+        }
     }
 }
