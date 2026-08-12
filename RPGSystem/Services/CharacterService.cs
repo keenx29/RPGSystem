@@ -861,7 +861,7 @@ namespace RPGSystem.Services
                 },
                 EquippedArmor = new Armor
                 {
-                    Name = "Leather Tunic",
+                    Name = "Leather Armor",
                     BaseArmorClass = 13,
                     ArmorType = ArmorType.Light,
 
@@ -880,8 +880,15 @@ namespace RPGSystem.Services
                     },
                     new Armor
                     {
+                        Name="Hide Armor",
+                        BaseArmorClass=15,
+                        ArmorType= ArmorType.Medium,
+                    },
+                    new Armor
+                    {
                         Name="Chainmail",
-                        BaseArmorClass=15
+                        BaseArmorClass=15,
+                        ArmorType= ArmorType.Heavy,
                     },
                     new Armor
                     {
@@ -1008,18 +1015,17 @@ namespace RPGSystem.Services
                 ProficiencyType = WeaponProficiencyType.Simple,
                 ProficiencyName = "Dagger"
             },
-
             new Armor
             {
-                Name = "Studded Leather",
-                BaseArmorClass = 12,
-                ArmorType = ArmorType.Light
+                Name="Hide Armor",
+                BaseArmorClass=15,
+                ArmorType= ArmorType.Medium,
             },
             new Armor
             {
-                Name = "Chain Shirt",
-                BaseArmorClass = 13,
-                ArmorType = ArmorType.Medium
+                Name="Chainmail",
+                BaseArmorClass=15,
+                ArmorType= ArmorType.Heavy,
             },
 
             new Item
@@ -1149,7 +1155,8 @@ namespace RPGSystem.Services
                 EquippedArmor = new Armor
                 {
                     Name = "Hide Armor",
-                    BaseArmorClass = 12
+                    BaseArmorClass = 12,
+                    ArmorType = ArmorType.Medium,
                 },
 
                 Inventory = new List<Item>
@@ -1185,13 +1192,25 @@ namespace RPGSystem.Services
                 ProficiencyType = WeaponProficiencyType.Simple,
                 ProficiencyName = "Shortbow"
             },
-
             new Armor
             {
-                Name = "Chain Shirt",
-                BaseArmorClass = 13
+                Name = "Shield",
+                BaseArmorClass = 2,
+                ArmorType = ArmorType.Shield
             },
+            new Armor
+            {
+                Name = "Leather Armor",
+                BaseArmorClass = 13,
+                ArmorType = ArmorType.Light,
 
+            },
+            new Armor
+            {
+                Name="Chainmail",
+                BaseArmorClass=15,
+                ArmorType= ArmorType.Heavy,
+            },
             new Item
             {
                 Name = "Healing Potion",
@@ -1365,9 +1384,10 @@ namespace RPGSystem.Services
             },
             new Armor
             {
-                Name = "Cloth Robes",
-                BaseArmorClass = 10,
+                Name = "Leather Armor",
+                BaseArmorClass = 13,
                 ArmorType = ArmorType.Light,
+
             },
 
             new Item

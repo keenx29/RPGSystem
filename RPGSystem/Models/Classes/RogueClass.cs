@@ -76,5 +76,14 @@ namespace RPGSystem.Models.Classes
                 SkillType.SleightOfHand,
                 SkillType.Stealth
             };
+        public override bool IsProficientWithArmor(Armor armor)
+        {
+            return armor.ArmorType == ArmorType.Light;
+        }
+
+        public override bool IsProficientWithShield()
+        {
+            return false;
+        }
     }
 }

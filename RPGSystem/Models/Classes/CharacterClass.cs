@@ -26,5 +26,14 @@ namespace RPGSystem.Models.Classes
         public abstract IReadOnlyCollection<AbilityType> SavingThrowProficiencies { get; }
         public virtual IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
             Array.Empty<SkillType>();
+        public virtual bool IsProficientWithArmor(Armor armor)
+        {
+            return false;
+        }
+
+        public virtual bool IsProficientWithShield()
+        {
+            return false;
+        }
     }
 }

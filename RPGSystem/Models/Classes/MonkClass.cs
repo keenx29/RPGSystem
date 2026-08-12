@@ -119,5 +119,14 @@ namespace RPGSystem.Models.Classes
                 SkillType.Religion,
                 SkillType.Stealth
             };
+        public override bool IsProficientWithArmor(Armor armor)
+        {
+            return false;
+        }
+
+        public override bool IsProficientWithShield()
+        {
+            return false;
+        }
     }
 }

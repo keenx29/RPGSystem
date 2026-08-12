@@ -59,6 +59,15 @@
             <strong>@(Model.EquippedArmor?.Name ?? "Unarmored")</strong>
             @if (Model.EquippedArmor != null)
             {
+                if (Model.IsProficientWithArmor(Model.EquippedArmor))
+                {
+                    <span class="badge bg-secondary">Proficient</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Not proficient</span>
+                }
+
                 <div class="text-muted small">@Model.EquippedArmor.ArmorType armor</div>
             }
         </div>
@@ -79,6 +88,18 @@
     <div class="equipment-row">
         <div>
             <strong>@(Model.EquippedShield?.Name ?? "No shield equipped")</strong>
+            @if (Model.EquippedShield != null)
+            {
+                if (Model.IsProficientWithShield())
+                {
+                    <span class="badge bg-secondary">Proficient</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Not proficient</span>
+                }
+                <div class="text-muted small">+@Model.EquippedShield.BaseArmorClass AC</div>
+            }
         </div>
         @if (Model.EquippedShield != null)
         {

@@ -363,6 +363,17 @@ namespace RPGSystem.Models.Characters
                 }
             }
         }
+        public bool IsProficientWithArmor(Armor armor)
+        {
+            var characterClass = CharacterClassFactory.Create(ClassType);
+            return characterClass.IsProficientWithArmor(armor);
+        }
+
+        public bool IsProficientWithShield()
+        {
+            var characterClass = CharacterClassFactory.Create(ClassType);
+            return characterClass.IsProficientWithShield();
+        }
         private int GetShieldBonus()
         {
             return EquippedShield != null ? EquippedShield.BaseArmorClass : 0;

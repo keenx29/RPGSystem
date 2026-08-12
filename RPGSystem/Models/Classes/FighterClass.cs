@@ -75,5 +75,16 @@ namespace RPGSystem.Models.Classes
                 SkillType.Perception,
                 SkillType.Survival
             };
+        public override bool IsProficientWithArmor(Armor armor)
+        {
+            return armor.ArmorType == ArmorType.Light
+                || armor.ArmorType == ArmorType.Medium
+                || armor.ArmorType == ArmorType.Heavy;
+        }
+
+        public override bool IsProficientWithShield()
+        {
+            return true;
+        }
     }
 }
