@@ -845,6 +845,11 @@ namespace RPGSystem.Services
                 MovementSpeed = 30,
                 ClassType = CharacterClassType.Fighter,
 
+                DamageResistances = new List<string>
+                {
+                    "Poison"
+                },
+
                 Abilities = new List<Ability>
                 {
                     strength, dexterity, constitution,

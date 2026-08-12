@@ -37,6 +37,13 @@ namespace RPGSystem.Models.Characters
         public int HitDiceRemaining { get; set; }
         public int MaxHitDice => Level;
         public int PendingAbilityScoreImprovementPoints { get; set; }
+        public List<string> DamageResistances { get; set; } = new();
+
+        public List<string> DamageVulnerabilities { get; set; } = new();
+
+        public List<string> DamageImmunities { get; set; } = new();
+
+        public List<string> ConditionImmunities { get; set; } = new();
 
         // Derived stats
         public int Level { get; set; }
@@ -393,6 +400,12 @@ namespace RPGSystem.Models.Characters
             PendingAbilityScoreImprovementPoints--;
 
             return true;
+        }
+        public string FormatDefenseList(List<string> values)
+        {
+            return values.Any()
+                ? string.Join(", ", values)
+                : "None";
         }
         private int GetShieldBonus()
         {

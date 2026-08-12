@@ -286,8 +286,15 @@ input[type=number] {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-    .skill-row:last-child,
-    .equipment-row:last-child,
-    .resource-row:last-child {
-        border-bottom: 0;
-    }
+.skill-row:last-child,
+.equipment-row:last-child,
+.resource-row:last-child {
+    border-bottom: 0;
+}
+.defense-group {
+    margin-bottom: 0.75rem;
+}
+
+.defense-group:last-child {
+    margin-bottom: 0;
+}

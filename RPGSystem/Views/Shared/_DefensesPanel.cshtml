@@ -1,0 +1,34 @@
+﻿@using RPGSystem.Models.Classes.Features
+@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel">
+    <h2 class="sheet-panel-title">Defenses</h2>
+
+    <div class="defense-group">
+        <div class="sheet-subtitle">Resistances</div>
+        <div>@(Model.DamageResistances.Any() ? string.Join(", ", Model.DamageResistances) : "None")</div>
+    </div>
+
+    @if (Model.GetFeature(BarbarianFeatures.Rage)?.IsActive == true)
+    {
+        <div class="defense-group">
+            <div class="sheet-subtitle">Temporary</div>
+            <div>Rage: resistance to bludgeoning, piercing, and slashing damage</div>
+        </div>
+    }
+
+    <div class="defense-group">
+        <div class="sheet-subtitle">Vulnerabilities</div>
+        <div>@(Model.DamageVulnerabilities.Any() ? string.Join(", ", Model.DamageVulnerabilities) : "None")</div>
+    </div>
+
+    <div class="defense-group">
+        <div class="sheet-subtitle">Immunities</div>
+        <div>@(Model.DamageImmunities.Any() ? string.Join(", ", Model.DamageImmunities) : "None")</div>
+    </div>
+
+    <div class="defense-group">
+        <div class="sheet-subtitle">Condition Immunities</div>
+        <div>@(Model.ConditionImmunities.Any() ? string.Join(", ", Model.ConditionImmunities) : "None")</div>
+    </div>
+</section>
