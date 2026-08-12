@@ -50,9 +50,9 @@ namespace RPGSystem.Models.Characters
         public int Level { get; set; }
         public int ArmorClass { get; set; } = 10;
         public int PassivePerception => GetPassiveSkillScore(SkillType.Perception);
-        //public int PassiveInvestigation => GetPassiveSkillScore(SkillType.Investigation);
+        public int PassiveInvestigation => GetPassiveSkillScore(SkillType.Investigation);
 
-        //public int PassiveInsight => GetPassiveSkillScore(SkillType.Insight);
+        public int PassiveInsight => GetPassiveSkillScore(SkillType.Insight);
         // Character State
         public List<ConditionType> Conditions { get; set; } = new();
         public int DeathSaveSuccesses { get; set; }
@@ -268,11 +268,6 @@ namespace RPGSystem.Models.Characters
         public int GetInitiative()
         {
             return GetAbility(AbilityType.Dexterity).Modifier;
-        }
-
-        public int GetPassivePerception()
-        {
-            return 10 + GetAbility(AbilityType.Wisdom).Modifier;
         }
 
         public Ability GetAbility(AbilityType type)

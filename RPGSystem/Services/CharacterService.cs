@@ -864,13 +864,6 @@ namespace RPGSystem.Services
                     intelligence, wisdom, charisma
                 },
 
-                Skills = new List<Skill>
-                {
-                    new Skill { Name = "Athletics", Type = SkillType.Athletics, RelatedAbility = strength},
-                    new Skill { Name = "Perception", Type = SkillType.Perception, RelatedAbility = wisdom },
-                    new Skill { Name = "Stealth", Type = SkillType.Stealth, RelatedAbility = dexterity }
-                },
-
                 EquippedWeapon = new Weapon
                 {
                     Name = "Longsword",
@@ -927,6 +920,7 @@ namespace RPGSystem.Services
                 },
 
             };
+            character.Skills = SkillFactory.CreateDefaultSkills(character);
             character.ApplySkillProficiencies(new[]
                 {
                     SkillType.Athletics,
@@ -953,38 +947,10 @@ namespace RPGSystem.Services
                 ClassType = CharacterClassType.Rogue,
 
                 Abilities = new List<Ability>
-        {
-            strength, dexterity, constitution,
-            intelligence, wisdom, charisma
-        },
-
-                Skills = new List<Skill>
-        {
-            new Skill
-            {
-                Name = "Stealth",
-                Type = SkillType.Stealth,
-                RelatedAbility = dexterity,
-            },
-            new Skill
-            {
-                Name = "Perception",
-                Type = SkillType.Perception,
-                RelatedAbility = wisdom,
-            },
-            new Skill
-            {
-                Name = "Acrobatics",
-                Type = SkillType.Acrobatics,
-                RelatedAbility = dexterity,
-            },
-            new Skill
-            {
-                Name = "Sleight of Hand",
-                Type = SkillType.SleightOfHand,
-                RelatedAbility = dexterity,
-            }
-        },
+                {
+                    strength, dexterity, constitution,
+                    intelligence, wisdom, charisma
+                },
 
                 EquippedWeapon = new Weapon
                 {
@@ -1066,12 +1032,16 @@ namespace RPGSystem.Services
                 SkillType.SleightOfHand
             });
 
+            character.Skills = SkillFactory.CreateDefaultSkills(character);
+            
             character.ApplySkillExpertise(new[]
             {
                 SkillType.Stealth,
                 SkillType.SleightOfHand
             });
+
             ApplyClassSetup(character);
+
             return character;
         }
         public Character GetBarbarianTestCharacter()
@@ -1127,41 +1097,10 @@ namespace RPGSystem.Services
                 ClassType = CharacterClassType.Barbarian,
 
                 Abilities = new List<Ability>
-        {
-            strength, dexterity, constitution,
-            intelligence, wisdom, charisma
-        },
-
-                Skills = new List<Skill>
-        {
-            new Skill
-            {
-                Name = "Athletics",
-                Type = SkillType.Athletics,
-                RelatedAbility = strength,
-            },
-
-            new Skill
-            {
-                Name = "Intimidation",
-                Type = SkillType.Intimidation,
-                RelatedAbility = charisma,
-            },
-
-            new Skill
-            {
-                Name = "Survival",
-                Type = SkillType.Survival,
-                RelatedAbility = wisdom,
-            },
-
-            new Skill
-            {
-                Name = "Perception",
-                Type = SkillType.Perception,
-                RelatedAbility = wisdom
-            }
-        },
+                {
+                    strength, dexterity, constitution,
+                    intelligence, wisdom, charisma
+                },
 
                 EquippedWeapon = new Weapon
                 {
@@ -1248,13 +1187,17 @@ namespace RPGSystem.Services
             }
         }
             };
+            character.Skills = SkillFactory.CreateDefaultSkills(character);
+
             character.ApplySkillProficiencies(new[]
             {
                 SkillType.Athletics,
                 SkillType.Intimidation,
                 SkillType.Survival
             });
+
             ApplyClassSetup(character);
+
             return character;
         }
         public Character GetMonkTestCharacter()
@@ -1313,37 +1256,6 @@ namespace RPGSystem.Services
                 {
                     strength, dexterity, constitution,
                     intelligence, wisdom, charisma
-                },
-
-                Skills = new List<Skill>
-                {
-                    new Skill
-                    {
-                        Name = "Acrobatics",
-                        Type = SkillType.Acrobatics,
-                        RelatedAbility = dexterity,
-                    },
-
-                    new Skill
-                    {
-                        Name = "Stealth",
-                        Type = SkillType.Stealth,
-                        RelatedAbility = dexterity,
-                    },
-
-                    new Skill
-                    {
-                        Name = "Perception",
-                        Type = SkillType.Perception,
-                        RelatedAbility = wisdom,
-                    },
-
-                    new Skill
-                    {
-                        Name = "Athletics",
-                        Type = SkillType.Athletics,
-                        RelatedAbility = strength
-                    }
                 },
 
                 EquippedWeapons = new List<Weapon>
@@ -1420,13 +1332,17 @@ namespace RPGSystem.Services
             }
         },
             };
+            character.Skills = SkillFactory.CreateDefaultSkills(character);
+
             character.ApplySkillProficiencies(new[]
             {
                 SkillType.Acrobatics,
                 SkillType.Stealth,
                 SkillType.Perception
             });
+
             ApplyClassSetup(character);
+
             return character;
         }
         private void ApplyClassSetup(Character character)
