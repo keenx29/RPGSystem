@@ -713,6 +713,11 @@ namespace RPGSystem.Services
 
             _character.FeatureResources = characterClass.GetResourcesForLevel(_character.Level);
             
+            if (characterClass.GrantsAbilityScoreImprovement(_character.Level))
+            {
+                _character.PendingAbilityScoreImprovementPoints += 2;
+            }
+
             return new RollResult
             {
                 Actor = "Level Up",
@@ -817,6 +822,10 @@ namespace RPGSystem.Services
         public void UnequipShield(Guid shieldId)
         {
             _character.UnequipShield(shieldId);
+        }
+        public void IncreaseAbilityScore(AbilityType abilityType)
+        {
+            _character.IncreaseAbilityScore(abilityType);
         }
         public Character GetFighterTestCharacter()
         {

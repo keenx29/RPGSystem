@@ -3,11 +3,23 @@
 <section class="sheet-panel abilities-panel">
 
     <h2 class="sheet-panel-title">Abilities</h2>
-
+    @if (Model.PendingAbilityScoreImprovementPoints > 0)
+    {
+        <div class="alert alert-info">
+            Ability Score Improvement points: @Model.PendingAbilityScoreImprovementPoints
+        </div>
+    }
     <div class="d-flex flex-wrap">
         @foreach (var ability in Model.Abilities)
         {
             <partial name="_AbilityCard" model="ability" />
+            @if (Model.PendingAbilityScoreImprovementPoints > 0 && ability.Score < 20)
+            {
+                <form asp-action="IncreaseAbilityScore" method="post">
+                    <input type="hidden" name="abilityType" value="@ability.Type" />
+                    <button type="submit" class="btn btn-sm btn-outline-primary">+1</button>
+                </form>
+            }
         }
     </div>
 

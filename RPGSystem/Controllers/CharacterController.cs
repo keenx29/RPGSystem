@@ -233,6 +233,13 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult IncreaseAbilityScore(AbilityType abilityType)
+        {
+            _characterService.IncreaseAbilityScore(abilityType);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult ToggleFeature(string featureName)
         {
             var result = _characterService.ToggleFeature(featureName);

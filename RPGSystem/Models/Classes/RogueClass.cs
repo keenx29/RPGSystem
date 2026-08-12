@@ -85,5 +85,10 @@ namespace RPGSystem.Models.Classes
         {
             return false;
         }
+        public override bool GrantsAbilityScoreImprovement(int level)
+        {
+            return base.GrantsAbilityScoreImprovement(level)
+                || level == 10;
+        }
     }
 }

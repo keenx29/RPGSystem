@@ -36,6 +36,7 @@ namespace RPGSystem.Models.Characters
         }
         public int HitDiceRemaining { get; set; }
         public int MaxHitDice => Level;
+        public int PendingAbilityScoreImprovementPoints { get; set; }
 
         // Derived stats
         public int Level { get; set; }
@@ -373,6 +374,25 @@ namespace RPGSystem.Models.Characters
         {
             var characterClass = CharacterClassFactory.Create(ClassType);
             return characterClass.IsProficientWithShield();
+        }
+        public bool IncreaseAbilityScore(AbilityType abilityType)
+        {
+            if (PendingAbilityScoreImprovementPoints <= 0)
+            {
+                return false;
+            }
+
+            var ability = GetAbility(abilityType);
+
+            if (ability.Score >= 20)
+            {
+                return false;
+            }
+
+            ability.Score++;
+            PendingAbilityScoreImprovementPoints--;
+
+            return true;
         }
         private int GetShieldBonus()
         {
