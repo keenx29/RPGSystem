@@ -849,7 +849,15 @@ namespace RPGSystem.Services
                 {
                     "Poison"
                 },
-
+                Senses = new List<CharacterSense>
+                {
+                    new CharacterSense
+                    {
+                        Name = "Darkvision",
+                        RangeFeet = 60,
+                        Description = "Can see in dim light within 60 ft as if it were bright light."
+                    }
+                },
                 Abilities = new List<Ability>
                 {
                     strength, dexterity, constitution,

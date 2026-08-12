@@ -1,0 +1,47 @@
+﻿@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel">
+    <h2 class="sheet-panel-title">Senses</h2>
+
+    <div class="defense-group">
+        <div class="sheet-subtitle">Passive Perception</div>
+        <div>@Model.PassivePerception</div>
+    </div>
+
+    @* <div class="defense-group">
+        <div class="sheet-subtitle">Passive Investigation</div>
+        <div>@Model.PassiveInvestigation</div>
+    </div>
+
+    <div class="defense-group">
+        <div class="sheet-subtitle">Passive Insight</div>
+        <div>@Model.PassiveInsight</div>
+    </div> *@
+
+    <div class="defense-group">
+        <div class="sheet-subtitle">Special Senses</div>
+
+        @if (Model.Senses.Any())
+        {
+            foreach (var sense in Model.Senses)
+            {
+                <div>
+                    <strong>@sense.Name</strong>
+                    @if (sense.RangeFeet.HasValue)
+                    {
+                        <span>@sense.RangeFeet.Value ft</span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(sense.Description))
+                    {
+                        <div class="small text-muted">@sense.Description</div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div>None</div>
+        }
+    </div>
+</section>

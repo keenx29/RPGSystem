@@ -44,10 +44,15 @@ namespace RPGSystem.Models.Characters
         public List<string> DamageImmunities { get; set; } = new();
 
         public List<string> ConditionImmunities { get; set; } = new();
+        public List<CharacterSense> Senses { get; set; } = new();
 
         // Derived stats
         public int Level { get; set; }
         public int ArmorClass { get; set; } = 10;
+        public int PassivePerception => GetPassiveSkillScore(SkillType.Perception);
+        //public int PassiveInvestigation => GetPassiveSkillScore(SkillType.Investigation);
+
+        //public int PassiveInsight => GetPassiveSkillScore(SkillType.Insight);
         // Character State
         public List<ConditionType> Conditions { get; set; } = new();
         public int DeathSaveSuccesses { get; set; }
@@ -400,6 +405,12 @@ namespace RPGSystem.Models.Characters
             PendingAbilityScoreImprovementPoints--;
 
             return true;
+        }
+        public int GetPassiveSkillScore(SkillType skillType)
+        {
+            var skill = GetSkill(skillType);
+
+            return 10 + skill.GetBonus(GetProficiencyBonus());
         }
         public string FormatDefenseList(List<string> values)
         {
