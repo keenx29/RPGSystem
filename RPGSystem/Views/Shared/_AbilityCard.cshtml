@@ -37,6 +37,18 @@
             </button>
 
         </form>
+        <form asp-action="SetSavingThrowProficiency" method="post" class="d-inline">
+            <input type="hidden" name="abilityType" value="@Model.Type" />
 
+            <label class="d-inline-flex align-items-center gap-1 small">
+                <input type="checkbox"
+                       name="isProficient"
+                       value="true"
+                       checked="@Model.IsSavingThrowProficient"
+                       onchange="this.form.submit()" />
+                <input type="hidden" name="isProficient" value="false" />
+                Prof
+            </label>
+        </form>
     </div>
 </div>

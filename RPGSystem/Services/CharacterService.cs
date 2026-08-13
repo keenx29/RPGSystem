@@ -49,7 +49,6 @@ namespace RPGSystem.Services
         {
             return _characters;
         }
-
         public void SelectCharacter(Guid characterId)
         {
             var character = _characters.FirstOrDefault(c => c.Id == characterId);
@@ -84,177 +83,175 @@ namespace RPGSystem.Services
                 .FirstOrDefault(w => w.Id == weaponId);
         }
         private AdvantageResolution ResolveAdvantage(
-    RollType rollType,
-    AdvantageState selectedAdvantage,
-    AbilityType? abilityType = null)
-        {
-            var result = new AdvantageResolution();
-
-            bool grantsAdvantage = false;
-            bool grantsDisadvantage = false;
-            var recklessAttack = _character.GetFeature(BarbarianFeatures.RecklessAttack);
-
-            if (rollType == RollType.Attack && recklessAttack?.IsActive == true)
-            {
-                if (abilityType == AbilityType.Strength)
+            RollType rollType,
+            AdvantageState selectedAdvantage,
+            AbilityType? abilityType = null)
                 {
-                    grantsAdvantage = true;
-                    result.AppliedEffects.Add(BarbarianFeatures.RecklessAttack);
-                    result.Explanations.Add(new RollExplanation
+                    var result = new AdvantageResolution();
+
+                    bool grantsAdvantage = false;
+                    bool grantsDisadvantage = false;
+                    var recklessAttack = _character.GetFeature(BarbarianFeatures.RecklessAttack);
+
+                    if (rollType == RollType.Attack && recklessAttack?.IsActive == true)
                     {
-                        Type = RollExplanationType.Advantage,
-                        Source = BarbarianFeatures.RecklessAttack,
-                        Text = "Reckless Attack gives advantage on Strength-based melee weapon attack rolls."
-                    });
-                }
-                else
-                {
-                    result.Explanations.Add(new RollExplanation
+                        if (abilityType == AbilityType.Strength)
+                        {
+                            grantsAdvantage = true;
+                            result.AppliedEffects.Add(BarbarianFeatures.RecklessAttack);
+                            result.Explanations.Add(new RollExplanation
+                            {
+                                Type = RollExplanationType.Advantage,
+                                Source = BarbarianFeatures.RecklessAttack,
+                                Text = "Reckless Attack gives advantage on Strength-based melee weapon attack rolls."
+                            });
+                        }
+                        else
+                        {
+                            result.Explanations.Add(new RollExplanation
+                            {
+                                Type = RollExplanationType.Ignored,
+                                Source = BarbarianFeatures.RecklessAttack,
+                                Text = "Reckless Attack was active but did not apply because this attack does not use Strength."
+                            });
+                        }
+                    }
+                    var dangerSense = _character.GetFeature(BarbarianFeatures.DangerSense);
+
+                    if (rollType == RollType.Save &&
+                        abilityType == AbilityType.Dexterity &&
+                        dangerSense != null)
                     {
-                        Type = RollExplanationType.Ignored,
-                        Source = BarbarianFeatures.RecklessAttack,
-                        Text = "Reckless Attack was active but did not apply because this attack does not use Strength."
-                    });
-                }
-            }
-            var dangerSense = _character.GetFeature(BarbarianFeatures.DangerSense);
+                        bool blocked =
+                            _character.HasCondition(ConditionType.Blinded) ||
+                            _character.HasCondition(ConditionType.Deafened) ||
+                            _character.HasCondition(ConditionType.Incapacitated);
 
-            if (rollType == RollType.Save &&
-                abilityType == AbilityType.Dexterity &&
-                dangerSense != null)
-            {
-                bool blocked =
-                    _character.HasCondition(ConditionType.Blinded) ||
-                    _character.HasCondition(ConditionType.Deafened) ||
-                    _character.HasCondition(ConditionType.Incapacitated);
-
-                if (blocked)
-                {
-                    result.Explanations.Add(new RollExplanation
+                        if (blocked)
+                        {
+                            result.Explanations.Add(new RollExplanation
+                            {
+                                Type = RollExplanationType.Ignored,
+                                Source = BarbarianFeatures.DangerSense,
+                                Text = "Danger Sense did not apply because the character is blinded, deafened, or incapacitated."
+                            });
+                        }
+                        else
+                        {
+                            grantsAdvantage = true;
+                            result.AppliedEffects.Add(BarbarianFeatures.DangerSense);
+                            result.Explanations.Add(new RollExplanation
+                            {
+                                Type = RollExplanationType.Advantage,
+                                Source = BarbarianFeatures.DangerSense,
+                                Text = "Danger Sense gives advantage on Dexterity saving throws in this simplified rules model."
+                            });
+                        }
+                    }
+                    if (selectedAdvantage == AdvantageState.Advantage)
                     {
-                        Type = RollExplanationType.Ignored,
-                        Source = BarbarianFeatures.DangerSense,
-                        Text = "Danger Sense did not apply because the character is blinded, deafened, or incapacitated."
-                    });
-                }
-                else
-                {
-                    grantsAdvantage = true;
-                    result.AppliedEffects.Add(BarbarianFeatures.DangerSense);
-                    result.Explanations.Add(new RollExplanation
+                        grantsAdvantage = true;
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Advantage,
+                            Source = "Manual Roll Mode",
+                            Text = "Player selected advantage for this roll."
+                        });
+                    }
+
+                    if (selectedAdvantage == AdvantageState.Disadvantage)
                     {
-                        Type = RollExplanationType.Advantage,
-                        Source = BarbarianFeatures.DangerSense,
-                        Text = "Danger Sense gives advantage on Dexterity saving throws in this simplified rules model."
-                    });
+                        grantsDisadvantage = true;
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Disadvantage,
+                            Source = "Manual Roll Mode",
+                            Text = "Player selected disadvantage for this roll."
+                        });
+                    }
+
+                    if ((rollType == RollType.Attack || rollType == RollType.Check) &&
+                        _character.HasCondition(ConditionType.Poisoned))
+                    {
+                        grantsDisadvantage = true;
+                        result.AppliedEffects.Add("Poisoned");
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Condition,
+                            Source = "Poisoned",
+                            Text = "Poisoned gives disadvantage on attack rolls and ability checks."
+                        });
+                    }
+
+                    if ((rollType == RollType.Attack || rollType == RollType.Check) &&
+                        _character.HasCondition(ConditionType.Frightened))
+                    {
+                        grantsDisadvantage = true;
+                        result.AppliedEffects.Add("Frightened");
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Condition,
+                            Source = "Frightened",
+                            Text = "Frightened gives disadvantage on attack rolls and ability checks."
+                        });
+                    }
+
+                    if (rollType == RollType.Attack &&
+                        _character.HasCondition(ConditionType.Invisible))
+                    {
+                        grantsAdvantage = true;
+                        result.AppliedEffects.Add("Invisible");
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Condition,
+                            Source = "Invisible",
+                            Text = "Invisible gives advantage on attack rolls."
+                        });
+                    }
+
+                    if (rollType == RollType.Save &&
+                        abilityType == AbilityType.Dexterity &&
+                        _character.HasCondition(ConditionType.Restrained))
+                    {
+                        grantsDisadvantage = true;
+                        result.AppliedEffects.Add("Restrained");
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Condition,
+                            Source = "Restrained",
+                            Text = "Restrained gives disadvantage on Dexterity saving throws."
+                        });
+                    }
+
+                    if (grantsAdvantage && grantsDisadvantage)
+                    {
+                        result.FinalState = AdvantageState.Normal;
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Cancellation,
+                            Source = "Advantage Rules",
+                            Text = "Advantage and disadvantage cancel each other out."
+                        });
+
+                        return result;
+                    }
+
+                    result.FinalState = grantsAdvantage
+                        ? AdvantageState.Advantage
+                        : grantsDisadvantage
+                            ? AdvantageState.Disadvantage
+                            : AdvantageState.Normal;
+
+                    return result;
                 }
-            }
-            if (selectedAdvantage == AdvantageState.Advantage)
-            {
-                grantsAdvantage = true;
-                result.Explanations.Add(new RollExplanation
-                {
-                    Type = RollExplanationType.Advantage,
-                    Source = "Manual Roll Mode",
-                    Text = "Player selected advantage for this roll."
-                });
-            }
-
-            if (selectedAdvantage == AdvantageState.Disadvantage)
-            {
-                grantsDisadvantage = true;
-                result.Explanations.Add(new RollExplanation
-                {
-                    Type = RollExplanationType.Disadvantage,
-                    Source = "Manual Roll Mode",
-                    Text = "Player selected disadvantage for this roll."
-                });
-            }
-
-            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
-                _character.HasCondition(ConditionType.Poisoned))
-            {
-                grantsDisadvantage = true;
-                result.AppliedEffects.Add("Poisoned");
-                result.Explanations.Add(new RollExplanation
-                {
-                    Type = RollExplanationType.Condition,
-                    Source = "Poisoned",
-                    Text = "Poisoned gives disadvantage on attack rolls and ability checks."
-                });
-            }
-
-            if ((rollType == RollType.Attack || rollType == RollType.Check) &&
-                _character.HasCondition(ConditionType.Frightened))
-            {
-                grantsDisadvantage = true;
-                result.AppliedEffects.Add("Frightened");
-                result.Explanations.Add(new RollExplanation
-                {
-                    Type = RollExplanationType.Condition,
-                    Source = "Frightened",
-                    Text = "Frightened gives disadvantage on attack rolls and ability checks."
-                });
-            }
-
-            if (rollType == RollType.Attack &&
-                _character.HasCondition(ConditionType.Invisible))
-            {
-                grantsAdvantage = true;
-                result.AppliedEffects.Add("Invisible");
-                result.Explanations.Add(new RollExplanation
-                {
-                    Type = RollExplanationType.Condition,
-                    Source = "Invisible",
-                    Text = "Invisible gives advantage on attack rolls."
-                });
-            }
-
-            if (rollType == RollType.Save &&
-                abilityType == AbilityType.Dexterity &&
-                _character.HasCondition(ConditionType.Restrained))
-            {
-                grantsDisadvantage = true;
-                result.AppliedEffects.Add("Restrained");
-                result.Explanations.Add(new RollExplanation
-                {
-                    Type = RollExplanationType.Condition,
-                    Source = "Restrained",
-                    Text = "Restrained gives disadvantage on Dexterity saving throws."
-                });
-            }
-
-            if (grantsAdvantage && grantsDisadvantage)
-            {
-                result.FinalState = AdvantageState.Normal;
-                result.Explanations.Add(new RollExplanation
-                {
-                    Type = RollExplanationType.Cancellation,
-                    Source = "Advantage Rules",
-                    Text = "Advantage and disadvantage cancel each other out."
-                });
-
-                return result;
-            }
-
-            result.FinalState = grantsAdvantage
-                ? AdvantageState.Advantage
-                : grantsDisadvantage
-                    ? AdvantageState.Disadvantage
-                    : AdvantageState.Normal;
-
-            return result;
-        }
         public void AddCondition(ConditionType condition)
         {
             _character.AddCondition(condition);
         }
-
         public void RemoveCondition(ConditionType condition)
         {
             _character.RemoveCondition(condition);
         }
-
         public void ClearConditions()
         {
             _character.ClearConditions();
@@ -305,6 +302,7 @@ namespace RPGSystem.Services
         }
         public RollResult RollSkill(SkillType skillType, AdvantageState adv)
         {
+            //TODO: Formula for negative modifiers
             var skill = _character.GetSkill(skillType);
             var advantage = ResolveAdvantage(RollType.Check, adv, skill.RelatedAbility.Type);
             int roll = _diceService.RollD20(advantage.FinalState);
@@ -419,12 +417,10 @@ namespace RPGSystem.Services
         {
             return RollDamage(weaponId, isCritical: false);
         }
-
         public RollResult RollCriticalDamage(Guid weaponId)
         {
             return RollDamage(weaponId, isCritical: true);
         }
-
         private RollResult RollDamage(Guid weaponId, bool isCritical)
         {
             var weapon = FindWeapon(weaponId);
@@ -734,6 +730,7 @@ namespace RPGSystem.Services
         }
         public RollResult? ShortRest(int hitDiceCount)
         {
+            //TODO: Separate hit dice and short rest logic
             _character.ShortRest();
 
             if (hitDiceCount <= 0)
@@ -818,7 +815,6 @@ namespace RPGSystem.Services
 
             _character.EquipShield(shield);
         }
-
         public void UnequipShield(Guid shieldId)
         {
             _character.UnequipShield(shieldId);
@@ -826,6 +822,56 @@ namespace RPGSystem.Services
         public void IncreaseAbilityScore(AbilityType abilityType)
         {
             _character.IncreaseAbilityScore(abilityType);
+        }
+        public bool SetSkillProficiency(SkillType skillType, bool isProficient)
+        {
+            var characterClass = CharacterClassFactory.Create(_character.ClassType);
+
+            if (isProficient)
+            {
+                if (!characterClass.CanChooseSkillProficiency(skillType))
+                {
+                    return false;
+                }
+
+                var selectedClassSkillCount = _character.Skills
+                    .Count(skill =>
+                        skill.IsProficient &&
+                        characterClass.CanChooseSkillProficiency(skill.Type));
+
+                var skill = _character.GetSkill(skillType);
+
+                if (!skill.IsProficient &&
+                    selectedClassSkillCount >= characterClass.SkillProficiencyChoiceCount)
+                {
+                    return false;
+                }
+            }
+
+            return _character.SetSkillProficiency(skillType, isProficient);
+        }
+        public bool SetSkillExpertise(SkillType skillType, bool isExpertise)
+        {
+            var skill = _character.GetSkill(skillType);
+
+            if (isExpertise && !skill.IsProficient)
+            {
+                return false;
+            }
+
+            return _character.SetSkillExpertise(skillType, isExpertise);
+        }
+        public bool SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
+        {
+            var characterClass = CharacterClassFactory.Create(_character.ClassType);
+
+            if (isProficient &&
+                !characterClass.HasSavingThrowProficiency(abilityType))
+            {
+                return false;
+            }
+
+            return _character.SetSavingThrowProficiency(abilityType, isProficient);
         }
         public Character GetFighterTestCharacter()
         {

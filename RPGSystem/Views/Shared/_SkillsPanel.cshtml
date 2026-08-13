@@ -1,13 +1,41 @@
 ﻿@using RPGSystem.Helpers
+@using RPGSystem.Models.Classes
 @model RPGSystem.Models.Characters.Character
 
 <section class="sheet-panel skills-panel">
-
     <h2 class="sheet-panel-title">Skills</h2>
+
+    @{
+        var characterClass = CharacterClassFactory.Create(Model.ClassType);
+
+        var selectedClassSkillCount = Model.Skills.Count(skill =>
+        skill.IsProficient &&
+        characterClass.CanChooseSkillProficiency(skill.Type));
+
+        var skillChoiceLimit = characterClass.SkillProficiencyChoiceCount;
+        var skillLimitReached = selectedClassSkillCount >= skillChoiceLimit;
+    }
+
+    <div class="text-muted small mb-2">
+        Skill proficiencies: @selectedClassSkillCount / @skillChoiceLimit
+    </div>
 
     @foreach (var skill in Model.Skills)
     {
-        int bonus = Model.GetSkillBonus(skill);
+        var canChooseSkill = characterClass.CanChooseSkillProficiency(skill.Type);
+
+        var proficiencyDisabled =
+        !skill.IsProficient &&
+        (!canChooseSkill || skillLimitReached);
+
+        var expertiseDisabled = !skill.IsProficient;
+
+        var bonus = Model.GetSkillBonus(skill);
+        var proficiencyTitle = !canChooseSkill
+        ? "Not available for this class"
+        : skillLimitReached && !skill.IsProficient
+        ? "Skill proficiency limit reached"
+        : "";
 
         <div class="skill-row">
             <div>
@@ -27,6 +55,39 @@
             <div class="d-flex align-items-center gap-2">
                 <strong>@ModifierFormatter.FormatWithoutSpace(bonus)</strong>
 
+                <form asp-action="SetSkillProficiency" method="post" class="m-0">
+                    <input type="hidden" name="skillType" value="@skill.Type" />
+
+                    <label class="d-inline-flex align-items-center gap-1 small" title="@proficiencyTitle">
+                        <input type="checkbox"
+                               name="isProficient"
+                               value="true"
+                               checked="@skill.IsProficient"
+                               disabled="@proficiencyDisabled"
+                               onchange="this.form.submit()" />
+                        <input type="hidden" name="isProficient" value="false" />
+                        Prof
+                    </label>
+                </form>
+                @if (Model.ClassType == CharacterClassType.Rogue)
+                {
+                    <form asp-action="SetSkillExpertise" method="post" class="m-0">
+                        <input type="hidden" name="skillType" value="@skill.Type" />
+
+                        <label class="d-inline-flex align-items-center gap-1 small">
+                            <input type="checkbox"
+                                   name="isExpertise"
+                                   value="true"
+                                   checked="@skill.IsExpertise"
+                                   disabled="@expertiseDisabled"
+                                   onchange="this.form.submit()" />
+                            <input type="hidden" name="isExpertise" value="false" />
+                            Exp
+                        </label>
+                    </form>
+                }
+                
+
                 <form asp-controller="Character" asp-action="RollSkill" method="post" class="m-0">
                     <input type="hidden" name="skillType" value="@skill.Type" />
                     <button class="btn btn-sm btn-dark">
@@ -36,5 +97,4 @@
             </div>
         </div>
     }
-
 </section>

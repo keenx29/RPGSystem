@@ -213,13 +213,8 @@ namespace RPGSystem.Models.Characters
         {
             return ClassFeatures.FirstOrDefault(f => f.Name == name);
         }
-        public void UseFeature(string name, Action<ClassFeatureInstance> effect)
-        {
-            //TODO: future generic feature system (maybe)
-        }
         public void ShortRest()
         {
-            //TODO: Hit Dice System
             RestoreFeatureUsesForShortRest();
             RestoreResourcesForShortRest();
         }
@@ -412,6 +407,42 @@ namespace RPGSystem.Models.Characters
             return values.Any()
                 ? string.Join(", ", values)
                 : "None";
+        }
+        public bool SetSkillProficiency(SkillType skillType, bool isProficient)
+        {
+            var skill = GetSkill(skillType);
+
+            skill.IsProficient = isProficient;
+
+            if (!isProficient)
+            {
+                skill.IsExpertise = false;
+            }
+
+            return true;
+        }
+
+        public bool SetSkillExpertise(SkillType skillType, bool isExpertise)
+        {
+            var skill = GetSkill(skillType);
+
+            if (isExpertise)
+            {
+                skill.IsProficient = true;
+            }
+
+            skill.IsExpertise = isExpertise;
+
+            return true;
+        }
+
+        public bool SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
+        {
+            var ability = GetAbility(abilityType);
+
+            ability.IsSavingThrowProficient = isProficient;
+
+            return true;
         }
         private int GetShieldBonus()
         {

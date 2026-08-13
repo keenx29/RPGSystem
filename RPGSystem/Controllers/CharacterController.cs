@@ -249,6 +249,29 @@ namespace RPGSystem.Controllers
 
             return RedirectToAction("Sheet");
         }
+        [HttpPost]
+        public IActionResult SetSkillProficiency(SkillType skillType, bool isProficient)
+        {
+            _characterService.SetSkillProficiency(skillType, isProficient);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult SetSkillExpertise(SkillType skillType, bool isExpertise)
+        {
+            _characterService.SetSkillExpertise(skillType, isExpertise);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
+        {
+            _characterService.SetSavingThrowProficiency(abilityType, isProficient);
+
+            return RedirectToAction("Sheet");
+        }
 
     }
 }

@@ -10,7 +10,7 @@ namespace RPGSystem.Models.Classes
         public override CharacterClassType Type =>
            CharacterClassType.Rogue;
         public override int HitDie => 8;
-
+        public override int SkillProficiencyChoiceCount => 4;
         public override List<ClassFeatureInstance> GetFeaturesForLevel(int level)
         {
             var features = new List<ClassFeatureInstance>();

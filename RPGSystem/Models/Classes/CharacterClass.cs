@@ -9,6 +9,7 @@ namespace RPGSystem.Models.Classes
         public abstract CharacterClassType Type { get; }
 
         public abstract int HitDie { get; }
+        public virtual int SkillProficiencyChoiceCount => 2;
 
         public abstract List<ClassFeatureInstance> GetFeaturesForLevel(int level);
         public virtual int? GetUnarmoredArmorClass(Character character)
@@ -42,6 +43,15 @@ namespace RPGSystem.Models.Classes
                 || level == 12
                 || level == 16
                 || level == 19;
+        }
+        public bool CanChooseSkillProficiency(SkillType skillType)
+        {
+            return AvailableSkillProficiencies.Contains(skillType);
+        }
+
+        public bool HasSavingThrowProficiency(AbilityType abilityType)
+        {
+            return SavingThrowProficiencies.Contains(abilityType);
         }
     }
 }
