@@ -298,3 +298,6 @@ input[type=number] {
 .defense-group:last-child {
     margin-bottom: 0;
 }
+.notes-panel textarea {
+    resize: vertical;
+}

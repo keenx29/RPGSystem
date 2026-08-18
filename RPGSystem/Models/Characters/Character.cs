@@ -45,6 +45,21 @@ namespace RPGSystem.Models.Characters
 
         public List<string> ConditionImmunities { get; set; } = new();
         public List<CharacterSense> Senses { get; set; } = new();
+        public string Race { get; set; } = "";
+
+        public string Background { get; set; } = "";
+
+        public string Alignment { get; set; } = "";
+
+        public string PersonalityTraits { get; set; } = "";
+
+        public string Ideals { get; set; } = "";
+
+        public string Bonds { get; set; } = "";
+
+        public string Flaws { get; set; } = "";
+
+        public string Notes { get; set; } = "";
 
         // Derived stats
         public int Level { get; set; }

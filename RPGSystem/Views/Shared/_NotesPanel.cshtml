@@ -1,0 +1,53 @@
+﻿@model RPGSystem.Models.Characters.Character
+
+<section class="sheet-panel notes-panel">
+    <h2 class="sheet-panel-title">Notes</h2>
+
+    <form asp-action="UpdateCharacterNotes" method="post">
+        <div class="row g-2 mb-2">
+            <div class="col-md-4">
+                <label class="form-label small">Race</label>
+                <input name="Race" value="@Model.Race" class="form-control form-control-sm" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small">Background</label>
+                <input name="Background" value="@Model.Background" class="form-control form-control-sm" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small">Alignment</label>
+                <input name="Alignment" value="@Model.Alignment" class="form-control form-control-sm" />
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label small">Personality Traits</label>
+            <textarea name="PersonalityTraits" class="form-control form-control-sm" rows="2">@Model.PersonalityTraits</textarea>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label small">Ideals</label>
+            <textarea name="Ideals" class="form-control form-control-sm" rows="2">@Model.Ideals</textarea>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label small">Bonds</label>
+            <textarea name="Bonds" class="form-control form-control-sm" rows="2">@Model.Bonds</textarea>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label small">Flaws</label>
+            <textarea name="Flaws" class="form-control form-control-sm" rows="2">@Model.Flaws</textarea>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label small">General Notes</label>
+            <textarea name="Notes" class="form-control form-control-sm" rows="4">@Model.Notes</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-sm btn-dark">
+            Save Notes
+        </button>
+    </form>
+</section>

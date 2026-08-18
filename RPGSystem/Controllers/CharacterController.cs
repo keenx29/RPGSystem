@@ -287,6 +287,12 @@ namespace RPGSystem.Controllers
 
             return RedirectToAction("Sheet");
         }
+        [HttpPost]
+        public IActionResult UpdateCharacterNotes(UpdateCharacterNotesViewModel model)
+        {
+            _characterService.UpdateCharacterNotes(model);
 
+            return RedirectToAction("Sheet");
+        }
     }
 }

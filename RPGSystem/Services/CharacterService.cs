@@ -923,6 +923,17 @@ namespace RPGSystem.Services
 
             return _character.SetSavingThrowProficiency(abilityType, isProficient);
         }
+        public void UpdateCharacterNotes(UpdateCharacterNotesViewModel model)
+        {
+            _character.Race = model.Race ?? "";
+            _character.Background = model.Background ?? "";
+            _character.Alignment = model.Alignment ?? "";
+            _character.PersonalityTraits = model.PersonalityTraits ?? "";
+            _character.Ideals = model.Ideals ?? "";
+            _character.Bonds = model.Bonds ?? "";
+            _character.Flaws = model.Flaws ?? "";
+            _character.Notes = model.Notes ?? "";
+        }
         public Character GetFighterTestCharacter()
         {
             var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 16 };
@@ -940,7 +951,13 @@ namespace RPGSystem.Services
                 HitDiceRemaining = 4,
                 MovementSpeed = 30,
                 ClassType = CharacterClassType.Fighter,
-
+                Race = "Dwarf",
+                Background = "Soldier",
+                Alignment = "Neutral Good",
+                PersonalityTraits = "Direct, loyal, and practical.",
+                Ideals = "Discipline and duty matter more than glory.",
+                Bonds = "Protects the people who fight beside him.",
+                Flaws = "Sometimes trusts strength more than planning.",
                 DamageResistances = new List<string>
                 {
                     "Poison"
