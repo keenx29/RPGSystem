@@ -1,7 +1,11 @@
 ﻿@using RPGSystem.Models.Items
 @model RPGSystem.Models.Characters.Character
 <section class="sheet-panel inventory-panel">
-    <h2 class="sheet-panel-title">Inventory</h2>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="sheet-panel-title">Inventory</h2>
+
+    </div>
+    
     @foreach (var item in Model.Inventory)
     {
         var isWeapon = item is Weapon;
@@ -92,10 +96,34 @@
                 {
                     <span class="text-muted small">No actions</span>
                 }
-
+                <form asp-action="RemoveInventoryItem" method="post" class="d-inline">
+                    <input type="hidden" name="itemId" value="@item.Id" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Remove
+                    </button>
+                </form>
             </div>
 
         </div>
     }
+    <div class="sheet-divider"></div>
 
+    <h3 class="sheet-subtitle">Add Item</h3>
+
+    <form asp-action="AddInventoryItem" method="post" class="inventory-add-form">
+        <select name="ItemKind" class="form-select form-select-sm mb-2">
+            <option value="Item">Basic Item</option>
+            <option value="Weapon">Weapon</option>
+            <option value="Armor">Armor</option>
+        </select>
+
+        <input name="Name" class="form-control form-control-sm mb-2" placeholder="Name" />
+
+        <input name="DamageDice" class="form-control form-control-sm mb-2" placeholder="Damage dice, e.g. 1d8" />
+        <input name="DamageType" class="form-control form-control-sm mb-2" placeholder="Damage type" />
+
+        <input name="BaseArmorClass" type="number" class="form-control form-control-sm mb-2" placeholder="Base AC" value="10" />
+
+        <button type="submit" class="btn btn-sm btn-dark">Add</button>
+    </form>
 </section>

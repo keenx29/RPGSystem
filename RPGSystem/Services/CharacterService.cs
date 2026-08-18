@@ -4,6 +4,7 @@ using RPGSystem.Models.Classes;
 using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Items;
 using RPGSystem.Models.Rolls;
+using RPGSystem.ViewModels;
 
 namespace RPGSystem.Services
 {
@@ -786,6 +787,55 @@ namespace RPGSystem.Services
         public void Heal(int amount)
         {
             _character.Heal(amount);
+        }
+        public void AddInventoryItem(AddInventoryItemViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                return;
+            }
+
+            Item item = model.ItemKind switch
+            {
+                "Weapon" => new Weapon
+                {
+                    Name = model.Name,
+                    Type = ItemType.Weapon,
+                    DamageDice = string.IsNullOrWhiteSpace(model.DamageDice) ? "1d4" : model.DamageDice,
+                    DamageType = string.IsNullOrWhiteSpace(model.DamageType) ? "bludgeoning" : model.DamageType,
+                    ScalingType = model.ScalingType,
+                    ProficiencyType = model.WeaponProficiencyType,
+                    ProficiencyName = model.Name,
+                    AttackBonus = model.AttackBonus
+                },
+
+                "Armor" => new Armor
+                {
+                    Name = model.Name,
+                    Type = ItemType.Armor,
+                    ArmorType = model.ArmorType,
+                    BaseArmorClass = model.BaseArmorClass,
+                },
+
+                _ => new Item
+                {
+                    Name = model.Name,
+                    Type = model.Type
+                }
+            };
+
+            _character.Inventory.Add(item);
+        }
+        public void RemoveInventoryItem(Guid itemId)
+        {
+            var item = _character.Inventory.FirstOrDefault(i => i.Id == itemId);
+
+            if (item == null)
+            {
+                return;
+            }
+
+            _character.Inventory.Remove(item);
         }
         public void EquipWeapon(Guid weaponId)
         {

@@ -139,6 +139,21 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult AddInventoryItem(AddInventoryItemViewModel model)
+        {
+            _characterService.AddInventoryItem(model);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveInventoryItem(Guid itemId)
+        {
+            _characterService.RemoveInventoryItem(itemId);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult EquipWeapon(Guid weaponId)
         {
             _characterService.EquipWeapon(weaponId);
