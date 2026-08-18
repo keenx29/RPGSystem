@@ -262,6 +262,14 @@ namespace RPGSystem.Services
             var ability = _character.GetAbility(type);
             var advantage = ResolveAdvantage(RollType.Check, adv, type);
             int roll = _diceService.RollD20(advantage.FinalState);
+            var explanations = new List<RollExplanation>(advantage.Explanations);
+
+            explanations.Add(new RollExplanation
+            {
+                Type = RollExplanationType.Info,
+                Source = ability.Name,
+                Text = $"{ability.Name} modifier applied: {ability.Modifier:+#;-#;0}."
+            });
             return new RollResult
             {
                 Actor = ability.Name,
@@ -269,11 +277,11 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = ability.Modifier,
-                Formula = $"1d20 + {ability.Modifier} {ability.Name}",
+                Formula = $"1d20 {ability.Modifier:+ #;- #;0} {ability.Name}",
                 Description = $"Ability check",
                 AdvantageType = advantage.FinalState,
                 AppliedEffects = advantage.AppliedEffects,
-                Explanations = advantage.Explanations
+                Explanations = explanations,
             };
         }
         public RollResult RollSavingThrow(AbilityType type, AdvantageState adv)
@@ -282,10 +290,35 @@ namespace RPGSystem.Services
             var advantage = ResolveAdvantage(RollType.Save, adv, type);
             int roll = _diceService.RollD20(advantage.FinalState);
             var proficiencyBonus =  _character.GetSavingThrowBonus(ability) - ability.Modifier;
-            var formula = $"1d20 + {ability.Modifier} {ability.Name} Save";
-            if (proficiencyBonus != 0)
+            var formula = $"1d20 {ability.Modifier:+ #;- #;0} {ability.Name}";
+
+            var explanations = new List<RollExplanation>(advantage.Explanations);
+
+            explanations.Add(new RollExplanation
             {
-                formula += $" + {proficiencyBonus} Proficiency";
+                Type = RollExplanationType.Info,
+                Source = ability.Name,
+                Text = $"{ability.Name} modifier applied: {ability.Modifier:+#;-#;0}."
+            });
+
+            if (ability.IsSavingThrowProficient)
+            {
+                formula += $" + {_character.GetProficiencyBonus()} Proficiency";
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = "Proficiency",
+                    Text = $"Saving throw proficiency bonus applied: +{_character.GetProficiencyBonus()}."
+                });
+            }
+            else
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = "Proficiency",
+                    Text = "No saving throw proficiency bonus applied."
+                });
             }
             return new RollResult
             {
@@ -298,7 +331,7 @@ namespace RPGSystem.Services
                 Description = $"Saving throw",
                 AdvantageType = advantage.FinalState,
                 AppliedEffects = advantage.AppliedEffects,
-                Explanations = advantage.Explanations
+                Explanations = explanations,
             };
         }
         public RollResult RollSkill(SkillType skillType, AdvantageState adv)
@@ -309,34 +342,45 @@ namespace RPGSystem.Services
             int roll = _diceService.RollD20(advantage.FinalState);
             var proficiencyBonus = _character.GetProficiencyBonus();
             var skillBonus = skill.GetBonus(proficiencyBonus);
+            var formula = $"1d20 {skill.RelatedAbility.Modifier:+ #;- #;0} {skill.RelatedAbility.Name}";
+            var explanations = new List<RollExplanation>(advantage.Explanations);
 
-            var formula = $"1d20 + {skill.RelatedAbility.Modifier} {skill.RelatedAbility.Name}";
-
-            if (skill.IsExpertise)
-                formula += $" + {proficiencyBonus * 2} Expertise";
-            else if (skill.IsProficient)
-                formula += $" + {proficiencyBonus} Proficiency";
-
-            var explanations = advantage.Explanations;
+            explanations.Add(new RollExplanation
+            {
+                Type = RollExplanationType.Info,
+                Source = skill.RelatedAbility.Name,
+                Text = $"{skill.RelatedAbility.Name} modifier applied: {skill.RelatedAbility.Modifier:+#;-#;0}."
+            });
 
             if (skill.IsExpertise)
             {
+                formula += $" + {_character.GetProficiencyBonus() * 2} Expertise";
+                
                 explanations.Add(new RollExplanation
                 {
-                    Type = RollExplanationType.Bonus,
-                    Source = RogueFeatures.Expertise,
-                    Text = "Expertise doubles the proficiency bonus for this skill.",
-                    Value = proficiencyBonus * 2
+                    Type = RollExplanationType.Info,
+                    Source = "Expertise",
+                    Text = $"Expertise applied: double proficiency bonus: +{_character.GetProficiencyBonus() * 2}."
                 });
             }
             else if (skill.IsProficient)
             {
+                formula += $" + {_character.GetProficiencyBonus()} Proficiency";
+                
                 explanations.Add(new RollExplanation
                 {
-                    Type = RollExplanationType.Bonus,
+                    Type = RollExplanationType.Info,
                     Source = "Proficiency",
-                    Text = "Proficiency bonus is added to this skill check.",
-                    Value = proficiencyBonus
+                    Text = $"Skill proficiency bonus applied: +{_character.GetProficiencyBonus()}."
+                });
+            }
+            else
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = "Proficiency",
+                    Text = "No skill proficiency bonus applied."
                 });
             }
             return new RollResult
@@ -372,25 +416,30 @@ namespace RPGSystem.Services
             var ability = _character.GetAttackAbility(weapon);
 
             var advantage = ResolveAdvantage(RollType.Attack, adv, ability.Type);
-            
+
             int roll = _diceService.RollD20(advantage.FinalState);
 
-            var proficiencyBonus = _character.IsProficientWithWeapon(weapon)
+            var isProficient = _character.IsProficientWithWeapon(weapon);
+
+            var proficiencyBonus = isProficient
                 ? _character.GetProficiencyBonus()
                 : 0;
+
             int modifier = ability.Modifier + proficiencyBonus + weapon.AttackBonus;
 
-            var formula = $"1d20 + {ability.Modifier} {ability.Name}";
+            var formula = $"1d20 {ability.Modifier:+ #;- #;0} {ability.Name}";
 
             if (proficiencyBonus != 0)
             {
                 formula += $" + {proficiencyBonus} Proficiency";
             }
-            if (weapon.AttackBonus != 0) 
+
+            if (weapon.AttackBonus != 0)
             {
-                formula += $" + {weapon.AttackBonus} Weapon Bonus";
+                formula += $" {weapon.AttackBonus:+#;-#;0} Weapon Bonus";
             }
-            var explanations = advantage.Explanations;
+
+            var explanations = new List<RollExplanation>(advantage.Explanations);
 
             explanations.Add(new RollExplanation
             {
@@ -398,6 +447,32 @@ namespace RPGSystem.Services
                 Source = weapon.Name,
                 Text = $"{weapon.Name} uses {ability.Name} for this attack based on its scaling type."
             });
+
+            explanations.Add(new RollExplanation
+            {
+                Type = RollExplanationType.Info,
+                Source = ability.Name,
+                Text = $"{ability.Name} modifier applied: {ability.Modifier:+#;-#;0}."
+            });
+
+            explanations.Add(new RollExplanation
+            {
+                Type = RollExplanationType.Info,
+                Source = "Proficiency",
+                Text = isProficient
+                    ? $"Character is proficient with {weapon.Name}, so proficiency bonus is added: +{proficiencyBonus}."
+                    : $"Character is not proficient with {weapon.Name}, so proficiency bonus is not added."
+            });
+
+            if (weapon.AttackBonus != 0)
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = weapon.Name,
+                    Text = $"Weapon attack bonus applied: {weapon.AttackBonus:+#;-#;0}."
+                });
+            }
 
             return new RollResult
             {
@@ -429,10 +504,22 @@ namespace RPGSystem.Services
             if (weapon == null)
                 throw new InvalidOperationException("Weapon not found.");
 
-            var explanations = new List<RollExplanation>();
-
             var ability = _character.GetAttackAbility(weapon);
-
+            var explanations = new List<RollExplanation>
+            {
+                new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = weapon.Name,
+                    Text = $"{weapon.Name} deals {weapon.DamageDice} {weapon.DamageType} damage."
+                },
+                new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = ability.Name,
+                    Text = $"{ability.Name} damage modifier applied: {ability.Modifier:+#;-#;0}."
+                }
+            };
             explanations.Add(new RollExplanation
             {
                 Type = RollExplanationType.Info,

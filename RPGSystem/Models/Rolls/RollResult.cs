@@ -28,10 +28,9 @@ namespace RPGSystem.Models.Rolls
 
         public bool IsCriticalFailure =>
             Type == RollType.Attack && NaturalRoll == 1;
-        public bool CanRollDamage => Type == RollType.Attack;
+        public bool CanRollDamage => Type == RollType.Attack && SourceItemId.HasValue;
         public bool CanRollCriticalDamage => CanRollDamage && IsCriticalSuccess;
         public bool IsCriticalDamage { get; set; }
-
-
+       
     }
 }
