@@ -81,20 +81,22 @@
                         </button>
                     </form>
                 }
-                @if (isConsumable)
-                {
-                    <form asp-action="UseItem" method="post">
-                        <input type="hidden" name="itemId" value="@item.Id" />
 
-                        <button class="btn btn-sm btn-dark">
-                            Use
+                @if (!isWeapon && !isArmor)
+                {
+                    @if (item.Effect != null)
+                    {
+                        <form asp-action="UseItem" method="post" class="d-inline">
+                            <input type="hidden" name="itemId" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-dark">Use</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
+                            No Use
                         </button>
-                    </form>
-                }
-
-                @if (!isWeapon && !isArmor && !isConsumable)
-                {
-                    <span class="text-muted small">No actions</span>
+                    }
                 }
                 <form asp-action="RemoveInventoryItem" method="post" class="d-inline">
                     <input type="hidden" name="itemId" value="@item.Id" />
@@ -111,6 +113,7 @@
     <h3 class="sheet-subtitle">Add Item</h3>
 
     <form asp-action="AddInventoryItem" method="post" class="inventory-add-form">
+        <label class="form-label small">Item type</label>
         <select name="ItemKind" class="form-select form-select-sm mb-2">
             <option value="Item">Basic Item</option>
             <option value="Weapon">Weapon</option>
@@ -119,10 +122,13 @@
 
         <input name="Name" class="form-control form-control-sm mb-2" placeholder="Name" />
 
-        <input name="DamageDice" class="form-control form-control-sm mb-2" placeholder="Damage dice, e.g. 1d8" />
+        <label class="form-label small">Weapon damage dice</label>
+        <input name="DamageDice" class="form-control form-control-sm mb-2" placeholder="e.g. 1d8" />
+
         <input name="DamageType" class="form-control form-control-sm mb-2" placeholder="Damage type" />
 
-        <input name="BaseArmorClass" type="number" class="form-control form-control-sm mb-2" placeholder="Base AC" value="10" />
+        <label class="form-label small">Armor base AC</label>
+        <input name="BaseArmorClass" type="number" class="form-control form-control-sm mb-2" value="10" />
 
         <button type="submit" class="btn btn-sm btn-dark">Add</button>
     </form>

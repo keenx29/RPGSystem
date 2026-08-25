@@ -50,11 +50,21 @@
                         @switch (feature.ActionType)
                         {
                             case FeatureActionType.Use:
-                            case FeatureActionType.ResourceUse:
                                 <form asp-action="UseFeature" method="post" class="m-0">
                                     <input type="hidden" name="featureName" value="@feature.Name" />
                                     <button class="btn btn-sm btn-warning"
                                             disabled="@(!feature.IsAvailable)">
+                                        Use
+                                    </button>
+                                </form>
+                                break;
+                            case FeatureActionType.ResourceUse:
+                                
+                                <form asp-action="UseFeature" method="post" class="m-0">
+                                    <input type="hidden" name="featureName" value="@feature.Name" />
+                                    <button class="btn btn-sm btn-warning"
+                                            disabled="@(
+                                            feature.ResourceCost > Model.FeatureResources.FirstOrDefault()?.Current)">
                                         Use
                                     </button>
                                 </form>

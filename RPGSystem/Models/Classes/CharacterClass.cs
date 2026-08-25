@@ -7,10 +7,11 @@ namespace RPGSystem.Models.Classes
     public abstract class CharacterClass
     {
         public abstract CharacterClassType Type { get; }
-
         public abstract int HitDie { get; }
         public virtual int SkillProficiencyChoiceCount => 2;
-
+        public abstract IReadOnlyCollection<AbilityType> SavingThrowProficiencies { get; }
+        public virtual IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
+            Array.Empty<SkillType>();
         public abstract List<ClassFeatureInstance> GetFeaturesForLevel(int level);
         public virtual int? GetUnarmoredArmorClass(Character character)
         {
@@ -24,9 +25,7 @@ namespace RPGSystem.Models.Classes
         {
             return false;
         }
-        public abstract IReadOnlyCollection<AbilityType> SavingThrowProficiencies { get; }
-        public virtual IReadOnlyCollection<SkillType> AvailableSkillProficiencies =>
-            Array.Empty<SkillType>();
+        
         public virtual bool IsProficientWithArmor(Armor armor)
         {
             return false;
@@ -52,6 +51,10 @@ namespace RPGSystem.Models.Classes
         public bool HasSavingThrowProficiency(AbilityType abilityType)
         {
             return SavingThrowProficiencies.Contains(abilityType);
+        }
+        public virtual int GetExpertiseChoiceCount(int level)
+        {
+            return 0;
         }
     }
 }

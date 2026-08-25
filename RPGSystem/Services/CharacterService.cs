@@ -984,6 +984,7 @@ namespace RPGSystem.Services
         public RollResult? SetSkillProficiency(SkillType skillType, bool isProficient)
         {
             var characterClass = CharacterClassFactory.Create(_character.ClassType);
+            var skill = _character.GetSkill(skillType);
 
             if (isProficient)
             {
@@ -992,35 +993,54 @@ namespace RPGSystem.Services
                     return CreateFeedback($"{skillType} is not available as a skill proficiency for this class.");
                 }
 
-                var selectedClassSkillCount = _character.Skills
-                    .Count(skill =>
-                        skill.IsProficient &&
-                        characterClass.CanChooseSkillProficiency(skill.Type));
-
-                var skill = _character.GetSkill(skillType);
-                if (!skill.IsProficient)
+                if (skill.IsProficient)
                 {
-                     return CreateFeedback($"{skillType} is already proficient.");
+                    return CreateFeedback($"{skillType} is already proficient.");
                 }
+
+                var selectedClassSkillCount = _character.Skills
+                    .Count(s =>
+                        s.IsProficient &&
+                        characterClass.CanChooseSkillProficiency(s.Type));
+
                 if (selectedClassSkillCount >= characterClass.SkillProficiencyChoiceCount)
                 {
-                    return CreateFeedback($"The maximum number of proficiencies are already applied");
+                    return CreateFeedback("The maximum number of skill proficiencies is already applied.");
                 }
             }
 
             _character.SetSkillProficiency(skillType, isProficient);
             return null;
         }
-        public bool SetSkillExpertise(SkillType skillType, bool isExpertise)
+        public RollResult? SetSkillExpertise(SkillType skillType, bool isExpertise)
         {
+            var characterClass = CharacterClassFactory.Create(_character.ClassType);
             var skill = _character.GetSkill(skillType);
 
-            if (isExpertise && !skill.IsProficient)
+            if (isExpertise)
             {
-                return false;
+                if (!skill.IsProficient)
+                {
+                    return CreateFeedback("Expertise can only be applied to proficient skills.");
+                }
+
+                var expertiseLimit = characterClass.GetExpertiseChoiceCount(_character.Level);
+
+                if (expertiseLimit <= 0)
+                {
+                    return CreateFeedback($"{_character.ClassType} cannot select skill expertise.");
+                }
+
+                var selectedExpertiseCount = _character.Skills.Count(s => s.IsExpertise);
+
+                if (!skill.IsExpertise && selectedExpertiseCount >= expertiseLimit)
+                {
+                    return CreateFeedback("The maximum number of expertise choices is already applied.");
+                }
             }
 
-            return _character.SetSkillExpertise(skillType, isExpertise);
+            _character.SetSkillExpertise(skillType, isExpertise);
+            return null;
         }
         public bool SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
         {
@@ -1248,6 +1268,9 @@ namespace RPGSystem.Services
             }
         }
             };
+            
+            character.Skills = SkillFactory.CreateDefaultSkills(character);
+
             character.ApplySkillProficiencies(new[]
             {
                 SkillType.Stealth,
@@ -1256,8 +1279,6 @@ namespace RPGSystem.Services
                 SkillType.SleightOfHand
             });
 
-            character.Skills = SkillFactory.CreateDefaultSkills(character);
-            
             character.ApplySkillExpertise(new[]
             {
                 SkillType.Stealth,

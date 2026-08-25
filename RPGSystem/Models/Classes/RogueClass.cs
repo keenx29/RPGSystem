@@ -90,5 +90,9 @@ namespace RPGSystem.Models.Classes
             return base.GrantsAbilityScoreImprovement(level)
                 || level == 10;
         }
+        public override int GetExpertiseChoiceCount(int level)
+        {
+            return level >= 6 ? 4 : 2;
+        }
     }
 }

@@ -279,7 +279,10 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult SetSkillExpertise(SkillType skillType, bool isExpertise)
         {
-            _characterService.SetSkillExpertise(skillType, isExpertise);
+            var result = _characterService.SetSkillExpertise(skillType, isExpertise);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
         }
