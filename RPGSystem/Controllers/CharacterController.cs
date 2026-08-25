@@ -267,7 +267,11 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult SetSkillProficiency(SkillType skillType, bool isProficient)
         {
-            _characterService.SetSkillProficiency(skillType, isProficient);
+            var result = _characterService.SetSkillProficiency(skillType, isProficient);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+            
 
             return RedirectToAction("Sheet");
         }

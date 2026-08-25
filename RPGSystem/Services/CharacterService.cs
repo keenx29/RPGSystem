@@ -411,7 +411,9 @@ namespace RPGSystem.Services
             var weapon = FindWeapon(weaponId);
 
             if (weapon == null)
-                throw new InvalidOperationException("Weapon not found.");
+            {
+                return CreateFeedback("Weapon was not found for this attack roll.");
+            }
 
             var ability = _character.GetAttackAbility(weapon);
 
@@ -502,7 +504,9 @@ namespace RPGSystem.Services
             var weapon = FindWeapon(weaponId);
 
             if (weapon == null)
-                throw new InvalidOperationException("Weapon not found.");
+            {
+                return CreateFeedback("Weapon was not found for this damage roll.");
+            }
 
             var ability = _character.GetAttackAbility(weapon);
             var explanations = new List<RollExplanation>
@@ -711,22 +715,31 @@ namespace RPGSystem.Services
         }
         public RollResult? UseItem(Guid itemId)
         {
-            var item = _character.Inventory.First(x => x.Id == itemId);
+            var item = _character.Inventory.FirstOrDefault(x => x.Id == itemId);
+
+            if (item == null)
+            {
+                return CreateFeedback("Item was not found in inventory.");
+            }
+
+            if (item.Effect == null)
+            {
+                return CreateFeedback($"{item.Name} cannot be used.");
+            }
+
             var context = new EffectContext
             {
                 Character = _character,
                 DiceService = _diceService,
             };
-            if (item != null && item.Effect != null)
+
+            var result = item.Effect.Apply(context);
+
+            if (result != null)
             {
-                var result = item.Effect.Apply(context);
-                if (result != null)
-                {
-                    _character.Inventory.Remove(item);
-                    return result;
-                }
+                _character.Inventory.Remove(item);
             }
-            return null;
+            return result ?? CreateFeedback($"{item.Name} had no effect.");
         }
         private RollResult? ExecuteFeatureAction(ClassFeatureInstance feature)
         {
@@ -752,13 +765,17 @@ namespace RPGSystem.Services
             var feature = _character.GetFeature(featureName);
 
             if (feature == null)
-                return null;
+            {
+                return CreateFeedback($"{featureName} was not found.");
+            }
 
             switch (feature.ActionType)
             {
                 case FeatureActionType.Use:
                     if (!feature.IsAvailable)
-                        return null;
+                    {
+                        return CreateFeedback($"{feature.Name} has no uses remaining.");
+                    }
 
                     if (feature.MaxUses > 0)
                         feature.UsesRemaining--;
@@ -766,15 +783,19 @@ namespace RPGSystem.Services
                     return ExecuteFeatureAction(feature);
 
                 case FeatureActionType.ResourceUse:
-                    if (feature.ResourceName == null)
-                        return null;
+                    if (string.IsNullOrWhiteSpace(feature.ResourceName))
+                    {
+                        return CreateFeedback($"{feature.Name} is missing a resource requirement.");
+                    }
 
                     bool success = _character.SpendResource(
                         feature.ResourceName,
                         feature.ResourceCost);
 
                     if (!success)
-                        return null;
+                    {
+                        return CreateFeedback($"Not enough {feature.ResourceName} to use {feature.Name}.");
+                    }
 
                     return ExecuteFeatureAction(feature);
             }
@@ -960,7 +981,7 @@ namespace RPGSystem.Services
         {
             _character.IncreaseAbilityScore(abilityType);
         }
-        public bool SetSkillProficiency(SkillType skillType, bool isProficient)
+        public RollResult? SetSkillProficiency(SkillType skillType, bool isProficient)
         {
             var characterClass = CharacterClassFactory.Create(_character.ClassType);
 
@@ -968,7 +989,7 @@ namespace RPGSystem.Services
             {
                 if (!characterClass.CanChooseSkillProficiency(skillType))
                 {
-                    return false;
+                    return CreateFeedback($"{skillType} is not available as a skill proficiency for this class.");
                 }
 
                 var selectedClassSkillCount = _character.Skills
@@ -977,15 +998,18 @@ namespace RPGSystem.Services
                         characterClass.CanChooseSkillProficiency(skill.Type));
 
                 var skill = _character.GetSkill(skillType);
-
-                if (!skill.IsProficient &&
-                    selectedClassSkillCount >= characterClass.SkillProficiencyChoiceCount)
+                if (!skill.IsProficient)
                 {
-                    return false;
+                     return CreateFeedback($"{skillType} is already proficient.");
+                }
+                if (selectedClassSkillCount >= characterClass.SkillProficiencyChoiceCount)
+                {
+                    return CreateFeedback($"The maximum number of proficiencies are already applied");
                 }
             }
 
-            return _character.SetSkillProficiency(skillType, isProficient);
+            _character.SetSkillProficiency(skillType, isProficient);
+            return null;
         }
         public bool SetSkillExpertise(SkillType skillType, bool isExpertise)
         {
@@ -1552,6 +1576,10 @@ namespace RPGSystem.Services
             character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
             character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
             character.FeatureResources = characterClass.GetResourcesForLevel(character.Level);
+        }
+        private RollResult CreateFeedback(string message)
+        {
+            return RollResult.Info("System", message);
         }
     }
 }
