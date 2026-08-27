@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<RpgDbContext>(options =>
+builder.Services.AddDbContextFactory<RpgDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSingleton<DiceService>();
@@ -15,6 +15,8 @@ builder.Services.AddSingleton<DiceService>();
 builder.Services.AddSingleton<CharacterService>();
 
 builder.Services.AddSingleton<RollStateService>();
+
+builder.Services.AddSingleton<CharacterPersistenceService>();
 
 var app = builder.Build();
 

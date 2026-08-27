@@ -1,4 +1,5 @@
-﻿using RPGSystem.Helpers;
+﻿using RPGSystem.Data.Entities;
+using RPGSystem.Helpers;
 using RPGSystem.Models.Characters;
 using RPGSystem.Models.Classes;
 using RPGSystem.Models.Classes.Features;
@@ -13,10 +14,14 @@ namespace RPGSystem.Services
         private readonly List<Character> _characters;
         private Character _character;
         private readonly DiceService _diceService;
+        private readonly CharacterPersistenceService _persistenceService;
 
-        public CharacterService(DiceService diceService)
+        public CharacterService(
+            DiceService diceService,
+            CharacterPersistenceService persistenceService)
         {
             _diceService = diceService;
+            _persistenceService = persistenceService;
 
             _characters = new List<Character>
             {
@@ -26,7 +31,81 @@ namespace RPGSystem.Services
                 GetMonkTestCharacter()
             };
 
+            ApplySavedCharacterStates();
+
             _character = _characters.First();
+        }
+        private void ApplySavedCharacterStates()
+        {
+            var savedCharacters = _persistenceService
+                .LoadCharacterStates()
+                .ToDictionary(c => c.Id);
+
+            foreach (var character in _characters)
+            {
+                if (savedCharacters.TryGetValue(character.Id, out var savedCharacter))
+                {
+                    ApplySavedState(character, savedCharacter);
+                }
+            }
+        }
+        private void ApplySavedState(Character character, CharacterEntity savedCharacter)
+        {
+            character.Name = savedCharacter.Name;
+            character.Level = savedCharacter.Level;
+            character.MaxHP = savedCharacter.MaxHP;
+            character.CurrentHP = savedCharacter.CurrentHP;
+            character.MovementSpeed = savedCharacter.MovementSpeed;
+            character.HitDiceRemaining = savedCharacter.HitDiceRemaining;
+            character.PendingAbilityScoreImprovementPoints = savedCharacter.PendingAbilityScoreImprovementPoints;
+            character.DeathSaveSuccesses = savedCharacter.DeathSaveSuccesses;
+            character.DeathSaveFailures = savedCharacter.DeathSaveFailures;
+            character.IsStable = savedCharacter.IsStable;
+            character.IsDead = savedCharacter.IsDead;
+            character.Race = savedCharacter.Race;
+            character.Background = savedCharacter.Background;
+            character.Alignment = savedCharacter.Alignment;
+            character.PersonalityTraits = savedCharacter.PersonalityTraits;
+            character.Ideals = savedCharacter.Ideals;
+            character.Bonds = savedCharacter.Bonds;
+            character.Flaws = savedCharacter.Flaws;
+            character.Notes = savedCharacter.Notes;
+
+            foreach (var savedAbility in savedCharacter.Abilities)
+            {
+                var ability = character.GetAbility(savedAbility.Type);
+                ability.Score = savedAbility.Score;
+                ability.IsSavingThrowProficient = savedAbility.IsSavingThrowProficient;
+            }
+
+            foreach (var savedSkill in savedCharacter.Skills)
+            {
+                var skill = character.GetSkill(savedSkill.Type);
+                skill.IsProficient = savedSkill.IsProficient;
+                skill.IsExpertise = savedSkill.IsExpertise;
+            }
+
+            RefreshClassProgression(character);
+        }
+        private void ApplyClassSetup(Character character)
+        {
+            var characterClass = CharacterClassFactory.Create(character.ClassType);
+
+            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
+
+            RefreshClassProgression(character);
+        }
+
+        private void RefreshClassProgression(Character character)
+        {
+            var characterClass = CharacterClassFactory.Create(character.ClassType);
+
+            character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
+            character.FeatureResources = characterClass.GetResourcesForLevel(character.Level);
+        }
+        public void SaveCharacters()
+        {
+            _persistenceService.SaveCharacters(_characters);
         }
         private RollResult CreateFeatureResult(
             string featureName,
@@ -1152,6 +1231,7 @@ namespace RPGSystem.Services
 
             var character = new Character
             {
+                Id = DemoCharacterIds.Fighter,
                 Name = "Tyrion",
                 Level = 5,
                 HitDiceRemaining = 4,
@@ -1259,6 +1339,7 @@ namespace RPGSystem.Services
 
             var character = new Character
             {
+                Id = DemoCharacterIds.Rogue,
                 Name = "Vex",
                 Level = 4,
                 HitDiceRemaining = 4,
@@ -1410,6 +1491,7 @@ namespace RPGSystem.Services
 
             var character = new Character
             {
+                Id = DemoCharacterIds.Barbarian,
                 Name = "Grom",
                 Level = 4,
                 HitDiceRemaining = 4,
@@ -1566,6 +1648,7 @@ namespace RPGSystem.Services
 
             var character = new Character
             {
+                Id = DemoCharacterIds.Monk,
                 Name = "Kael",
                 Level = 4,
                 HitDiceRemaining = 4,
@@ -1665,14 +1748,7 @@ namespace RPGSystem.Services
 
             return character;
         }
-        private void ApplyClassSetup(Character character)
-        {
-            var characterClass = CharacterClassFactory.Create(character.ClassType);
-
-            character.ApplySavingThrowProficiencies(characterClass.SavingThrowProficiencies);
-            character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
-            character.FeatureResources = characterClass.GetResourcesForLevel(character.Level);
-        }
+        
         private RollResult CreateFeedback(string message)
         {
             return RollResult.Info("System", message);

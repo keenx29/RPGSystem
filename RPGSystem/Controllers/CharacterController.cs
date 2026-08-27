@@ -51,6 +51,15 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult SaveCharacters()
+        {
+            _characterService.SaveCharacters();
+
+            _rollHistory.Insert(0, RollResult.Info("Database", "Character data saved."));
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult AddCondition(ConditionType condition)
         {
             _characterService.AddCondition(condition);
