@@ -459,6 +459,53 @@ namespace RPGSystem.Models.Characters
 
             return true;
         }
+        public void ApplyDeathSavingThrow(int roll)
+        {
+            if (CurrentHP > 0 || IsStable || IsDead)
+                return;
+
+            if (roll == 20)
+            {
+                CurrentHP = 1;
+                ResetDeathSaves();
+                return;
+            }
+
+            if (roll == 1)
+            {
+                DeathSaveFailures += 2;
+            }
+            else if (roll >= 10)
+            {
+                DeathSaveSuccesses++;
+            }
+            else
+            {
+                DeathSaveFailures++;
+            }
+
+            if (DeathSaveSuccesses >= 3)
+            {
+                DeathSaveSuccesses = 3;
+                DeathSaveFailures = 0;
+                IsStable = true;
+            }
+
+            if (DeathSaveFailures >= 3)
+            {
+                DeathSaveFailures = 3;
+                DeathSaveSuccesses = 0;
+                IsDead = true;
+            }
+        }
+
+        public void Stabilize()
+        {
+            if (CurrentHP > 0 || IsDead)
+                return;
+
+            IsStable = true;
+        }
         private int GetShieldBonus()
         {
             return EquippedShield != null ? EquippedShield.BaseArmorClass : 0;

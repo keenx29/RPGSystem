@@ -646,6 +646,81 @@ namespace RPGSystem.Services
                 Explanations = explanations,
             };
         }
+        public RollResult RollDeathSave(AdvantageState adv)
+        {
+            if (!_character.ShouldMakeDeathSaves)
+            {
+                return CreateFeedback("Death saving throws are only needed at 0 HP while not stable or dead.");
+            }
+
+            var advantage = ResolveAdvantage(RollType.DeathSave, adv);
+
+            int roll = _diceService.RollD20(advantage.FinalState);
+
+            _character.ApplyDeathSavingThrow(roll);
+
+            var explanations = new List<RollExplanation>(advantage.Explanations)
+            {
+                new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = "Death Save",
+                    Text = "A death saving throw succeeds on 10 or higher and fails on 9 or lower."
+                }
+            };
+
+            if (roll == 1)
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Critical,
+                    Source = "Natural 1",
+                    Text = "A natural 1 counts as two death save failures."
+                });
+            }
+
+            if (roll == 20)
+            {
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Critical,
+                    Source = "Natural 20",
+                    Text = "A natural 20 restores the character to 1 HP."
+                });
+            }
+
+            return new RollResult
+            {
+                Actor = _character.Name,
+                Type = RollType.DeathSave,
+                DiceRoll = roll,
+                NaturalRoll = roll,
+                Modifier = 0,
+                Formula = "1d20",
+                Description = "Death saving throw",
+                AppliedEffects = advantage.AppliedEffects,
+                Explanations = explanations,
+                AdvantageType = advantage.FinalState
+            };
+        }
+        public RollResult Stabilize()
+        {
+            if (_character.CurrentHP > 0)
+            {
+                return CreateFeedback("The character does not need to be stabilized.");
+            }
+
+            if (_character.IsDead)
+            {
+                return CreateFeedback("The character cannot be stabilized because they are dead.");
+            }
+
+            _character.Stabilize();
+
+            return CreateFeatureResult(
+                "Stabilize",
+                $"{_character.Name} is stable and no longer making death saving throws.");
+        }
         public RollResult? UseSecondWind()
         {
             var feature = _character.GetFeature(FighterFeatures.SecondWind);

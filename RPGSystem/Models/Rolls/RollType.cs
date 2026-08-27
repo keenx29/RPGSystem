@@ -9,6 +9,7 @@
         Save,
         Initiative,
         MaxHP,
-        Feature
+        Feature,
+        DeathSave
     }
 }

@@ -139,6 +139,25 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult RollDeathSave()
+        {
+            var result = _characterService.RollDeathSave(_rollState.SelectedAdvantageState);
+
+            _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult Stabilize()
+        {
+            var result = _characterService.Stabilize();
+
+            _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult AddInventoryItem(AddInventoryItemViewModel model)
         {
             _characterService.AddInventoryItem(model);

@@ -1,7 +1,6 @@
 ﻿@model RPGSystem.ViewModels.HitPointsPanelViewModel
 
 <section class="sheet-panel hp-panel">
-
     <h2 class="sheet-panel-title">Hit Points</h2>
 
     <div class="hp-current">
@@ -19,11 +18,11 @@
             </button>
 
             <input type="number"
-                   name="amount"
-                   value="1"
-                   min="1"
-                   class="form-control form-control-sm text-center"
-                   style="width: 80px;" />
+                    name="amount"
+                    value="1"
+                    min="1"
+                    class="form-control form-control-sm text-center"
+                    style="width: 80px;" />
 
             <button class="btn btn-sm btn-success"
                     name="mode"
@@ -32,7 +31,7 @@
             </button>
         </div>
     </form>
-
+    <partial name="_DeathSavesPanel" model="Model.Character" />
     <div class="sheet-divider"></div>
 
     <div class="d-flex justify-content-between align-items-center">
