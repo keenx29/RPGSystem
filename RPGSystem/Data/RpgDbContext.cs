@@ -13,5 +13,29 @@ namespace RPGSystem.Data
         public DbSet<CharacterEntity> Characters => Set<CharacterEntity>();
         public DbSet<AbilityEntity> Abilities => Set<AbilityEntity>();
         public DbSet<SkillEntity> Skills => Set<SkillEntity>();
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CharacterEntity>()
+                .HasMany(c => c.Abilities)
+                .WithOne(a => a.Character)
+                .HasForeignKey(a => a.CharacterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CharacterEntity>()
+                .HasMany(c => c.Skills)
+                .WithOne(s => s.Character)
+                .HasForeignKey(s => s.CharacterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AbilityEntity>()
+                .HasIndex(a => new { a.CharacterId, a.Type })
+                .IsUnique();
+
+            modelBuilder.Entity<SkillEntity>()
+                .HasIndex(s => new { s.CharacterId, s.Type })
+                .IsUnique();
+        }
     }
 }

@@ -37,5 +37,16 @@ namespace RPGSystem.Data.Entities
         public List<AbilityEntity> Abilities { get; set; } = new();
 
         public List<SkillEntity> Skills { get; set; } = new();
+        public int HitDiceRemaining { get; set; }
+
+        public int PendingAbilityScoreImprovementPoints { get; set; }
+
+        public int DeathSaveSuccesses { get; set; }
+
+        public int DeathSaveFailures { get; set; }
+
+        public bool IsStable { get; set; }
+
+        public bool IsDead { get; set; }
     }
 }
