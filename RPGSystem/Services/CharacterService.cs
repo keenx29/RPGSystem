@@ -155,6 +155,10 @@ namespace RPGSystem.Services
         }
         public void SaveCharacters()
         {
+            SaveState();
+        }
+        private void SaveState()
+        {
             _persistenceService.SaveCharacters(_characters);
         }
         private RollResult CreateFeatureResult(
@@ -377,14 +381,17 @@ namespace RPGSystem.Services
         public void AddCondition(ConditionType condition)
         {
             _character.AddCondition(condition);
+            SaveState();
         }
         public void RemoveCondition(ConditionType condition)
         {
             _character.RemoveCondition(condition);
+            SaveState();
         }
         public void ClearConditions()
         {
             _character.ClearConditions();
+            SaveState();
         }
         public RollResult RollAbility(AbilityType type, AdvantageState adv)
         {
@@ -788,6 +795,8 @@ namespace RPGSystem.Services
 
             _character.ApplyDeathSavingThrow(roll);
 
+            SaveState();
+
             var explanations = new List<RollExplanation>(advantage.Explanations)
             {
                 new RollExplanation
@@ -846,42 +855,11 @@ namespace RPGSystem.Services
 
             _character.Stabilize();
 
+            SaveState();
+
             return CreateFeatureResult(
                 "Stabilize",
                 $"{_character.Name} is stable and no longer making death saving throws.");
-        }
-        public RollResult? UseSecondWind()
-        {
-            var feature = _character.GetFeature(FighterFeatures.SecondWind);
-
-            if (feature == null)
-                return null;
-
-            int roll = _diceService.RollDice("1d10");
-
-            int healAmount = roll + _character.Level;
-
-            _character.Heal(healAmount);
-
-            return new RollResult
-            {
-                Actor = "Second Wind",
-                Type = RollType.Heal,
-                DiceRoll = roll,
-                Modifier = _character.Level,
-                Formula = $"1d10 + {_character.Level} Fighter level",
-                Description = $"Heal roll using Second Wind",
-                AppliedEffects = new List<string> { FighterFeatures.SecondWind },
-                Explanations = new List<RollExplanation>
-                {
-                    new RollExplanation
-                    {
-                        Type = RollExplanationType.Feature,
-                        Source = FighterFeatures.SecondWind,
-                        Text = "Second Wind restores 1d10 + fighter level hit points."
-                    }
-                }
-            };
         }
         public RollResult? ToggleFeature(string name)
         {
@@ -899,6 +877,7 @@ namespace RPGSystem.Services
             }
 
             feature.IsActive = !feature.IsActive;
+            SaveState();
             return CreateFeatureResult(
                 feature.Name,
                 feature.IsActive
@@ -942,6 +921,7 @@ namespace RPGSystem.Services
             if (result != null)
             {
                 _character.Inventory.Remove(item);
+                SaveState();
             }
             return result ?? CreateFeedback($"{item.Name} had no effect.");
         }
@@ -984,8 +964,9 @@ namespace RPGSystem.Services
                     if (feature.MaxUses > 0)
                         feature.UsesRemaining--;
 
-                    return ExecuteFeatureAction(feature);
-
+                    var useResult = ExecuteFeatureAction(feature);
+                    SaveState();
+                    return useResult;
                 case FeatureActionType.ResourceUse:
                     if (string.IsNullOrWhiteSpace(feature.ResourceName))
                     {
@@ -1001,7 +982,9 @@ namespace RPGSystem.Services
                         return CreateFeedback($"Not enough {feature.ResourceName} to use {feature.Name}.");
                     }
 
-                    return ExecuteFeatureAction(feature);
+                    var resourceUseResult = ExecuteFeatureAction(feature);
+                    SaveState();
+                    return resourceUseResult;
             }
 
             return null;
@@ -1026,6 +1009,8 @@ namespace RPGSystem.Services
             {
                 _character.PendingAbilityScoreImprovementPoints += 2;
             }
+
+            SaveState();
 
             return new RollResult
             {
@@ -1069,7 +1054,7 @@ namespace RPGSystem.Services
 
             _character.SpendHitDice(hitDiceCount);
             _character.Heal(healAmount);
-
+            SaveState();
             return new RollResult
             {
                 Actor = "Short Rest",
@@ -1084,6 +1069,7 @@ namespace RPGSystem.Services
         public void LongRest()
         {
             _character.LongRest();
+            SaveState();
         }
         public void ModifyHP(int amount, HpChangeType type)
         {
@@ -1091,6 +1077,7 @@ namespace RPGSystem.Services
                 TakeDamage(amount);
             else
                 Heal(amount);
+            SaveState();
         }
         public void TakeDamage(int amount)
         {
@@ -1137,6 +1124,7 @@ namespace RPGSystem.Services
             };
 
             _character.Inventory.Add(item);
+            SaveState();
         }
         public void RemoveInventoryItem(Guid itemId)
         {
@@ -1148,26 +1136,31 @@ namespace RPGSystem.Services
             }
 
             _character.Inventory.Remove(item);
+            SaveState();
         }
         public void EquipWeapon(Guid weaponId)
         {
             var weapon = _character.Inventory.OfType<Weapon>().First(w => w.Id == weaponId);
 
             _character.EquipWeapon(weapon);
+            SaveState();
         }
         public void UnequipWeapon(Guid weaponId)
         {
             _character.UnequipWeapon(weaponId);
+            SaveState();
         }
         public void EquipArmor(Guid armorId)
         {
             var armor = _character.Inventory.OfType<Armor>().First(a => a.Id == armorId);
 
             _character.EquipArmor(armor);
+            SaveState();
         }
         public void UnequipArmor(Guid armorId)
         {
             _character.UnequipArmor(armorId);
+            SaveState();
         }
         public void EquipShield(Guid shieldId)
         {
@@ -1176,14 +1169,17 @@ namespace RPGSystem.Services
                 .First(a => a.Id == shieldId && a.ArmorType == ArmorType.Shield);
 
             _character.EquipShield(shield);
+            SaveState();
         }
         public void UnequipShield(Guid shieldId)
         {
             _character.UnequipShield(shieldId);
+            SaveState();
         }
         public void IncreaseAbilityScore(AbilityType abilityType)
         {
             _character.IncreaseAbilityScore(abilityType);
+            SaveState();
         }
         public RollResult? SetSkillProficiency(SkillType skillType, bool isProficient)
         {
@@ -1214,6 +1210,7 @@ namespace RPGSystem.Services
             }
 
             _character.SetSkillProficiency(skillType, isProficient);
+            SaveState();
             return null;
         }
         public RollResult? SetSkillExpertise(SkillType skillType, bool isExpertise)
@@ -1244,19 +1241,20 @@ namespace RPGSystem.Services
             }
 
             _character.SetSkillExpertise(skillType, isExpertise);
+            SaveState();
             return null;
         }
-        public bool SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
+        public void SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
         {
             var characterClass = CharacterClassFactory.Create(_character.ClassType);
 
             if (isProficient &&
                 !characterClass.HasSavingThrowProficiency(abilityType))
             {
-                return false;
+                return;
             }
-
-            return _character.SetSavingThrowProficiency(abilityType, isProficient);
+            _character.SetSavingThrowProficiency(abilityType, isProficient);
+            SaveState();
         }
         public void UpdateCharacterNotes(UpdateCharacterNotesViewModel model)
         {
@@ -1268,6 +1266,7 @@ namespace RPGSystem.Services
             _character.Bonds = model.Bonds ?? "";
             _character.Flaws = model.Flaws ?? "";
             _character.Notes = model.Notes ?? "";
+            SaveState();
         }
         
         public Character GetFighterTestCharacter()
