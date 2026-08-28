@@ -23,6 +23,9 @@ namespace RPGSystem.Services
                 .Include(c => c.Abilities)
                 .Include(c => c.Skills)
                 .Include(c => c.Items)
+                .Include(c => c.Conditions)
+                .Include(c => c.FeatureStates)
+                .Include(c => c.FeatureResources)
                 .AsNoTracking()
                 .ToList();
         }
@@ -37,6 +40,9 @@ namespace RPGSystem.Services
                     .Include(c => c.Abilities)
                     .Include(c => c.Skills)
                     .Include(c => c.Items)
+                    .Include(c => c.Conditions)
+                    .Include(c => c.FeatureStates)
+                    .Include(c => c.FeatureResources)
                     .FirstOrDefault(c => c.Id == character.Id);
 
                 if (existing == null)
@@ -49,6 +55,9 @@ namespace RPGSystem.Services
                 UpdateAbilities(existing, character);
                 UpdateSkills(existing, character);
                 UpdateItems(context, existing, character);
+                UpdateConditions(context, existing, character);
+                UpdateFeatureStates(context, existing, character);
+                UpdateFeatureResources(context, existing, character);
             }
 
             context.SaveChanges();
@@ -232,6 +241,43 @@ namespace RPGSystem.Services
 
             return entity;
         }
-        
+        private void UpdateConditions(RpgDbContext context, CharacterEntity entity, Character character)
+        {
+            context.Conditions.RemoveRange(entity.Conditions);
+
+            context.Conditions.AddRange(character.Conditions.Select(condition =>
+                new ConditionEntity
+                {
+                    CharacterId = character.Id,
+                    Type = condition
+                }));
+        }
+        private void UpdateFeatureStates(RpgDbContext context, CharacterEntity entity, Character character)
+        {
+            context.FeatureStates.RemoveRange(entity.FeatureStates);
+
+            context.FeatureStates.AddRange(character.ClassFeatures.Select(feature =>
+                new FeatureStateEntity
+                {
+                    CharacterId = character.Id,
+                    FeatureName = feature.Name,
+                    UsesRemaining = feature.UsesRemaining,
+                    IsActive = feature.IsActive
+                }));
+        }
+        private void UpdateFeatureResources(RpgDbContext context, CharacterEntity entity, Character character)
+        {
+            context.FeatureResources.RemoveRange(entity.FeatureResources);
+
+            context.FeatureResources.AddRange(character.FeatureResources.Select(resource =>
+                new FeatureResourceEntity
+                {
+                    CharacterId = character.Id,
+                    Name = resource.Name,
+                    Current = resource.Current,
+                    Max = resource.Max,
+                    ResetType = resource.ResetType
+                }));
+        }
     }
 }

@@ -109,6 +109,33 @@ namespace RPGSystem.Services
             }
 
             RefreshClassProgression(character);
+
+            character.Conditions = savedCharacter.Conditions
+                .Select(c => c.Type)
+                .ToList();
+
+            foreach (var savedFeature in savedCharacter.FeatureStates)
+            {
+                var feature = character.GetFeature(savedFeature.FeatureName);
+
+                if (feature == null)
+                    continue;
+
+                feature.UsesRemaining = savedFeature.UsesRemaining;
+                feature.IsActive = savedFeature.IsActive;
+            }
+
+            foreach (var savedResource in savedCharacter.FeatureResources)
+            {
+                var resource = character.GetResource(savedResource.Name);
+
+                if (resource == null)
+                    continue;
+
+                resource.Current = savedResource.Current;
+                resource.Max = savedResource.Max;
+                resource.ResetType = savedResource.ResetType;
+            }
         }
         private void ApplyClassSetup(Character character)
         {

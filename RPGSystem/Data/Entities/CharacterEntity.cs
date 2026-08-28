@@ -46,9 +46,11 @@ namespace RPGSystem.Data.Entities
         public bool IsDead { get; set; }
 
         public List<AbilityEntity> Abilities { get; set; } = new();
-
         public List<SkillEntity> Skills { get; set; } = new();
         public List<ItemEntity> Items { get; set; } = new();
-        
+        public List<ConditionEntity> Conditions { get; set; } = new();
+        public List<FeatureStateEntity> FeatureStates { get; set; } = new();
+        public List<FeatureResourceEntity> FeatureResources { get; set; } = new();
+    
     }
 }
