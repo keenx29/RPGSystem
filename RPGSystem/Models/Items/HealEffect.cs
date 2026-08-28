@@ -6,16 +6,16 @@ namespace RPGSystem.Models.Items
 {
     public class HealEffect : IItemEffect
     {
-        private readonly string _notation;
+        public string Notation { get; }
 
         public HealEffect(string notation)
         {
-            _notation = notation;
+            Notation = notation;
         }
 
         public RollResult Apply(EffectContext context)
         {
-            var result = context.DiceService.RollDiceDetailed(_notation);
+            var result = context.DiceService.RollDiceDetailed(Notation);
 
             context.Character.Heal(result.Total);
 

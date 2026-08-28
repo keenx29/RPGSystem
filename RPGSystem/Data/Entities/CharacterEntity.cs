@@ -33,10 +33,6 @@ namespace RPGSystem.Data.Entities
         public string Flaws { get; set; } = "";
 
         public string Notes { get; set; } = "";
-
-        public List<AbilityEntity> Abilities { get; set; } = new();
-
-        public List<SkillEntity> Skills { get; set; } = new();
         public int HitDiceRemaining { get; set; }
 
         public int PendingAbilityScoreImprovementPoints { get; set; }
@@ -48,5 +44,11 @@ namespace RPGSystem.Data.Entities
         public bool IsStable { get; set; }
 
         public bool IsDead { get; set; }
+
+        public List<AbilityEntity> Abilities { get; set; } = new();
+
+        public List<SkillEntity> Skills { get; set; } = new();
+        public List<ItemEntity> Items { get; set; } = new();
+        
     }
 }

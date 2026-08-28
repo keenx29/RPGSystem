@@ -71,6 +71,29 @@ namespace RPGSystem.Services
             character.Flaws = savedCharacter.Flaws;
             character.Notes = savedCharacter.Notes;
 
+            character.Inventory = savedCharacter.Items
+                .Where(i => i.Location == "Inventory")
+                .Select(ToItem)
+                .ToList();
+
+            character.EquippedWeapons = savedCharacter.Items
+                .Where(i => i.Location == "EquippedWeapon")
+                .Select(ToItem)
+                .OfType<Weapon>()
+                .ToList();
+
+            character.EquippedArmor = savedCharacter.Items
+                .Where(i => i.Location == "EquippedArmor")
+                .Select(ToItem)
+                .OfType<Armor>()
+                .FirstOrDefault();
+
+            character.EquippedShield = savedCharacter.Items
+                .Where(i => i.Location == "EquippedShield")
+                .Select(ToItem)
+                .OfType<Armor>()
+                .FirstOrDefault();
+
             foreach (var savedAbility in savedCharacter.Abilities)
             {
                 var ability = character.GetAbility(savedAbility.Type);
@@ -1219,6 +1242,7 @@ namespace RPGSystem.Services
             _character.Flaws = model.Flaws ?? "";
             _character.Notes = model.Notes ?? "";
         }
+        
         public Character GetFighterTestCharacter()
         {
             var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 16 };
@@ -1752,6 +1776,52 @@ namespace RPGSystem.Services
         private RollResult CreateFeedback(string message)
         {
             return RollResult.Info("System", message);
+        }
+        private Item ToItem(ItemEntity entity)
+        {
+            if (entity.Kind == "Weapon")
+            {
+                return new Weapon
+                {
+                    Id = entity.Id,
+                    Name = entity.Name,
+                    Description = entity.Description,
+                    Weight = entity.Weight,
+                    Type = ItemType.Weapon,
+                    DamageDice = entity.DamageDice ?? "1d4",
+                    DamageType = entity.DamageType ?? "bludgeoning",
+                    AttackBonus = entity.AttackBonus,
+                    ScalingType = entity.ScalingType,
+                    ProficiencyType = entity.ProficiencyType,
+                    ProficiencyName = entity.ProficiencyName
+                };
+            }
+
+            if (entity.Kind == "Armor")
+            {
+                return new Armor
+                {
+                    Id = entity.Id,
+                    Name = entity.Name,
+                    Description = entity.Description,
+                    Weight = entity.Weight,
+                    Type = ItemType.Armor,
+                    BaseArmorClass = entity.BaseArmorClass,
+                    ArmorType = entity.ArmorType
+                };
+            }
+
+            return new Item
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                Weight = entity.Weight,
+                Type = entity.Type,
+                Effect = entity.EffectType == "Heal"
+                    ? new HealEffect(entity.EffectDice ?? "2d4+2")
+                    : null
+            };
         }
     }
 }

@@ -2,6 +2,7 @@
 using RPGSystem.Data;
 using RPGSystem.Data.Entities;
 using RPGSystem.Models.Characters;
+using RPGSystem.Models.Items;
 
 namespace RPGSystem.Services
 {
@@ -21,6 +22,7 @@ namespace RPGSystem.Services
             return context.Characters
                 .Include(c => c.Abilities)
                 .Include(c => c.Skills)
+                .Include(c => c.Items)
                 .AsNoTracking()
                 .ToList();
         }
@@ -34,6 +36,7 @@ namespace RPGSystem.Services
                 var existing = context.Characters
                     .Include(c => c.Abilities)
                     .Include(c => c.Skills)
+                    .Include(c => c.Items)
                     .FirstOrDefault(c => c.Id == character.Id);
 
                 if (existing == null)
@@ -45,6 +48,7 @@ namespace RPGSystem.Services
                 UpdateEntity(existing, character);
                 UpdateAbilities(existing, character);
                 UpdateSkills(existing, character);
+                UpdateItems(context, existing, character);
             }
 
             context.SaveChanges();
@@ -153,5 +157,81 @@ namespace RPGSystem.Services
                 existingSkill.IsExpertise = skill.IsExpertise;
             }
         }
+        private void UpdateItems(
+            RpgDbContext context,
+            CharacterEntity entity,
+            Character character)
+        {
+            context.Items.RemoveRange(entity.Items);
+
+            var currentItems = new List<ItemEntity>();
+
+            currentItems.AddRange(character.Inventory.Select(item =>
+                ToItemEntity(item, character.Id, "Inventory")));
+
+            currentItems.AddRange(character.EquippedWeapons.Select(item =>
+                ToItemEntity(item, character.Id, "EquippedWeapon")));
+
+            if (character.EquippedArmor != null)
+            {
+                currentItems.Add(ToItemEntity(
+                    character.EquippedArmor,
+                    character.Id,
+                    "EquippedArmor"));
+            }
+
+            if (character.EquippedShield != null)
+            {
+                currentItems.Add(ToItemEntity(
+                    character.EquippedShield,
+                    character.Id,
+                    "EquippedShield"));
+            }
+
+            context.Items.AddRange(currentItems);
+        }
+        private ItemEntity ToItemEntity(Item item, Guid characterId, string location)
+        {
+            var entity = new ItemEntity
+            {
+                Id = item.Id,
+                CharacterId = characterId,
+                Location = location,
+                Name = item.Name,
+                Description = item.Description,
+                Weight = item.Weight,
+                Type = item.Type
+            };
+
+            if (item is Weapon weapon)
+            {
+                entity.Kind = "Weapon";
+                entity.DamageDice = weapon.DamageDice;
+                entity.DamageType = weapon.DamageType;
+                entity.AttackBonus = weapon.AttackBonus;
+                entity.ScalingType = weapon.ScalingType;
+                entity.ProficiencyType = weapon.ProficiencyType;
+                entity.ProficiencyName = weapon.ProficiencyName;
+            }
+            else if (item is Armor armor)
+            {
+                entity.Kind = "Armor";
+                entity.BaseArmorClass = armor.BaseArmorClass;
+                entity.ArmorType = armor.ArmorType;
+            }
+            else
+            {
+                entity.Kind = "Item";
+
+                if (item.Effect is HealEffect healEffect)
+                {
+                    entity.EffectType = "Heal";
+                    entity.EffectDice = healEffect.Notation;
+                }
+            }
+
+            return entity;
+        }
+        
     }
 }

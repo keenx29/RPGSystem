@@ -13,6 +13,7 @@ namespace RPGSystem.Data
         public DbSet<CharacterEntity> Characters => Set<CharacterEntity>();
         public DbSet<AbilityEntity> Abilities => Set<AbilityEntity>();
         public DbSet<SkillEntity> Skills => Set<SkillEntity>();
+        public DbSet<ItemEntity> Items => Set<ItemEntity>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,6 +29,11 @@ namespace RPGSystem.Data
                 .WithOne(s => s.Character)
                 .HasForeignKey(s => s.CharacterId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CharacterEntity>()
+                .HasMany(c => c.Items)
+                .WithOne(i => i.Character)
+                .HasForeignKey(i => i.CharacterId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AbilityEntity>()
                 .HasIndex(a => new { a.CharacterId, a.Type })
@@ -36,6 +42,7 @@ namespace RPGSystem.Data
             modelBuilder.Entity<SkillEntity>()
                 .HasIndex(s => new { s.CharacterId, s.Type })
                 .IsUnique();
+
         }
     }
 }
