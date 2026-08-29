@@ -60,7 +60,7 @@ namespace RPGSystem.Services
 
             foreach (var savedCharacter in userCreatedCharacters)
             {
-                var character = CreateCharacterTemplate(savedCharacter.ClassType);
+                var character = CreateStarterCharacterTemplate(savedCharacter.ClassType);
 
                 ApplySavedState(character, savedCharacter);
 
@@ -180,33 +180,50 @@ namespace RPGSystem.Services
                 return;
             }
 
-            var character = CreateCharacterTemplate(model.ClassType);
+            var character = CreateStarterCharacterTemplate(model.ClassType);
 
             character.Id = Guid.NewGuid();
             character.Name = model.Name.Trim();
             character.Race = model.Race?.Trim() ?? "";
             character.Background = model.Background?.Trim() ?? "";
+            _characters.Add(character);
+            _character = character;
+
+            SaveState();
+        }
+        private Character CreateStarterCharacterTemplate(CharacterClassType classType)
+        {
+            var character = CreateDemoCharacterTemplate(classType);
+
+            character.Id = Guid.NewGuid();
+            character.Name = "";
+            character.Race = "";
+            character.Background = "";
             character.Alignment = "";
             character.PersonalityTraits = "";
             character.Ideals = "";
             character.Bonds = "";
             character.Flaws = "";
             character.Notes = "";
-            _characters.Add(character);
-            _character = character;
 
-            SaveState();
-        }
-        private Character CreateCharacterTemplate(CharacterClassType classType)
-        {
-            return classType switch
+            character.DamageResistances.Clear();
+            character.DamageVulnerabilities.Clear();
+            character.DamageImmunities.Clear();
+            character.ConditionImmunities.Clear();
+            character.Senses.Clear();
+            character.Conditions.Clear();
+
+            character.DeathSaveSuccesses = 0;
+            character.DeathSaveFailures = 0;
+            character.IsStable = false;
+            character.IsDead = false;
+
+            foreach (var feature in character.ClassFeatures)
             {
-                CharacterClassType.Fighter => GetFighterTestCharacter(),
-                CharacterClassType.Rogue => GetRogueTestCharacter(),
-                CharacterClassType.Barbarian => GetBarbarianTestCharacter(),
-                CharacterClassType.Monk => GetMonkTestCharacter(),
-                _ => GetFighterTestCharacter()
-            };
+                feature.IsActive = false;
+            }
+
+            return character;
         }
         public void SaveCharacters()
         {
@@ -255,7 +272,7 @@ namespace RPGSystem.Services
             }
 
             var classType = _characters[index].ClassType;
-            var resetCharacter = CreateCharacterTemplate(classType);
+            var resetCharacter = CreateDemoCharacterTemplate(classType);
 
             _characters[index] = resetCharacter;
 
@@ -1961,6 +1978,16 @@ namespace RPGSystem.Services
                     : null
             };
         }
-
+        private Character CreateDemoCharacterTemplate(CharacterClassType classType)
+        {
+            return classType switch
+            {
+                CharacterClassType.Fighter => GetFighterTestCharacter(),
+                CharacterClassType.Rogue => GetRogueTestCharacter(),
+                CharacterClassType.Barbarian => GetBarbarianTestCharacter(),
+                CharacterClassType.Monk => GetMonkTestCharacter(),
+                _ => GetFighterTestCharacter()
+            };
+        }
     }
 }
