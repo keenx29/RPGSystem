@@ -216,6 +216,58 @@ namespace RPGSystem.Services
         {
             _persistenceService.SaveCharacters(_characters);
         }
+        public RollResult? DeleteCharacter(Guid characterId)
+        {
+            if (IsDemoCharacter(characterId))
+            {
+                return CreateFeedback("Demo characters cannot be deleted. Use reset instead.");
+            }
+
+            var character = _characters.FirstOrDefault(c => c.Id == characterId);
+
+            if (character == null)
+            {
+                return CreateFeedback("Character not found.");
+            }
+
+            _characters.Remove(character);
+            _persistenceService.DeleteCharacter(characterId);
+
+            if (_character.Id == characterId)
+            {
+                _character = _characters.First();
+            }
+
+            return CreateFeedback($"{character.Name} was deleted.");
+        }
+        public RollResult? ResetDemoCharacter(Guid characterId)
+        {
+            if (!IsDemoCharacter(characterId))
+            {
+                return CreateFeedback("Only demo characters can be reset.");
+            }
+
+            var index = _characters.FindIndex(c => c.Id == characterId);
+
+            if (index == -1)
+            {
+                return CreateFeedback("Character not found.");
+            }
+
+            var classType = _characters[index].ClassType;
+            var resetCharacter = CreateCharacterTemplate(classType);
+
+            _characters[index] = resetCharacter;
+
+            if (_character.Id == characterId)
+            {
+                _character = resetCharacter;
+            }
+
+            SaveState();
+
+            return CreateFeedback($"{resetCharacter.Name} was reset to its original demo state.");
+        }
         private RollResult CreateFeatureResult(
             string featureName,
             string description,
@@ -1323,7 +1375,13 @@ namespace RPGSystem.Services
             _character.Notes = model.Notes ?? "";
             SaveState();
         }
-        
+        public bool IsDemoCharacter(Guid characterId)
+        {
+            return characterId == DemoCharacterIds.Fighter ||
+                   characterId == DemoCharacterIds.Rogue ||
+                   characterId == DemoCharacterIds.Barbarian ||
+                   characterId == DemoCharacterIds.Monk;
+        }
         public Character GetFighterTestCharacter()
         {
             var strength = new Ability { Name = "Strength", Type = AbilityType.Strength, Score = 16 };
@@ -1904,5 +1962,6 @@ namespace RPGSystem.Services
                     : null
             };
         }
+
     }
 }

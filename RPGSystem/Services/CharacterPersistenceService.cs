@@ -62,7 +62,19 @@ namespace RPGSystem.Services
 
             context.SaveChanges();
         }
+        public void DeleteCharacter(Guid characterId)
+        {
+            using var context = _contextFactory.CreateDbContext();
 
+            var existing = context.Characters
+                .FirstOrDefault(c => c.Id == characterId);
+
+            if (existing == null)
+                return;
+
+            context.Characters.Remove(existing);
+            context.SaveChanges();
+        }
         private CharacterEntity ToEntity(Character character)
         {
             var entity = new CharacterEntity();

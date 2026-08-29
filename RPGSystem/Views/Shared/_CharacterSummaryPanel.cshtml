@@ -1,4 +1,5 @@
-﻿@model RPGSystem.ViewModels.CharacterSummaryPanelViewModel
+﻿@using RPGSystem.Models.Characters
+@model RPGSystem.ViewModels.CharacterSummaryPanelViewModel
 
 <section class="sheet-panel character-summary-panel">
 
@@ -73,4 +74,38 @@
             Save
         </button>
     </form>
+    @{
+        var isDemoCharacter =
+        Model.SelectedCharacterId == DemoCharacterIds.Fighter ||
+        Model.SelectedCharacterId == DemoCharacterIds.Rogue ||
+        Model.SelectedCharacterId == DemoCharacterIds.Barbarian ||
+        Model.SelectedCharacterId == DemoCharacterIds.Monk;
+    }
+
+    <div class="d-flex gap-2 mt-2 flex-wrap">
+        @if (isDemoCharacter)
+        {
+            <form asp-action="ResetDemoCharacter"
+                  method="post"
+                  onsubmit="return confirm('Reset this demo character to its original state?');">
+                <input type="hidden" name="characterId" value="@Model.SelectedCharacterId" />
+
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                    Reset Demo
+                </button>
+            </form>
+        }
+        else
+        {
+            <form asp-action="DeleteCharacter"
+                  method="post"
+                  onsubmit="return confirm('Delete this character? This cannot be undone.');">
+                <input type="hidden" name="characterId" value="@Model.SelectedCharacterId" />
+
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                    Delete Character
+                </button>
+            </form>
+        }
+    </div>
 </section>

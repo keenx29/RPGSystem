@@ -70,6 +70,33 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult DeleteCharacter(Guid characterId)
+        {
+            var result = _characterService.DeleteCharacter(characterId);
+
+            _rollHistory.Clear();
+            _rollState.SelectedAdvantageState = AdvantageState.Normal;
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult ResetDemoCharacter(Guid characterId)
+        {
+            var result = _characterService.ResetDemoCharacter(characterId);
+
+            _rollHistory.Clear();
+            _rollState.SelectedAdvantageState = AdvantageState.Normal;
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult AddCondition(ConditionType condition)
         {
             _characterService.AddCondition(condition);
