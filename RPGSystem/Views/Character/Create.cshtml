@@ -23,6 +23,7 @@
                         <input asp-for="Name"
                                class="form-control"
                                placeholder="Character name" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -40,6 +41,7 @@
                         <input asp-for="Race"
                                class="form-control"
                                placeholder="Race" />
+                        <span asp-validation-for="Race" class="text-danger small"></span>
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -47,6 +49,7 @@
                         <input asp-for="Background"
                                class="form-control"
                                placeholder="Background" />
+                        <span asp-validation-for="Background" class="text-danger small"></span>
                     </div>
                 </div>
 
@@ -66,3 +69,6 @@
     </section>
 
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

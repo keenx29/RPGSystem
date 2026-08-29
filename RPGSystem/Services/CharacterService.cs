@@ -184,8 +184,8 @@ namespace RPGSystem.Services
 
             character.Id = Guid.NewGuid();
             character.Name = model.Name.Trim();
-            character.Race = model.Race ?? "";
-            character.Background = model.Background ?? "";
+            character.Race = model.Race?.Trim() ?? "";
+            character.Background = model.Background?.Trim() ?? "";
             character.Alignment = "";
             character.PersonalityTraits = "";
             character.Ideals = "";

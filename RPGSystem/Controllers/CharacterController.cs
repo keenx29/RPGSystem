@@ -74,6 +74,16 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult CreateCharacter(CreateCharacterViewModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                ModelState.AddModelError(nameof(model.Name), "Character name is required.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("Create", model);
+            }
+
             _characterService.CreateCharacter(model);
 
             _rollHistory.Clear();
