@@ -5,40 +5,49 @@
 
     <partial name="_RollModePanel" model="Model.SelectedAdvantageState" />
 
-    <div class="sheet-header-grid">
-        <partial name="_CharacterSummaryPanel"
-                 model="new CharacterSummaryPanelViewModel
-                 {
-                     Character = Model.Character,
-                     AvailableCharacters = Model.AvailableCharacters,
-                     SelectedCharacterId = Model.SelectedCharacterId
-                 }" />
+    <div class="sheet-with-chat">
 
-        <partial name="_HitPointsPanel"
-                 model="new HitPointsPanelViewModel
-                 {
-                     Character = Model.Character,
-                     HitDie = Model.HitDie
-                 }" />
-    </div>
+        <div class="sheet-content">
+            <div class="sheet-header-grid">
+                <partial name="_CharacterSummaryPanel"
+                         model="new CharacterSummaryPanelViewModel
+                         {
+                             Character = Model.Character,
+                             AvailableCharacters = Model.AvailableCharacters,
+                             SelectedCharacterId = Model.SelectedCharacterId
+                         }" />
 
-    <div class="sheet-body-grid">
+                <partial name="_HitPointsPanel"
+                         model="new HitPointsPanelViewModel
+                         {
+                             Character = Model.Character,
+                             HitDie = Model.HitDie
+                         }" />
+            </div>
 
-        <main class="sheet-main-column">
-            <partial name="_AbilitiesPanel" model="Model.Character" />
-            <partial name="_SkillsPanel" model="Model.Character" />
-            <partial name="_EquippedPanel" model="Model.Character" />
-            <partial name="_InventoryPanel" model="Model.Character" />
-            <partial name="_ClassFeaturesPanel" model="Model.Character" />
-            <partial name="_NotesPanel" model="Model.Character" />
-        </main>
+            <div class="sheet-body-grid">
 
-        <aside class="sheet-side-column">
-            <partial name="_StatsPanel" model="Model.Character" />
-            <partial name="_SensesPanel" model="Model.Character" />
-            <partial name="_DefensesPanel" model="Model.Character" />
-            <partial name="_ResourcesPanel" model="Model.Character" />
-            <partial name="_ConditionsPanel" model="Model.Character" />
+                <main class="sheet-main-column">
+                    <partial name="_AbilitiesPanel" model="Model.Character" />
+                    <partial name="_SkillsPanel" model="Model.Character" />
+                    <partial name="_EquippedPanel" model="Model.Character" />
+                    <partial name="_InventoryPanel" model="Model.Character" />
+                    <partial name="_ClassFeaturesPanel" model="Model.Character" />
+                    <partial name="_NotesPanel" model="Model.Character" />
+                </main>
+
+                <aside class="sheet-side-column">
+                    <partial name="_StatsPanel" model="Model.Character" />
+                    <partial name="_SensesPanel" model="Model.Character" />
+                    <partial name="_DefensesPanel" model="Model.Character" />
+                    <partial name="_ResourcesPanel" model="Model.Character" />
+                    <partial name="_ConditionsPanel" model="Model.Character" />
+                </aside>
+
+            </div>
+        </div>
+
+        <aside class="sheet-chat-column">
             <partial name="_RollHistoryPanel" model="Model.RollHistory" />
         </aside>
 

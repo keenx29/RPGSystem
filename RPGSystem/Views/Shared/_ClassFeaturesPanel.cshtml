@@ -1,91 +1,121 @@
 ﻿@using RPGSystem.Models.Classes.Features
 @model RPGSystem.Models.Characters.Character
 
-@foreach (var group in Enum.GetValues<FeatureActivationType>())
-{
-    var features = Model.ClassFeatures
-    .Where(f => f.ActivationType == group)
-    .ToList();
+<section class="sheet-panel class-features-panel">
+    <h2 class="sheet-panel-title">Features & Traits</h2>
 
-    if (!features.Any())
-        continue;
+    @foreach (var group in Enum.GetValues<FeatureActivationType>())
+    {
+        var features = Model.ClassFeatures
+        .Where(f => f.ActivationType == group)
+        .ToList();
 
-    <h6 class="mt-3">@group</h6>
+        if (!features.Any())
+            continue;
 
-    <table class="table table-sm align-middle">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Details</th>
-                <th class="text-end"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var feature in features)
-            {
-                <tr>
-                    <td>
-                        <strong>@feature.Name</strong>
+        <section class="feature-group">
+            <h3 class="sheet-subtitle">@group</h3>
 
-                        @if (feature.MaxUses > 0)
-                        {
-                            <div class="text-muted small">
-                                @feature.UsesRemaining / @feature.MaxUses
+            <div class="feature-list">
+                @foreach (var feature in features)
+                {
+                    var resource = !string.IsNullOrWhiteSpace(feature.ResourceName)
+                    ? Model.FeatureResources.FirstOrDefault(r => r.Name == feature.ResourceName)
+                    : null;
+
+                    var canUseResourceFeature =
+                    resource != null &&
+                    resource.Current >= feature.ResourceCost;
+
+                    <div class="feature-row">
+                        <div class="feature-main">
+                            <div class="feature-name-line">
+                                <strong>@feature.Name</strong>
+
+                                @if (feature.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else if (feature.ActionType == FeatureActionType.None)
+                                {
+                                    <span class="badge bg-secondary">Passive</span>
+                                }
                             </div>
-                        }
 
-                        @if (feature.ResourceCost > 0)
-                        {
-                            <div class="text-muted small">
-                                Cost: @feature.ResourceCost @feature.ResourceName
+                            @if (!string.IsNullOrWhiteSpace(feature.Details))
+                            {
+                                <div class="feature-details">
+                                    @feature.Details
+                                </div>
+                            }
+
+                            <div class="feature-meta">
+                                @if (feature.MaxUses > 0)
+                                {
+                                    <span>
+                                        Uses: @feature.UsesRemaining / @feature.MaxUses
+                                    </span>
+                                }
+
+                                @if (feature.ResourceCost > 0)
+                                {
+                                    <span>
+                                        Cost: @feature.ResourceCost @feature.ResourceName
+                                    </span>
+                                }
+
+                                @if (feature.ResetType != FeatureResetType.None)
+                                {
+                                    <span>
+                                        Reset: @feature.ResetType
+                                    </span>
+                                }
                             </div>
-                        }
-                    </td>
+                        </div>
 
-                    <td>
-                        <span class="small">@feature.Details</span>
-                    </td>
+                        <div class="feature-action">
+                            @switch (feature.ActionType)
+                            {
+                                case FeatureActionType.Use:
+                                    <form asp-action="UseFeature" method="post" class="m-0">
+                                        <input type="hidden" name="featureName" value="@feature.Name" />
 
-                    <td class="text-end">
-                        @switch (feature.ActionType)
-                        {
-                            case FeatureActionType.Use:
-                                <form asp-action="UseFeature" method="post" class="m-0">
-                                    <input type="hidden" name="featureName" value="@feature.Name" />
-                                    <button class="btn btn-sm btn-warning"
-                                            disabled="@(!feature.IsAvailable)">
-                                        Use
-                                    </button>
-                                </form>
-                                break;
-                            case FeatureActionType.ResourceUse:
-                                
-                                <form asp-action="UseFeature" method="post" class="m-0">
-                                    <input type="hidden" name="featureName" value="@feature.Name" />
-                                    <button class="btn btn-sm btn-warning"
-                                            disabled="@(
-                                            feature.ResourceCost > Model.FeatureResources.FirstOrDefault()?.Current)">
-                                        Use
-                                    </button>
-                                </form>
-                                break;
+                                        <button class="btn btn-sm btn-warning"
+                                                disabled="@(!feature.IsAvailable)">
+                                            Use
+                                        </button>
+                                    </form>
+                                    break;
 
-                            case FeatureActionType.Toggle:
-                                <form asp-action="ToggleFeature" method="post" class="m-0">
-                                    <input type="hidden" name="featureName" value="@feature.Name" />
-                                    <button class="btn btn-sm @(feature.IsActive ? "btn-success" : "btn-primary")">
-                                        @(feature.IsActive ? "ON" : "Toggle")
-                                    </button>
-                                </form>
-                                break;
+                                case FeatureActionType.ResourceUse:
+                                    <form asp-action="UseFeature" method="post" class="m-0">
+                                        <input type="hidden" name="featureName" value="@feature.Name" />
 
-                            case FeatureActionType.None:
-                                <span class="badge bg-secondary">Passive</span>
-                                break;
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                                        <button class="btn btn-sm btn-warning"
+                                                disabled="@(!canUseResourceFeature)">
+                                            Use
+                                        </button>
+                                    </form>
+                                    break;
+
+                                case FeatureActionType.Toggle:
+                                    <form asp-action="ToggleFeature" method="post" class="m-0">
+                                        <input type="hidden" name="featureName" value="@feature.Name" />
+
+                                        <button class="btn btn-sm @(feature.IsActive ? "btn-success" : "btn-outline-secondary")">
+                                            @(feature.IsActive ? "On" : "Toggle")
+                                        </button>
+                                    </form>
+                                    break;
+
+                                case FeatureActionType.None:
+                                    <span class="feature-passive-text">No action</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+</section>

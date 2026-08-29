@@ -14,7 +14,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow app-navbar">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RPGSystem</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -24,20 +24,20 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Home" && currentAction == "Privacy" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Character" && currentAction == "Index" ? "active" : "")" asp-controller="Character" asp-action="Index">
+                            <a class="nav-link @(currentController == "Character" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="Character"
+                               asp-action="Index">
                                 Characters
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link @(currentController == "Character" && currentAction == "Sheet" ? "active" : "")" asp-controller="Character" asp-action="Sheet">Character Sheet</a>
+                            <a class="nav-link @(currentController == "Character" && currentAction == "Sheet" ? "active" : "")"
+                               asp-controller="Character"
+                               asp-action="Sheet">
+                                Character Sheet
+                            </a>
                         </li>
-                        
                     </ul>
                 </div>
             </div>
@@ -49,9 +49,9 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - RPGSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="app-footer">
+        <div class="container-fluid">
+            RPGSystem - Interactive D&D 5e Character Sheet
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
