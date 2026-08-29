@@ -35,7 +35,32 @@
                 }
             </select>
         </form>
+        <form asp-action="CreateCharacter" method="post" class="mt-2">
+            <div class="d-flex gap-2 flex-wrap">
+                <input name="Name"
+                       class="form-control form-control-sm"
+                       placeholder="Character name" />
 
+                <select name="ClassType" class="form-select form-select-sm">
+                    @foreach (var classType in Enum.GetValues<RPGSystem.Models.Classes.CharacterClassType>())
+                    {
+                        <option value="@classType">@classType</option>
+                    }
+                </select>
+
+                <input name="Race"
+                       class="form-control form-control-sm"
+                       placeholder="Race" />
+
+                <input name="Background"
+                       class="form-control form-control-sm"
+                       placeholder="Background" />
+
+                <button type="submit" class="btn btn-sm btn-dark">
+                    Create
+                </button>
+            </div>
+        </form>
     </div>
 
     <form asp-controller="Character" asp-action="LevelUp" method="post" class="mt-3">

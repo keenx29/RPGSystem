@@ -38,19 +38,39 @@ namespace RPGSystem.Services
         private void ApplySavedCharacterStates()
         {
             var savedCharacters = _persistenceService
-                .LoadCharacterStates()
+                .LoadCharacterStates();
+
+            var savedCharactersById = savedCharacters
                 .ToDictionary(c => c.Id);
 
             foreach (var character in _characters)
             {
-                if (savedCharacters.TryGetValue(character.Id, out var savedCharacter))
+                if (savedCharactersById.TryGetValue(character.Id, out var savedCharacter))
                 {
                     ApplySavedState(character, savedCharacter);
                 }
             }
+
+            var existingCharacterIds = _characters
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            var userCreatedCharacters = savedCharacters
+                .Where(c => !existingCharacterIds.Contains(c.Id));
+
+            foreach (var savedCharacter in userCreatedCharacters)
+            {
+                var character = CreateCharacterTemplate(savedCharacter.ClassType);
+
+                ApplySavedState(character, savedCharacter);
+
+                _characters.Add(character);
+            }
         }
         private void ApplySavedState(Character character, CharacterEntity savedCharacter)
         {
+            character.Id = savedCharacter.Id;
+            character.ClassType = savedCharacter.ClassType;
             character.Name = savedCharacter.Name;
             character.Level = savedCharacter.Level;
             character.MaxHP = savedCharacter.MaxHP;
@@ -152,6 +172,41 @@ namespace RPGSystem.Services
 
             character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
             character.FeatureResources = characterClass.GetResourcesForLevel(character.Level);
+        }
+        public void CreateCharacter(CreateCharacterViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                return;
+            }
+
+            var character = CreateCharacterTemplate(model.ClassType);
+
+            character.Id = Guid.NewGuid();
+            character.Name = model.Name.Trim();
+            character.Race = model.Race ?? "";
+            character.Background = model.Background ?? "";
+            character.Alignment = "";
+            character.PersonalityTraits = "";
+            character.Ideals = "";
+            character.Bonds = "";
+            character.Flaws = "";
+            character.Notes = "";
+            _characters.Add(character);
+            _character = character;
+
+            SaveState();
+        }
+        private Character CreateCharacterTemplate(CharacterClassType classType)
+        {
+            return classType switch
+            {
+                CharacterClassType.Fighter => GetFighterTestCharacter(),
+                CharacterClassType.Rogue => GetRogueTestCharacter(),
+                CharacterClassType.Barbarian => GetBarbarianTestCharacter(),
+                CharacterClassType.Monk => GetMonkTestCharacter(),
+                _ => GetFighterTestCharacter()
+            };
         }
         public void SaveCharacters()
         {

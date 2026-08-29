@@ -51,6 +51,16 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult CreateCharacter(CreateCharacterViewModel model)
+        {
+            _characterService.CreateCharacter(model);
+
+            _rollHistory.Clear();
+            _rollState.SelectedAdvantageState = AdvantageState.Normal;
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult SaveCharacters()
         {
             _characterService.SaveCharacters();
