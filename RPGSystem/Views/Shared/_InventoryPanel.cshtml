@@ -113,22 +113,81 @@
     <h3 class="sheet-subtitle">Add Item</h3>
 
     <form asp-action="AddInventoryItem" method="post" class="inventory-add-form">
-        <label class="form-label small">Item type</label>
-        <select name="ItemKind" class="form-select form-select-sm mb-2">
+        <label class="form-label small">Item kind</label>
+        <select name="ItemKind"
+                id="inventoryItemKind"
+                class="form-select form-select-sm mb-2">
             <option value="Item">Basic Item</option>
             <option value="Weapon">Weapon</option>
             <option value="Armor">Armor</option>
         </select>
 
-        <input name="Name" class="form-control form-control-sm mb-2" placeholder="Name" />
+        <input name="Name"
+               class="form-control form-control-sm mb-2"
+               placeholder="Name" />
 
-        <label class="form-label small">Weapon damage dice</label>
-        <input name="DamageDice" class="form-control form-control-sm mb-2" placeholder="e.g. 1d8" />
+        <div data-inventory-fields="item">
+            <label class="form-label small">Basic item type</label>
+            <select name="Type" class="form-select form-select-sm mb-2">
+                @foreach (var itemType in Enum.GetValues<ItemType>())
+                {
+                    <option value="@itemType">@itemType</option>
+                }
+            </select>
+        </div>
 
-        <input name="DamageType" class="form-control form-control-sm mb-2" placeholder="Damage type" />
+        <div data-inventory-fields="weapon">
+            <label class="form-label small">Weapon damage dice</label>
+            <input name="DamageDice"
+                   class="form-control form-control-sm mb-2"
+                   placeholder="e.g. 1d8" />
 
-        <label class="form-label small">Armor base AC</label>
-        <input name="BaseArmorClass" type="number" class="form-control form-control-sm mb-2" value="10" />
+            <input name="DamageType"
+                   class="form-control form-control-sm mb-2"
+                   placeholder="Damage type, e.g. slashing" />
+
+            <label class="form-label small">Weapon scaling</label>
+            <select name="ScalingType" class="form-select form-select-sm mb-2">
+                @foreach (var scalingType in Enum.GetValues<WeaponScalingType>())
+                {
+                    <option value="@scalingType">@scalingType</option>
+                }
+            </select>
+
+            <label class="form-label small">Weapon proficiency</label>
+            <select name="WeaponProficiencyType" class="form-select form-select-sm mb-2">
+                @foreach (var proficiencyType in Enum.GetValues<WeaponProficiencyType>())
+                {
+                    <option value="@proficiencyType">@proficiencyType</option>
+                }
+            </select>
+
+            <label class="form-label small">Attack bonus</label>
+            <input name="AttackBonus"
+                   type="number"
+                   min="-5"
+                   max="5"
+                   value="0"
+                   class="form-control form-control-sm mb-2" />
+        </div>
+
+        <div data-inventory-fields="armor">
+            <label class="form-label small">Armor type</label>
+            <select name="ArmorType" class="form-select form-select-sm mb-2">
+                @foreach (var armorType in Enum.GetValues<ArmorType>())
+                {
+                    <option value="@armorType">@armorType</option>
+                }
+            </select>
+
+            <label class="form-label small">Armor base AC / Shield bonus</label>
+            <input name="BaseArmorClass"
+                   type="number"
+                   min="1"
+                   max="18"
+                   class="form-control form-control-sm mb-2"
+                   value="10" />
+        </div>
 
         <button type="submit" class="btn btn-sm btn-dark">Add</button>
     </form>

@@ -1249,6 +1249,37 @@ namespace RPGSystem.Services
                 }
             };
 
+            if (model.ItemKind == "Weapon")
+            {
+                var damageDice = string.IsNullOrWhiteSpace(model.DamageDice)
+                    ? "1d4"
+                    : model.DamageDice.Trim();
+
+                if (!_diceService.IsValidDiceNotation(damageDice))
+                {
+                    return CreateFeedback("Weapon damage dice must use a format like 1d8 or 2d6.");
+                }
+
+                if (model.AttackBonus < -5 || model.AttackBonus > 5)
+                {
+                    return CreateFeedback("Weapon attack bonus must be between -5 and +5.");
+                }
+            }
+
+            if (model.ItemKind == "Armor")
+            {
+                if (model.ArmorType == ArmorType.Shield)
+                {
+                    if (model.BaseArmorClass < 1 || model.BaseArmorClass > 5)
+                    {
+                        return CreateFeedback("Shield AC bonus must be between 1 and 5.");
+                    }
+                }
+                else if (model.BaseArmorClass < 10 || model.BaseArmorClass > 18)
+                {
+                    return CreateFeedback("Armor base AC must be between 10 and 18.");
+                }
+            }
             _character.Inventory.Add(item);
             SaveState();
 

@@ -1,4 +1,25 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function updateInventoryAddFields() {
+    const kindSelect = document.getElementById("inventoryItemKind");
 
-// Write your JavaScript code.
+    if (!kindSelect) {
+        return;
+    }
+
+    const selectedKind = kindSelect.value.toLowerCase();
+
+    document.querySelectorAll("[data-inventory-fields]").forEach(function (section) {
+        const sectionKind = section.getAttribute("data-inventory-fields");
+        section.style.display = sectionKind === selectedKind ? "" : "none";
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const kindSelect = document.getElementById("inventoryItemKind");
+
+    if (!kindSelect) {
+        return;
+    }
+
+    kindSelect.addEventListener("change", updateInventoryAddFields);
+    updateInventoryAddFields();
+});

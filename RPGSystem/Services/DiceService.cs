@@ -65,16 +65,37 @@ namespace RPGSystem.Services
         }
         public string DoubleDiceExpression(string diceExpression)
         {
-            var parts = diceExpression.Split('d');
+            if (!IsValidDiceNotation(diceExpression))
+                return diceExpression;
+
+            var parts = diceExpression.ToLower().Split('d');
+            int diceCount = int.Parse(parts[0]);
+            int sides = int.Parse(parts[1]);
+
+            return $"{diceCount * 2}d{sides}";
+        }
+        public bool IsValidDiceNotation(string? notation)
+        {
+            if (string.IsNullOrWhiteSpace(notation))
+                return false;
+
+            var parts = notation.ToLower().Split('d');
 
             if (parts.Length != 2)
-                return diceExpression;
+                return false;
 
-            if (!int.TryParse(parts[0], out int diceCount))
-                return diceExpression;
+            if (!int.TryParse(parts[0], out int count))
+                return false;
 
-            return $"{diceCount * 2}d{parts[1]}";
+            if (!int.TryParse(parts[1], out int sides))
+                return false;
+
+            return count > 0 &&
+                   count <= 20 &&
+                   sides > 0 &&
+                   sides <= 100;
         }
+
     }
 }
 
