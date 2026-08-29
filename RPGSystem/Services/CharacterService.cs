@@ -1757,8 +1757,7 @@ namespace RPGSystem.Services
             character.ApplySkillProficiencies(new[]
             {
                 SkillType.Athletics,
-                SkillType.Intimidation,
-                SkillType.Survival
+                SkillType.Intimidation
             });
 
             ApplyClassSetup(character);

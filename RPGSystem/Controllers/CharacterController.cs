@@ -31,6 +31,11 @@ namespace RPGSystem.Controllers
             return View(characters);
         }
         [HttpGet]
+        public IActionResult Create()
+        {
+            return View(new CreateCharacterViewModel());
+        }
+        [HttpGet]
         public IActionResult Sheet()
         {
             var character = _characterService.GetCharacter();
@@ -96,7 +101,7 @@ namespace RPGSystem.Controllers
             if (result != null)
                 _rollHistory.Insert(0, result);
 
-            return RedirectToAction("Sheet");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -110,7 +115,7 @@ namespace RPGSystem.Controllers
             if (result != null)
                 _rollHistory.Insert(0, result);
 
-            return RedirectToAction("Sheet");
+            return RedirectToAction("Index");
         }
         [HttpPost]
         public IActionResult AddCondition(ConditionType condition)

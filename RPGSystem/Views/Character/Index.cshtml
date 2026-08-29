@@ -14,6 +14,11 @@
             <p class="text-muted mb-0">
                 Choose a character to open their interactive sheet.
             </p>
+            <a asp-controller="Character"
+               asp-action="Create"
+               class="btn btn-dark">
+                Add Character
+            </a>
         </div>
     </div>
 
@@ -64,53 +69,34 @@
                                 Open Sheet
                             </button>
                         </form>
+                        @if (isDemo)
+                        {
+                            <form asp-action="ResetDemoCharacter"
+                                  method="post"
+                                  onsubmit="return confirm('Reset this demo character to its original state?');">
+                                <input type="hidden" name="characterId" value="@character.Id" />
+
+                                <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
+                                    Reset Demo
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="DeleteCharacter"
+                                  method="post"
+                                  onsubmit="return confirm('Delete this character? This cannot be undone.');">
+                                <input type="hidden" name="characterId" value="@character.Id" />
+
+                                <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                    Delete
+                                </button>
+                            </form>
+                        }
                     </div>
                 </div>
             </div>
         }
-    </section>
-
-    <section class="card">
-        <div class="card-body">
-            <h2 class="h5">Create Character</h2>
-
-            <form asp-action="CreateCharacter" method="post">
-                <div class="row g-2">
-                    <div class="col-12 col-md-3">
-                        <input name="Name"
-                               class="form-control"
-                               placeholder="Character name" />
-                    </div>
-
-                    <div class="col-12 col-md-3">
-                        <select name="ClassType" class="form-select">
-                            @foreach (var classType in Enum.GetValues<CharacterClassType>())
-                            {
-                                <option value="@classType">@classType</option>
-                            }
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-2">
-                        <input name="Race"
-                               class="form-control"
-                               placeholder="Race" />
-                    </div>
-
-                    <div class="col-12 col-md-2">
-                        <input name="Background"
-                               class="form-control"
-                               placeholder="Background" />
-                    </div>
-
-                    <div class="col-12 col-md-2">
-                        <button type="submit" class="btn btn-outline-dark w-100">
-                            Create
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
     </section>
 
 </div>
