@@ -15,7 +15,7 @@ namespace RPGSystem.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Character");
         }
 
         public IActionResult Privacy()

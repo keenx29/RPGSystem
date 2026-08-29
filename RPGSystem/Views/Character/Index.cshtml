@@ -1,0 +1,116 @@
+﻿@using RPGSystem.Models.Characters
+@using RPGSystem.Models.Classes
+@model IReadOnlyList<RPGSystem.Models.Characters.Character>
+
+@{
+    ViewData["Title"] = "Characters";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Characters</h1>
+            <p class="text-muted mb-0">
+                Choose a character to open their interactive sheet.
+            </p>
+        </div>
+    </div>
+
+    <section class="row g-3 mb-4">
+        @foreach (var character in Model)
+        {
+            var isDemo =
+            character.Id == DemoCharacterIds.Fighter ||
+            character.Id == DemoCharacterIds.Rogue ||
+            character.Id == DemoCharacterIds.Barbarian ||
+            character.Id == DemoCharacterIds.Monk;
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column gap-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title mb-1">@character.Name</h5>
+                                <div class="text-muted small">
+                                    Level @character.Level @character.ClassType
+                                </div>
+                            </div>
+
+                            @if (isDemo)
+                            {
+                                <span class="badge bg-secondary">Demo</span>
+                            }
+                        </div>
+
+                        <div class="small">
+                            <div>HP: @character.CurrentHP / @character.MaxHP</div>
+                            <div>AC: @character.ArmorClass</div>
+                            <div>Speed: @character.TotalMovementSpeed ft.</div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(character.Race) ||
+                                            !string.IsNullOrWhiteSpace(character.Background))
+                        {
+                            <div class="text-muted small">
+                                @character.Race @character.Background
+                            </div>
+                        }
+
+                        <form asp-action="OpenCharacter" method="post" class="mt-auto">
+                            <input type="hidden" name="characterId" value="@character.Id" />
+
+                            <button type="submit" class="btn btn-dark w-100">
+                                Open Sheet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5">Create Character</h2>
+
+            <form asp-action="CreateCharacter" method="post">
+                <div class="row g-2">
+                    <div class="col-12 col-md-3">
+                        <input name="Name"
+                               class="form-control"
+                               placeholder="Character name" />
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <select name="ClassType" class="form-select">
+                            @foreach (var classType in Enum.GetValues<CharacterClassType>())
+                            {
+                                <option value="@classType">@classType</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-2">
+                        <input name="Race"
+                               class="form-control"
+                               placeholder="Race" />
+                    </div>
+
+                    <div class="col-12 col-md-2">
+                        <input name="Background"
+                               class="form-control"
+                               placeholder="Background" />
+                    </div>
+
+                    <div class="col-12 col-md-2">
+                        <button type="submit" class="btn btn-outline-dark w-100">
+                            Create
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+</div>

@@ -23,7 +23,13 @@ namespace RPGSystem.Controllers
             _characterService = characterService;
             _rollState = rollState;
         }
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var characters = _characterService.GetCharacters();
 
+            return View(characters);
+        }
         [HttpGet]
         public IActionResult Sheet()
         {
@@ -39,6 +45,16 @@ namespace RPGSystem.Controllers
             };
             
             return View(vm);
+        }
+        [HttpPost]
+        public IActionResult OpenCharacter(Guid characterId)
+        {
+            _characterService.SelectCharacter(characterId);
+
+            _rollHistory.Clear();
+            _rollState.SelectedAdvantageState = AdvantageState.Normal;
+
+            return RedirectToAction("Sheet");
         }
         [HttpPost]
         public IActionResult SelectCharacter(Guid characterId)
