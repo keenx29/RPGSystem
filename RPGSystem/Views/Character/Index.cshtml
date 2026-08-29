@@ -8,95 +8,103 @@
 
 <div class="container py-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="mb-1">Characters</h1>
             <p class="text-muted mb-0">
                 Choose a character to open their interactive sheet.
             </p>
-            <a asp-controller="Character"
-               asp-action="Create"
-               class="btn btn-dark">
-                Add Character
-            </a>
         </div>
+
+        <a asp-controller="Character"
+           asp-action="Create"
+           class="btn btn-dark">
+            Add Character
+        </a>
     </div>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-secondary">
+            No characters created yet.
+        </div>
+    }
+    else
+    {
+        <section class="row g-3 mb-4">
+            @foreach (var character in Model)
+            {
+                var isDemo =
+                character.Id == DemoCharacterIds.Fighter ||
+                character.Id == DemoCharacterIds.Rogue ||
+                character.Id == DemoCharacterIds.Barbarian ||
+                character.Id == DemoCharacterIds.Monk;
 
-    <section class="row g-3 mb-4">
-        @foreach (var character in Model)
-        {
-            var isDemo =
-            character.Id == DemoCharacterIds.Fighter ||
-            character.Id == DemoCharacterIds.Rogue ||
-            character.Id == DemoCharacterIds.Barbarian ||
-            character.Id == DemoCharacterIds.Monk;
-
-            <div class="col-12 col-md-6 col-xl-3">
-                <div class="card h-100">
-                    <div class="card-body d-flex flex-column gap-2">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="card-title mb-1">@character.Name</h5>
-                                <div class="text-muted small">
-                                    Level @character.Level @character.ClassType
+                <div class="col-12 col-md-6 col-xl-3">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column gap-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title mb-1">@character.Name</h5>
+                                    <div class="text-muted small">
+                                        Level @character.Level @character.ClassType
+                                    </div>
                                 </div>
+
+                                @if (isDemo)
+                                {
+                                    <span class="badge bg-secondary">Demo</span>
+                                }
                             </div>
 
+                            <div class="small">
+                                <div>HP: @character.CurrentHP / @character.MaxHP</div>
+                                <div>AC: @character.ArmorClass</div>
+                                <div>Speed: @character.TotalMovementSpeed ft.</div>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(character.Race) ||
+                                                !string.IsNullOrWhiteSpace(character.Background))
+                            {
+                                <div class="text-muted small">
+                                    @character.Race @character.Background
+                                </div>
+                            }
+
+                            <form asp-action="OpenCharacter" method="post" class="mt-auto">
+                                <input type="hidden" name="characterId" value="@character.Id" />
+
+                                <button type="submit" class="btn btn-dark w-100">
+                                    Open Sheet
+                                </button>
+                            </form>
                             @if (isDemo)
                             {
-                                <span class="badge bg-secondary">Demo</span>
+                                <form asp-action="ResetDemoCharacter"
+                                      method="post"
+                                      onsubmit="return confirm('Reset this demo character to its original state?');">
+                                    <input type="hidden" name="characterId" value="@character.Id" />
+
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
+                                        Reset Demo
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="DeleteCharacter"
+                                      method="post"
+                                      onsubmit="return confirm('Delete this character? This cannot be undone.');">
+                                    <input type="hidden" name="characterId" value="@character.Id" />
+
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                        Delete
+                                    </button>
+                                </form>
                             }
                         </div>
-
-                        <div class="small">
-                            <div>HP: @character.CurrentHP / @character.MaxHP</div>
-                            <div>AC: @character.ArmorClass</div>
-                            <div>Speed: @character.TotalMovementSpeed ft.</div>
-                        </div>
-
-                        @if (!string.IsNullOrWhiteSpace(character.Race) ||
-                                            !string.IsNullOrWhiteSpace(character.Background))
-                        {
-                            <div class="text-muted small">
-                                @character.Race @character.Background
-                            </div>
-                        }
-
-                        <form asp-action="OpenCharacter" method="post" class="mt-auto">
-                            <input type="hidden" name="characterId" value="@character.Id" />
-
-                            <button type="submit" class="btn btn-dark w-100">
-                                Open Sheet
-                            </button>
-                        </form>
-                        @if (isDemo)
-                        {
-                            <form asp-action="ResetDemoCharacter"
-                                  method="post"
-                                  onsubmit="return confirm('Reset this demo character to its original state?');">
-                                <input type="hidden" name="characterId" value="@character.Id" />
-
-                                <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
-                                    Reset Demo
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-action="DeleteCharacter"
-                                  method="post"
-                                  onsubmit="return confirm('Delete this character? This cannot be undone.');">
-                                <input type="hidden" name="characterId" value="@character.Id" />
-
-                                <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                                    Delete
-                                </button>
-                            </form>
-                        }
                     </div>
                 </div>
-            </div>
-        }
-    </section>
-
+            }
+        </section>
+    }
 </div>

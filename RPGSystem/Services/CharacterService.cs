@@ -662,7 +662,9 @@ namespace RPGSystem.Services
             var weapon = _character.EquippedWeapons.FirstOrDefault();
 
             if (weapon == null)
-                throw new InvalidOperationException("Character has no equipped weapon.");
+            {
+                return CreateFeedback("No weapon equipped for attack roll.");
+            }
 
             return RollAttack(weapon.Id, adv);
         }
@@ -1211,30 +1213,30 @@ namespace RPGSystem.Services
         {
             _character.Heal(amount);
         }
-        public void AddInventoryItem(AddInventoryItemViewModel model)
+        public RollResult? AddInventoryItem(AddInventoryItemViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                return;
+                return CreateFeedback("Item name is required.");
             }
 
             Item item = model.ItemKind switch
             {
                 "Weapon" => new Weapon
                 {
-                    Name = model.Name,
+                    Name = model.Name.Trim(),
                     Type = ItemType.Weapon,
-                    DamageDice = string.IsNullOrWhiteSpace(model.DamageDice) ? "1d4" : model.DamageDice,
-                    DamageType = string.IsNullOrWhiteSpace(model.DamageType) ? "bludgeoning" : model.DamageType,
+                    DamageDice = string.IsNullOrWhiteSpace(model.DamageDice) ? "1d4" : model.DamageDice.Trim(),
+                    DamageType = string.IsNullOrWhiteSpace(model.DamageType) ? "bludgeoning" : model.DamageType.Trim(),
                     ScalingType = model.ScalingType,
                     ProficiencyType = model.WeaponProficiencyType,
-                    ProficiencyName = model.Name,
+                    ProficiencyName = model.Name.Trim(),
                     AttackBonus = model.AttackBonus
                 },
 
                 "Armor" => new Armor
                 {
-                    Name = model.Name,
+                    Name = model.Name.Trim(),
                     Type = ItemType.Armor,
                     ArmorType = model.ArmorType,
                     BaseArmorClass = model.BaseArmorClass,
@@ -1242,13 +1244,15 @@ namespace RPGSystem.Services
 
                 _ => new Item
                 {
-                    Name = model.Name,
+                    Name = model.Name.Trim(),
                     Type = model.Type
                 }
             };
 
             _character.Inventory.Add(item);
             SaveState();
+
+            return null;
         }
         public void RemoveInventoryItem(Guid itemId)
         {
@@ -1262,38 +1266,63 @@ namespace RPGSystem.Services
             _character.Inventory.Remove(item);
             SaveState();
         }
-        public void EquipWeapon(Guid weaponId)
+        public RollResult? EquipWeapon(Guid weaponId)
         {
-            var weapon = _character.Inventory.OfType<Weapon>().First(w => w.Id == weaponId);
+            var weapon = _character.Inventory
+                .OfType<Weapon>()
+                .FirstOrDefault(w => w.Id == weaponId);
+
+            if (weapon == null)
+            {
+                return CreateFeedback("Weapon was not found in inventory.");
+            }
 
             _character.EquipWeapon(weapon);
             SaveState();
+
+            return null;
         }
         public void UnequipWeapon(Guid weaponId)
         {
             _character.UnequipWeapon(weaponId);
             SaveState();
         }
-        public void EquipArmor(Guid armorId)
+        public RollResult? EquipArmor(Guid armorId)
         {
-            var armor = _character.Inventory.OfType<Armor>().First(a => a.Id == armorId);
+            var armor = _character.Inventory
+                .OfType<Armor>()
+                .FirstOrDefault(a => a.Id == armorId && a.ArmorType != ArmorType.Shield);
+
+            if (armor == null)
+            {
+                return CreateFeedback("Armor was not found in inventory.");
+            }
 
             _character.EquipArmor(armor);
             SaveState();
+
+            return null;
         }
         public void UnequipArmor(Guid armorId)
         {
             _character.UnequipArmor(armorId);
             SaveState();
         }
-        public void EquipShield(Guid shieldId)
+        public RollResult? EquipShield(Guid shieldId)
         {
             var shield = _character.Inventory
                 .OfType<Armor>()
-                .First(a => a.Id == shieldId && a.ArmorType == ArmorType.Shield);
+                .FirstOrDefault(a => a.Id == shieldId && a.ArmorType == ArmorType.Shield);
+
+            if (shield == null)
+            {
+                return CreateFeedback("Shield was not found in inventory.");
+            }
 
             _character.EquipShield(shield);
             SaveState();
+
+            return null;
         }
         public void UnequipShield(Guid shieldId)
         {

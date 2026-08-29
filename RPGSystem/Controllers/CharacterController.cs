@@ -237,7 +237,10 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult AddInventoryItem(AddInventoryItemViewModel model)
         {
-            _characterService.AddInventoryItem(model);
+            var result = _characterService.AddInventoryItem(model);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
         }
@@ -252,7 +255,11 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult EquipWeapon(Guid weaponId)
         {
-            _characterService.EquipWeapon(weaponId);
+            var result = _characterService.EquipWeapon(weaponId);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
             return RedirectToAction("Sheet");
         }
         [HttpPost]
@@ -265,7 +272,11 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult EquipArmor(Guid armorId)
         {
-            _characterService.EquipArmor(armorId);
+            var result = _characterService.EquipArmor(armorId);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
             return RedirectToAction("Sheet");
         }
         [HttpPost]
@@ -278,7 +289,10 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult EquipShield(Guid shieldId)
         {
-            _characterService.EquipShield(shieldId);
+            var result = _characterService.EquipShield(shieldId);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
         }
