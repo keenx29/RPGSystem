@@ -1,36 +1,43 @@
 ﻿@model RPGSystem.Models.Characters.Character
 
-<section class="sheet-panel">
+<section class="sheet-panel senses-panel">
     <h2 class="sheet-panel-title">Senses</h2>
 
-    <div class="defense-group">
-        <div class="sheet-subtitle">Passive Perception</div>
-        <div>@Model.PassivePerception</div>
+    <div class="sense-group">
+        <h3 class="sheet-subtitle">Passive Senses</h3>
+
+        <div class="sense-row">
+            <span>Passive Perception</span>
+            <strong>@Model.PassivePerception</strong>
+        </div>
+
+        <div class="sense-row">
+            <span>Passive Investigation</span>
+            <strong>@Model.PassiveInvestigation</strong>
+        </div>
+
+        <div class="sense-row">
+            <span>Passive Insight</span>
+            <strong>@Model.PassiveInsight</strong>
+        </div>
     </div>
 
-    <div class="defense-group">
-        <div class="sheet-subtitle">Passive Investigation</div>
-        <div>@Model.PassiveInvestigation</div>
-    </div>
-
-    <div class="defense-group">
-        <div class="sheet-subtitle">Passive Insight</div>
-        <div>@Model.PassiveInsight</div>
-    </div>
-
-    <div class="defense-group">
-        <div class="sheet-subtitle">Special Senses</div>
+    <div class="sense-group">
+        <h3 class="sheet-subtitle">Other Senses</h3>
 
         @if (Model.Senses.Any())
         {
             foreach (var sense in Model.Senses)
             {
-                <div>
-                    <strong>@sense.Name</strong>
-                    @if (sense.RangeFeet.HasValue)
-                    {
-                        <span>@sense.RangeFeet.Value ft</span>
-                    }
+                <div class="sense-other">
+                    <div class="d-flex justify-content-between gap-2">
+                        <strong>@sense.Name</strong>
+
+                        @if (sense.RangeFeet.HasValue)
+                        {
+                            <span class="text-muted">@sense.RangeFeet.Value ft.</span>
+                        }
+                    </div>
 
                     @if (!string.IsNullOrWhiteSpace(sense.Description))
                     {
@@ -41,7 +48,7 @@
         }
         else
         {
-            <div>None</div>
+            <div class="text-muted small">None</div>
         }
     </div>
 </section>

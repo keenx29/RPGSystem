@@ -5,22 +5,21 @@
 
     <h2 class="sheet-panel-title">Stats</h2>
 
-    <div class="stats-grid">
-        <div>
-            <strong>AC</strong>
-            <span>@Model.GetArmorClass()</span>
+    <div class="stat-list">
+        <div class="stat-row">
+            <span>Armor Class</span>
+            <strong>@Model.GetArmorClass()</strong>
         </div>
 
-        <div>
-            <strong>Speed</strong>
-            <span>@Model.TotalMovementSpeed ft.</span>
+        <div class="stat-row">
+            <span>Speed</span>
+            <strong>@Model.TotalMovementSpeed ft.</strong>
         </div>
 
-        <div>
-            <strong>Initiative</strong>
-            <span>@ModifierFormatter.FormatWithoutSpace(Model.GetInitiative())</span>
+        <div class="stat-row">
+            <span>Initiative</span>
+            <strong>@ModifierFormatter.FormatWithoutSpace(Model.GetInitiative())</strong>
         </div>
-
     </div>
 
 </section>

@@ -23,3 +23,44 @@ document.addEventListener("DOMContentLoaded", function () {
     kindSelect.addEventListener("change", updateInventoryAddFields);
     updateInventoryAddFields();
 });
+
+const sheetScrollKey = "rpgsystem.sheetScrollY";
+
+function rememberSheetScrollPosition() {
+    if (!document.querySelector(".sheet-page")) {
+        return;
+    }
+
+    document.querySelectorAll(".sheet-page form").forEach(function (form) {
+        form.addEventListener("submit", function () {
+            sessionStorage.setItem(sheetScrollKey, window.scrollY.toString());
+        });
+    });
+}
+
+function restoreSheetScrollPosition() {
+    if (!document.querySelector(".sheet-page")) {
+        sessionStorage.removeItem(sheetScrollKey);
+        return;
+    }
+
+    const savedScrollY = sessionStorage.getItem(sheetScrollKey);
+
+    if (!savedScrollY) {
+        return;
+    }
+
+    sessionStorage.removeItem(sheetScrollKey);
+
+    requestAnimationFrame(function () {
+        window.scrollTo({
+            top: Number(savedScrollY),
+            behavior: "instant"
+        });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    rememberSheetScrollPosition();
+    restoreSheetScrollPosition();
+});

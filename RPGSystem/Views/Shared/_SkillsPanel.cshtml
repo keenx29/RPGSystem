@@ -36,6 +36,8 @@
         : skillLimitReached && !skill.IsProficient
         ? "Skill proficiency limit reached"
         : "";
+        var nextProficiencyValue = skill.IsProficient ? "false" : "true";
+        var nextExpertiseValue = skill.IsExpertise ? "false" : "true";
 
         <div class="skill-row">
             <div>
@@ -57,33 +59,26 @@
 
                 <form asp-action="SetSkillProficiency" method="post" class="m-0">
                     <input type="hidden" name="skillType" value="@skill.Type" />
+                    <input type="hidden" name="isProficient" value="@nextProficiencyValue" />
 
-                    <label class="d-inline-flex align-items-center gap-1 small" title="@proficiencyTitle">
-                        <input type="checkbox"
-                               name="isProficient"
-                               value="true"
-                               checked="@skill.IsProficient"
-                               disabled="@proficiencyDisabled"
-                               onchange="this.form.submit()" />
-                        <input type="hidden" name="isProficient" value="false" />
+                    <button type="submit"
+                            class="skill-toggle @(skill.IsProficient ? "selected" : "")"
+                            disabled="@proficiencyDisabled"
+                            title="@proficiencyTitle">
                         Prof
-                    </label>
+                    </button>
                 </form>
                 @if (Model.ClassType == CharacterClassType.Rogue)
                 {
                     <form asp-action="SetSkillExpertise" method="post" class="m-0">
                         <input type="hidden" name="skillType" value="@skill.Type" />
+                        <input type="hidden" name="isExpertise" value="@nextExpertiseValue" />
 
-                        <label class="d-inline-flex align-items-center gap-1 small">
-                            <input type="checkbox"
-                                   name="isExpertise"
-                                   value="true"
-                                   checked="@skill.IsExpertise"
-                                   disabled="@expertiseDisabled"
-                                   onchange="this.form.submit()" />
-                            <input type="hidden" name="isExpertise" value="false" />
+                        <button type="submit"
+                                class="skill-toggle expertise @(skill.IsExpertise ? "selected" : "")"
+                                disabled="@expertiseDisabled">
                             Exp
-                        </label>
+                        </button>
                     </form>
                 }
                 

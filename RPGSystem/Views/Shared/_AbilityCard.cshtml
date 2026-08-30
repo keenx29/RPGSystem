@@ -1,6 +1,9 @@
 ﻿@using RPGSystem.Helpers
 @using RPGSystem.Models.Characters
 @model Ability
+@{
+    var nextSavingThrowProficiencyValue = Model.IsSavingThrowProficient ? "false" : "true";
+}
 
 <div class="card p-3 m-2 text-center" style="width: 200px;">
 
@@ -12,9 +15,9 @@
         Modifier:
         <span>@ModifierFormatter.FormatWithoutSpace(Model.Modifier)</span>
     </p>
-    <div class="d-flex justify-content-center gap-2">
+    <div class="ability-actions">
 
-        <form asp-action="RollAbility" method="post">
+        <form asp-action="RollAbility" method="post" class="m-0">
 
             <input type="hidden"
                     name="abilityType"
@@ -26,7 +29,7 @@
 
         </form>
 
-        <form asp-action="RollSavingThrow" method="post">
+        <form asp-action="RollSavingThrow" method="post" class="m-0">
 
             <input type="hidden"
                     name="abilityType"
@@ -37,18 +40,15 @@
             </button>
 
         </form>
-        <form asp-action="SetSavingThrowProficiency" method="post" class="d-inline">
+        <form asp-action="SetSavingThrowProficiency" method="post" class="m-0">
             <input type="hidden" name="abilityType" value="@Model.Type" />
+            <input type="hidden" name="isProficient" value="@nextSavingThrowProficiencyValue" />
 
-            <label class="d-inline-flex align-items-center gap-1 small">
-                <input type="checkbox"
-                       name="isProficient"
-                       value="true"
-                       checked="@Model.IsSavingThrowProficient"
-                       onchange="this.form.submit()" />
-                <input type="hidden" name="isProficient" value="false" />
+            <button type="submit"
+                    class="skill-toggle save-toggle @(Model.IsSavingThrowProficient ? "selected" : "")"
+                    title="Saving throw proficiency">
                 Prof
-            </label>
+            </button>
         </form>
     </div>
 </div>

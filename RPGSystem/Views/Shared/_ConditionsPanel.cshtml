@@ -1,9 +1,9 @@
 ﻿@using RPGSystem.Models.Characters
 @model RPGSystem.Models.Characters.Character
-<div class="card mt-4 p-3">
+<section class="sheet-panel conditions-panel">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Conditions</h3>
+        <h2 class="sheet-panel-title mb-0">Conditions</h2>
 
         @if (Model.Conditions.Any())
         {
@@ -53,4 +53,4 @@
         </div>
     </form>
 
-</div>
+</section>

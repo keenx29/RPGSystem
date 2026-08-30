@@ -1,36 +1,38 @@
 ﻿@model RPGSystem.Models.Characters.Character
 
-<div class="death-saves-panel mt-3">
-    <h3 class="sheet-subtitle">Death Saves</h3>
-
-    <div class="small mb-1">
-        Successes:
-        @for (var i = 1; i <= 3; i++)
-        {
-            <span class="death-save-box @(i <= Model.DeathSaveSuccesses ? "filled" : "")">
-                @(i <= Model.DeathSaveSuccesses ? "x" : "")
-            </span>
-        }
+<div class="death-saves-panel">
+    <div class="death-save-row">
+        <span>Successes</span>
+        <div>
+            @for (var i = 1; i <= 3; i++)
+            {
+                <span class="death-save-box @(i <= Model.DeathSaveSuccesses ? "filled" : "")">
+                    @(i <= Model.DeathSaveSuccesses ? "x" : "")
+                </span>
+            }
+        </div>
     </div>
 
-    <div class="small mb-2">
-        Failures:
-        @for (var i = 1; i <= 3; i++)
-        {
-            <span class="death-save-box @(i <= Model.DeathSaveFailures ? "filled failure" : "")">
-                @(i <= Model.DeathSaveFailures ? "x" : "")
-            </span>
-        }
+    <div class="death-save-row">
+        <span>Failures</span>
+        <div>
+            @for (var i = 1; i <= 3; i++)
+            {
+                <span class="death-save-box @(i <= Model.DeathSaveFailures ? "filled failure" : "")">
+                    @(i <= Model.DeathSaveFailures ? "x" : "")
+                </span>
+            }
+        </div>
     </div>
 
     @if (Model.IsStable)
     {
-        <div class="text-success small mb-2">Stable</div>
+        <div class="text-success small">Stable</div>
     }
 
     @if (Model.IsDead)
     {
-        <div class="text-danger small mb-2">Dead</div>
+        <div class="text-danger small">Dead</div>
     }
 
     <div class="d-flex gap-2">

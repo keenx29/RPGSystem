@@ -16,11 +16,57 @@
 
     @foreach (var roll in Model)
     {
+        var advantageClass = roll.AdvantageType switch
+        {
+            AdvantageState.Advantage => "roll-chip-advantage",
+            AdvantageState.Disadvantage => "roll-chip-disadvantage",
+            _ => ""
+        };
+
+        var damageType = roll.DamageType?.Trim();
+        var damageLabel = string.IsNullOrWhiteSpace(damageType)
+        ? ""
+        : $"{char.ToUpper(damageType[0])}{damageType[1..].ToLower()} Damage";
+        var damageClass = (damageType ?? "").ToLowerInvariant() switch
+        {
+            "slashing" => "damage-slashing",
+            "piercing" => "damage-piercing",
+            "bludgeoning" => "damage-bludgeoning",
+            "fire" => "damage-fire",
+            "cold" => "damage-cold",
+            "poison" => "damage-poison",
+            "necrotic" => "damage-necrotic",
+            "radiant" => "damage-radiant",
+            "lightning" => "damage-lightning",
+            "thunder" => "damage-thunder",
+            "acid" => "damage-acid",
+            "psychic" => "damage-psychic",
+            "force" => "damage-force",
+            _ => "damage-generic"
+        };
         <div class="roll-message roll-@roll.Type.ToString().ToLower()">
 
             <div class="roll-message-header">
-                <strong>@roll.Actor</strong>
-                <span>@roll.Type</span>
+                <div class="roll-message-title">
+                    <strong>@roll.Actor</strong>
+                    <span class="roll-type-chip">@roll.Type</span>
+                </div>
+
+                <div class="roll-message-tags">
+                    @if (roll.AdvantageType != AdvantageState.Normal)
+                    {
+                        <span class="roll-state-chip @advantageClass">
+                            @roll.AdvantageType
+                        </span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(damageType))
+                    {
+                        <span class="damage-chip @damageClass">
+                            @damageLabel
+                        </span>
+                    }
+                </div>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(roll.Description))
@@ -37,7 +83,7 @@
                 </div>
 
                 <div class="roll-breakdown">
-                    @roll.DiceRoll + @roll.Modifier
+                    @roll.DiceRoll @ModifierFormatter.FormatWithSpace(roll.Modifier)
                 </div>
             }
 
@@ -48,12 +94,6 @@
                 </div>
             }
 
-            @if (!string.IsNullOrWhiteSpace(roll.DamageType))
-            {
-                <div class="roll-damage-type">
-                    @roll.DamageType
-                </div>
-            }
 
             @if (roll.AppliedEffects.Any())
             {
@@ -89,12 +129,6 @@
                         }
                     </ul>
                 </details>
-            }
-            @if (roll.AdvantageType != AdvantageState.Normal)
-            {
-                <div class="roll-advantage">
-                    @roll.AdvantageType
-                </div>
             }
 
             <div class="roll-actions">

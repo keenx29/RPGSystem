@@ -537,7 +537,7 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 NaturalRoll = roll,
                 Modifier = ability.Modifier,
-                Formula = $"1d20 {ability.Modifier:+ #;- #;0} {ability.Name}",
+                Formula = $"1d20 {ability.Modifier:+ #;- #;+ 0} {ability.Name}",
                 Description = $"Ability check",
                 AdvantageType = advantage.FinalState,
                 AppliedEffects = advantage.AppliedEffects,
@@ -550,7 +550,7 @@ namespace RPGSystem.Services
             var advantage = ResolveAdvantage(RollType.Save, adv, type);
             int roll = _diceService.RollD20(advantage.FinalState);
             var proficiencyBonus =  _character.GetSavingThrowBonus(ability) - ability.Modifier;
-            var formula = $"1d20 {ability.Modifier:+ #;- #;0} {ability.Name}";
+            var formula = $"1d20 {ability.Modifier:+ #;- #;+ 0} {ability.Name}";
 
             var explanations = new List<RollExplanation>(advantage.Explanations);
 
@@ -602,7 +602,7 @@ namespace RPGSystem.Services
             int roll = _diceService.RollD20(advantage.FinalState);
             var proficiencyBonus = _character.GetProficiencyBonus();
             var skillBonus = skill.GetBonus(proficiencyBonus);
-            var formula = $"1d20 {skill.RelatedAbility.Modifier:+ #;- #;0} {skill.RelatedAbility.Name}";
+            var formula = $"1d20 {skill.RelatedAbility.Modifier:+ #;- #;+ 0} {skill.RelatedAbility.Name}";
             var explanations = new List<RollExplanation>(advantage.Explanations);
 
             explanations.Add(new RollExplanation
@@ -691,7 +691,7 @@ namespace RPGSystem.Services
 
             int modifier = ability.Modifier + proficiencyBonus + weapon.AttackBonus;
 
-            var formula = $"1d20 {ability.Modifier:+ #;- #;0} {ability.Name}";
+            var formula = $"1d20 {ability.Modifier:+ #;- #;+ 0} {ability.Name}";
 
             if (proficiencyBonus != 0)
             {
@@ -700,7 +700,7 @@ namespace RPGSystem.Services
 
             if (weapon.AttackBonus != 0)
             {
-                formula += $" {weapon.AttackBonus:+#;-#;0} Weapon Bonus";
+                formula += $" {weapon.AttackBonus:+ #;- #;+ 0} Weapon Bonus";
             }
 
             var explanations = new List<RollExplanation>(advantage.Explanations);
@@ -1428,17 +1428,26 @@ namespace RPGSystem.Services
             SaveState();
             return null;
         }
-        public void SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
+        public RollResult? SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
         {
             var characterClass = CharacterClassFactory.Create(_character.ClassType);
+            var ability = _character.GetAbility(abilityType);
 
             if (isProficient &&
                 !characterClass.HasSavingThrowProficiency(abilityType))
             {
-                return;
+                return CreateFeedback($"{ability.Name} is not available as a saving throw proficiency for this class.");
             }
+
+            if (isProficient && ability.IsSavingThrowProficient)
+            {
+                return CreateFeedback($"{ability.Name} saving throw is already proficient.");
+            }
+
             _character.SetSavingThrowProficiency(abilityType, isProficient);
             SaveState();
+
+            return null;
         }
         public void UpdateCharacterNotes(UpdateCharacterNotesViewModel model)
         {

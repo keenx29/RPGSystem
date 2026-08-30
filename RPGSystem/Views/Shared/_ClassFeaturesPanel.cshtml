@@ -6,6 +6,12 @@
 
     @foreach (var group in Enum.GetValues<FeatureActivationType>())
     {
+        var groupName = group switch
+        {
+            FeatureActivationType.BonusAction => "Bonus Action",
+            FeatureActivationType.FreeAction => "Free Action",
+            _ => group.ToString()
+        };
         var features = Model.ClassFeatures
         .Where(f => f.ActivationType == group)
         .ToList();
@@ -14,7 +20,7 @@
             continue;
 
         <section class="feature-group">
-            <h3 class="sheet-subtitle">@group</h3>
+            <h3 class="sheet-subtitle">@groupName</h3>
 
             <div class="feature-list">
                 @foreach (var feature in features)

@@ -400,7 +400,10 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult SetSavingThrowProficiency(AbilityType abilityType, bool isProficient)
         {
-            _characterService.SetSavingThrowProficiency(abilityType, isProficient);
+            var result = _characterService.SetSavingThrowProficiency(abilityType, isProficient);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
         }

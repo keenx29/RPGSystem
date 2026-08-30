@@ -7,21 +7,36 @@
 
     @if (Model.FeatureResources.Any())
     {
-        @foreach (var resource in Model.FeatureResources)
-        {
-            <div class="resource-row">
-                <strong>@resource.Name</strong>
+        <div class="resource-list">
+            @foreach (var resource in Model.FeatureResources)
+            {
+                var percentage = resource.Max > 0
+                ? Math.Clamp((resource.Current * 100) / resource.Max, 0, 100)
+                : 0;
 
-                <span>@resource.Current / @resource.Max</span>
+                <div class="resource-card">
+                    <div>
+                        <strong>@resource.Name</strong>
 
-                @if (resource.ResetType != FeatureResetType.None)
-                {
-                    <small class="text-muted">
-                        @resource.ResetType
-                    </small>
-                }
-            </div>
-        }
+                        @if (resource.ResetType != FeatureResetType.None)
+                        {
+                            <div class="text-muted small">
+                                Resets on @resource.ResetType
+                            </div>
+                        }
+                    </div>
+
+                    <div class="resource-value">
+                        <strong>@resource.Current</strong>
+                        <span>/ @resource.Max</span>
+                    </div>
+                </div>
+
+                <div class="resource-track">
+                    <div style="width: @percentage%"></div>
+                </div>
+            }
+        </div>
     }
     else
     {
