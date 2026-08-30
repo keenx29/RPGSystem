@@ -51,6 +51,11 @@ namespace RPGSystem.Controllers
             
             return View(vm);
         }
+        [HttpGet]
+        public IActionResult AddItem()
+        {
+            return View(new AddInventoryItemViewModel());
+        }
         [HttpPost]
         public IActionResult OpenCharacter(Guid characterId)
         {

@@ -589,6 +589,19 @@ input[type=number] {
 
 /* Inventory / Equipment */
 
+.panel-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.panel-title-row .btn {
+    min-width: 2rem;
+    font-weight: 800;
+}
+
 .inventory-item {
     padding: 10px;
     margin-bottom: 8px;
@@ -596,15 +609,15 @@ input[type=number] {
     transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
-    .inventory-item:hover {
-        border-color: var(--accent);
-        transform: translateY(-1px);
-    }
+.inventory-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
 
-    .inventory-item.equipped {
-        background: rgba(47, 143, 91, 0.16);
-        border-left: 4px solid var(--success);
-    }
+.inventory-item.equipped {
+    background: rgba(47, 143, 91, 0.16);
+    border-left: 4px solid var(--success);
+}
 
 .equipped-container {
     display: flex;
@@ -618,9 +631,9 @@ input[type=number] {
     transition: border-color 0.15s ease;
 }
 
-    .equipped-slot:hover {
-        border-color: var(--accent);
-    }
+.equipped-slot:hover {
+    border-color: var(--accent);
+}
 
 .slot-label {
     font-size: 0.85rem;
@@ -642,13 +655,13 @@ input[type=number] {
     margin-top: 4px;
 }
 
-    .slot-state.active {
-        color: #75d99b;
-    }
+.slot-state.active {
+    color: #75d99b;
+}
 
-    .slot-state.empty {
-        color: var(--text-muted);
-    }
+.slot-state.empty {
+    color: var(--text-muted);
+}
 
 /* Defenses / Notes / Death saves */
 
