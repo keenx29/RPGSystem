@@ -1225,6 +1225,7 @@ namespace RPGSystem.Services
                 "Weapon" => new Weapon
                 {
                     Name = model.Name.Trim(),
+                    Description = model.Description?.Trim() ?? "",
                     Type = ItemType.Weapon,
                     DamageDice = string.IsNullOrWhiteSpace(model.DamageDice) ? "1d4" : model.DamageDice.Trim(),
                     DamageType = string.IsNullOrWhiteSpace(model.DamageType) ? "bludgeoning" : model.DamageType.Trim(),
@@ -1237,6 +1238,7 @@ namespace RPGSystem.Services
                 "Armor" => new Armor
                 {
                     Name = model.Name.Trim(),
+                    Description = model.Description?.Trim() ?? "",
                     Type = ItemType.Armor,
                     ArmorType = model.ArmorType,
                     BaseArmorClass = model.BaseArmorClass,
@@ -1245,6 +1247,7 @@ namespace RPGSystem.Services
                 _ => new Item
                 {
                     Name = model.Name.Trim(),
+                    Description = model.Description?.Trim() ?? "",
                     Type = model.Type
                 }
             };
@@ -1562,6 +1565,7 @@ namespace RPGSystem.Services
                     new Item
                     {
                         Name="Healing Potion",
+                        Description = "Restores 2d4 + 2 hit points when used.",
                         Type= ItemType.Consumable,
                         Effect= new HealEffect("2d4+2"),
                     }
@@ -1668,6 +1672,7 @@ namespace RPGSystem.Services
             new Item
             {
                 Name = "Healing Potion",
+                Description = "Restores 2d4 + 2 hit points when used.",
                 Type = ItemType.Consumable,
                 Effect = new HealEffect("2d4+2")
             }
@@ -1826,6 +1831,7 @@ namespace RPGSystem.Services
             new Item
             {
                 Name = "Healing Potion",
+                Description = "Restores 2d4 + 2 hit points when used.",
                 Type = ItemType.Consumable,
                 Effect = new HealEffect("2d4+2")
             },
@@ -1833,6 +1839,7 @@ namespace RPGSystem.Services
             new Item
             {
                 Name = "Greater Healing Potion",
+                Description = "Restores 4d4 + 4 hit points when used.",
                 Type = ItemType.Consumable,
                 Effect = new HealEffect("4d4+4")
             }
@@ -1978,6 +1985,7 @@ namespace RPGSystem.Services
             new Item
             {
                 Name = "Healing Potion",
+                Description = "Restores 2d4 + 2 hit points when used.",
                 Type = ItemType.Consumable,
                 Effect = new HealEffect("2d4+2")
             }

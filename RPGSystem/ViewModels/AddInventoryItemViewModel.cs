@@ -7,7 +7,7 @@ namespace RPGSystem.ViewModels
         public string ItemKind { get; set; } = "Item";
 
         public string Name { get; set; } = "";
-
+        public string Description { get; set; } = "";
         public ItemType Type { get; set; } = ItemType.General;
 
         public string? DamageDice { get; set; }

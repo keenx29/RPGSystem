@@ -12,7 +12,7 @@
 
             <a asp-controller="Character"
                asp-action="AddItem"
-               class="btn btn-sm btn-dark"
+               class="btn btn-sm btn-dark panel-add-button"
                title="Add item">
                 +
             </a>
@@ -51,16 +51,21 @@
                     {
                         <span class="badge bg-secondary">@item.Type</span>
                     }
-
+                    
                 </div>
-
+               
                 <!-- small weight / meta (future-proof feel) -->
                 <small class="text-muted">
                     @item.Weight lb
                 </small>
 
             </div>
-
+            @if (!string.IsNullOrWhiteSpace(item.Description))
+            {
+                <div class="inventory-description">
+                    @item.Description
+                </div>
+            }
             <!-- ACTIONS -->
             <div class="mt-2 d-flex gap-2">
 

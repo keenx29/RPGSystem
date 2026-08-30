@@ -597,7 +597,8 @@ input[type=number] {
     margin-bottom: 0.75rem;
 }
 
-.panel-title-row .btn {
+.panel-add-button {
+    margin-left: auto;
     min-width: 2rem;
     font-weight: 800;
 }
@@ -612,6 +613,13 @@ input[type=number] {
 .inventory-item:hover {
     border-color: var(--accent);
     transform: translateY(-1px);
+}
+
+.inventory-description {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+    line-height: 1.35;
 }
 
 .inventory-item.equipped {
