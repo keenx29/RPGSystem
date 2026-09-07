@@ -268,6 +268,16 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult UpdateCurrency(UpdateCurrencyViewModel model)
+        {
+            var result = _characterService.UpdateCurrency(model);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult EquipWeapon(Guid weaponId)
         {
             var result = _characterService.EquipWeapon(weaponId);

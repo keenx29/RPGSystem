@@ -24,6 +24,72 @@
                         </span>
                     }
                 </div>
+                <form asp-controller="Character"
+                      asp-action="UpdateCurrency"
+                      method="post"
+                      class="currency-tracker"
+                      data-currency-form>
+
+                    <div class="currency-field">
+                        <label for="platinumPieces" title="Platinum Pieces">PP</label>
+                        <input id="platinumPieces"
+                               name="PlatinumPieces"
+                               type="number"
+                               min="0"
+                               step="1"
+                               inputmode="numeric"
+                               value="@Model.PlatinumPieces"
+                               data-currency-input />
+                    </div>
+
+                    <div class="currency-field">
+                        <label for="goldPieces" title="Gold Pieces">GP</label>
+                        <input id="goldPieces"
+                               name="GoldPieces"
+                               type="number"
+                               min="0"
+                               step="1"
+                               inputmode="numeric"
+                               value="@Model.GoldPieces"
+                               data-currency-input />
+                    </div>
+
+                    <div class="currency-field">
+                        <label for="electrumPieces" title="Electrum Pieces">EP</label>
+                        <input id="electrumPieces"
+                               name="ElectrumPieces"
+                               type="number"
+                               min="0"
+                               step="1"
+                               inputmode="numeric"
+                               value="@Model.ElectrumPieces"
+                               data-currency-input />
+                    </div>
+
+                    <div class="currency-field">
+                        <label for="silverPieces" title="Silver Pieces">SP</label>
+                        <input id="silverPieces"
+                               name="SilverPieces"
+                               type="number"
+                               min="0"
+                               step="1"
+                               inputmode="numeric"
+                               value="@Model.SilverPieces"
+                               data-currency-input />
+                    </div>
+
+                    <div class="currency-field">
+                        <label for="copperPieces" title="Copper Pieces">CP</label>
+                        <input id="copperPieces"
+                               name="CopperPieces"
+                               type="number"
+                               min="0"
+                               step="1"
+                               inputmode="numeric"
+                               value="@Model.CopperPieces"
+                               data-currency-input />
+                    </div>
+                </form>
             </div>
 
             <a asp-controller="Character"

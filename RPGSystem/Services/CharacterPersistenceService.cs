@@ -115,6 +115,11 @@ namespace RPGSystem.Services
             entity.Bonds = character.Bonds;
             entity.Flaws = character.Flaws;
             entity.Notes = character.Notes;
+            entity.CopperPieces = character.CopperPieces;
+            entity.SilverPieces = character.SilverPieces;
+            entity.ElectrumPieces = character.ElectrumPieces;
+            entity.GoldPieces = character.GoldPieces;
+            entity.PlatinumPieces = character.PlatinumPieces;
         }
 
         private AbilityEntity ToAbilityEntity(Ability ability, Guid characterId)

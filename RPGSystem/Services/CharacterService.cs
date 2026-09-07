@@ -90,6 +90,11 @@ namespace RPGSystem.Services
             character.Bonds = savedCharacter.Bonds;
             character.Flaws = savedCharacter.Flaws;
             character.Notes = savedCharacter.Notes;
+            character.CopperPieces = savedCharacter.CopperPieces;
+            character.SilverPieces = savedCharacter.SilverPieces;
+            character.ElectrumPieces = savedCharacter.ElectrumPieces;
+            character.GoldPieces = savedCharacter.GoldPieces;
+            character.PlatinumPieces = savedCharacter.PlatinumPieces;
 
             character.Inventory = savedCharacter.Items
                 .Where(i => i.Location == "Inventory")
@@ -1478,6 +1483,27 @@ namespace RPGSystem.Services
             }
 
             _character.SetSavingThrowProficiency(abilityType, isProficient);
+            SaveState();
+
+            return null;
+        }
+        public RollResult? UpdateCurrency(UpdateCurrencyViewModel model)
+        {
+            if (model.CopperPieces < 0 ||
+                model.SilverPieces < 0 ||
+                model.ElectrumPieces < 0 ||
+                model.GoldPieces < 0 ||
+                model.PlatinumPieces < 0)
+            {
+                return CreateFeedback("Currency values cannot be negative.");
+            }
+
+            _character.CopperPieces = model.CopperPieces;
+            _character.SilverPieces = model.SilverPieces;
+            _character.ElectrumPieces = model.ElectrumPieces;
+            _character.GoldPieces = model.GoldPieces;
+            _character.PlatinumPieces = model.PlatinumPieces;
+
             SaveState();
 
             return null;

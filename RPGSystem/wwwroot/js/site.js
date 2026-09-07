@@ -64,3 +64,22 @@ document.addEventListener("DOMContentLoaded", function () {
     rememberSheetScrollPosition();
     restoreSheetScrollPosition();
 });
+function setupCurrencyAutoSave() {
+    const currencyForm = document.querySelector("[data-currency-form]");
+
+    if (!currencyForm) {
+        return;
+    }
+
+    currencyForm
+        .querySelectorAll("[data-currency-input]")
+        .forEach(function (input) {
+            input.addEventListener("change", function () {
+                currencyForm.requestSubmit();
+            });
+        });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupCurrencyAutoSave();
+});
