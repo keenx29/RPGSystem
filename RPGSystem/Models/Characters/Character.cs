@@ -36,6 +36,8 @@ namespace RPGSystem.Models.Characters
         }
         public int HitDiceRemaining { get; set; }
         public int MaxHitDice => Level;
+        public bool CanSpendHitDie =>
+            HitDiceRemaining > 0 && CurrentHP < MaxHP;
         public int PendingAbilityScoreImprovementPoints { get; set; }
         public List<string> DamageResistances { get; set; } = new();
 
@@ -174,10 +176,6 @@ namespace RPGSystem.Models.Characters
             HitDiceRemaining = Math.Max(0, HitDiceRemaining - amount);
         }
 
-        public void RestoreHitDice(int amount)
-        {
-            HitDiceRemaining = Math.Min(MaxHitDice, HitDiceRemaining + amount);
-        }
         public void TakeDamage(int amount)
         {
             CurrentHP = Math.Max(0, CurrentHP - amount);
@@ -267,8 +265,7 @@ namespace RPGSystem.Models.Characters
             RestoreFeatureUsesForLongRest();
             RestoreResourcesForLongRest();
 
-            int hitDiceToRestore = Math.Max(1, MaxHitDice / 2);
-            RestoreHitDice(hitDiceToRestore);
+            RestoreHitDiceAfterLongRest();
 
             ResetDeathSaves();
         }
@@ -532,6 +529,14 @@ namespace RPGSystem.Models.Characters
                 return;
 
             IsStable = true;
+        }
+        public void RestoreHitDiceAfterLongRest()
+        {
+            int restoredDice = Math.Max(1, MaxHitDice / 2);
+
+            HitDiceRemaining = Math.Min(
+                MaxHitDice,
+                HitDiceRemaining + restoredDice);
         }
         private int GetShieldBonus()
         {

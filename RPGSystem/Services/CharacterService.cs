@@ -908,6 +908,32 @@ namespace RPGSystem.Services
                 Explanations = explanations,
             };
         }
+        public RollResult? RollHitDie()
+        {
+            if (!_character.CanSpendHitDie)
+                return CreateFeedback("No Hit Dice can be spent right now.");
+
+            var characterClass = CharacterClassFactory.Create(_character.ClassType);
+            var constitution = _character.GetAbility(AbilityType.Constitution);
+
+            int dieRoll = _diceService.RollDice($"1d{characterClass.HitDie}");
+            int healing = Math.Max(0, dieRoll + constitution.Modifier);
+
+            _character.HitDiceRemaining--;
+            _character.Heal(healing);
+
+            SaveState();
+
+            return new RollResult
+            {
+                Actor = "Hit Die",
+                Type = RollType.Heal,
+                DiceRoll = dieRoll,
+                Modifier = constitution.Modifier,
+                Formula = $"1d{characterClass.HitDie} + {constitution.Modifier} CON",
+                Description = $"Spent one Hit Die and restored {healing} HP."
+            };
+        }
         public RollResult RollDeathSave(AdvantageState adv)
         {
             if (!_character.ShouldMakeDeathSaves)
@@ -1152,44 +1178,45 @@ namespace RPGSystem.Services
 
             return characterClass.HitDie;
         }
-        public RollResult? ShortRest(int hitDiceCount)
+        public RollResult ShortRest()
         {
-            //TODO: Separate hit dice and short rest logic
-            _character.ShortRest();
+            var restoredEffects = new List<string>();
 
-            if (hitDiceCount <= 0)
-                return null;
-
-            hitDiceCount = Math.Min(hitDiceCount, _character.HitDiceRemaining);
-
-            if (hitDiceCount <= 0)
-                return null;
-
-            int hitDie = GetHitDie();
-            int constitutionModifier = _character.GetAbility(AbilityType.Constitution).Modifier;
-
-            int diceTotal = 0;
-
-            for (int i = 0; i < hitDiceCount; i++)
+            foreach (var feature in _character.ClassFeatures)
             {
-                diceTotal += _diceService.RollDice($"1d{hitDie}");
+                bool canRestore =
+                    feature.ResetType == FeatureResetType.ShortRest &&
+                    feature.UsesRemaining < feature.MaxUses;
+
+                if (canRestore)
+                {
+                    restoredEffects.Add(feature.Name);
+                }
             }
 
-            int modifier = constitutionModifier * hitDiceCount;
-            int healAmount = Math.Max(0, diceTotal + modifier);
+            foreach (var resource in _character.FeatureResources)
+            {
+                bool canRestore =
+                    resource.ResetType == FeatureResetType.ShortRest &&
+                    resource.Current < resource.Max;
 
-            _character.SpendHitDice(hitDiceCount);
-            _character.Heal(healAmount);
+                if (canRestore)
+                {
+                    restoredEffects.Add(resource.Name);
+                }
+            }
+
+            _character.ShortRest();
             SaveState();
+
             return new RollResult
             {
                 Actor = "Short Rest",
-                Type = RollType.Heal,
-                DiceRoll = diceTotal,
-                Modifier = modifier,
-                Formula = $"{hitDiceCount}d{hitDie} + {modifier} CON",
-                Description = $"Spent {hitDiceCount} hit dice during a short rest.",
-                AppliedEffects = new List<string> { $"Hit Dice" }
+                Type = RollType.Feature,
+                Description = restoredEffects.Any()
+                    ? "Short rest completed. Restored the listed features and resources."
+                    : "Short rest completed. No features or resources needed to be restored.",
+                AppliedEffects = restoredEffects
             };
         }
         public void LongRest()

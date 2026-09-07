@@ -221,6 +221,16 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult RollHitDie()
+        {
+            var result = _characterService.RollHitDie();
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult RollDeathSave()
         {
             var result = _characterService.RollDeathSave(_rollState.SelectedAdvantageState);
@@ -336,9 +346,9 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult ShortRest(int hitDiceCount)
+        public IActionResult ShortRest()
         {
-            var result = _characterService.ShortRest(hitDiceCount);
+            var result = _characterService.ShortRest();
 
             if (result != null)
                 _rollHistory.Insert(0, result);
