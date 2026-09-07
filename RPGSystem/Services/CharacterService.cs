@@ -1185,6 +1185,9 @@ namespace RPGSystem.Services
         }
         public RollResult ShortRest()
         {
+            if (_character.IsDead)
+                return CreateFeedback("A dead character cannot take a short rest.");
+
             var restoredEffects = new List<string>();
 
             foreach (var feature in _character.ClassFeatures)
@@ -1224,10 +1227,109 @@ namespace RPGSystem.Services
                 AppliedEffects = restoredEffects
             };
         }
-        public void LongRest()
+        public RollResult LongRest()
         {
+            if (_character.IsDead)
+                return CreateFeedback("A dead character cannot take a long rest.");
+
+            var appliedEffects = new List<string>();
+            var explanations = new List<RollExplanation>();
+
+            int hpBefore = _character.CurrentHP;
+            int hitDiceBefore = _character.HitDiceRemaining;
+
+            bool hadDeathSaveState =
+                _character.DeathSaveSuccesses > 0 ||
+                _character.DeathSaveFailures > 0 ||
+                _character.IsStable;
+
+            foreach (var feature in _character.ClassFeatures)
+            {
+                bool resetsOnLongRest =
+                    feature.ResetType == FeatureResetType.ShortRest ||
+                    feature.ResetType == FeatureResetType.LongRest;
+
+                if (resetsOnLongRest && feature.UsesRemaining < feature.MaxUses)
+                {
+                    appliedEffects.Add(feature.Name);
+
+                    explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Feature,
+                        Source = feature.Name,
+                        Text = $"Uses restored from {feature.UsesRemaining}/{feature.MaxUses} to {feature.MaxUses}/{feature.MaxUses}."
+                    });
+                }
+            }
+
+            foreach (var resource in _character.FeatureResources)
+            {
+                bool resetsOnLongRest =
+                    resource.ResetType == FeatureResetType.ShortRest ||
+                    resource.ResetType == FeatureResetType.LongRest;
+
+                if (resetsOnLongRest && resource.Current < resource.Max)
+                {
+                    appliedEffects.Add(resource.Name);
+
+                    explanations.Add(new RollExplanation
+                    {
+                        Type = RollExplanationType.Feature,
+                        Source = resource.Name,
+                        Text = $"Resource restored from {resource.Current}/{resource.Max} to {resource.Max}/{resource.Max}."
+                    });
+                }
+            }
+
             _character.LongRest();
             SaveState();
+
+            if (hpBefore < _character.MaxHP)
+            {
+                appliedEffects.Insert(0, "Hit Points");
+
+                explanations.Insert(0, new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = "Hit Points",
+                    Text = $"Restored from {hpBefore}/{_character.MaxHP} to {_character.CurrentHP}/{_character.MaxHP}."
+                });
+            }
+
+            if (_character.HitDiceRemaining > hitDiceBefore)
+            {
+                appliedEffects.Add("Hit Dice");
+
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = "Hit Dice",
+                    Text = $"Recovered from {hitDiceBefore}/{_character.MaxHitDice} to {_character.HitDiceRemaining}/{_character.MaxHitDice}."
+                });
+            }
+
+            if (hadDeathSaveState)
+            {
+                appliedEffects.Add("Death Saves");
+
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = "Death Saves",
+                    Text = "Death save state was reset."
+                });
+            }
+
+            return new RollResult
+            {
+                Actor = "Long Rest",
+                Type = RollType.Feature,
+                Description = appliedEffects.Any()
+                    ? "Long rest completed. Restored the listed character state."
+                    : "Long rest completed. No tracked values needed restoring.",
+                AppliedEffects = appliedEffects,
+                Explanations = explanations
+            };
         }
         public void ModifyHP(int amount, HpChangeType type)
         {

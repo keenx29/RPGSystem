@@ -71,13 +71,13 @@
 
         <div class="d-flex gap-2">
             <form asp-controller="Character" asp-action="ShortRest" method="post">
-                <button class="btn btn-sm btn-warning">
+                <button class="btn btn-sm btn-warning" disabled="@Model.Character.IsDead">
                     Short
                 </button>
             </form>
 
             <form asp-controller="Character" asp-action="LongRest" method="post">
-                <button class="btn btn-sm btn-success">
+                <button class="btn btn-sm btn-success" disabled="@Model.Character.IsDead">
                     Long
                 </button>
             </form>

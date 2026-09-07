@@ -369,7 +369,11 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult LongRest()
         {
-            _characterService.LongRest();
+            var result = _characterService.LongRest();
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
+
             return RedirectToAction("Sheet");
         }
         [HttpPost]

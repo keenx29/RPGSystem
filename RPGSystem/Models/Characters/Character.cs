@@ -37,7 +37,9 @@ namespace RPGSystem.Models.Characters
         public int HitDiceRemaining { get; set; }
         public int MaxHitDice => Level;
         public bool CanSpendHitDie =>
-            HitDiceRemaining > 0 && CurrentHP < MaxHP;
+            !IsDead &&
+            HitDiceRemaining > 0 &&
+            CurrentHP < MaxHP;
         public int PendingAbilityScoreImprovementPoints { get; set; }
         public List<string> DamageResistances { get; set; } = new();
 
@@ -265,6 +267,9 @@ namespace RPGSystem.Models.Characters
         }
         public void LongRest()
         {
+            if (IsDead)
+                return;
+
             CurrentHP = MaxHP;
 
             RestoreFeatureUsesForLongRest();
