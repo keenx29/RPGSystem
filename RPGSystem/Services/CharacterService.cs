@@ -1225,6 +1225,7 @@ namespace RPGSystem.Services
                 "Weapon" => new Weapon
                 {
                     Name = model.Name.Trim(),
+                    Weight = model.Weight,
                     Description = model.Description?.Trim() ?? "",
                     Type = ItemType.Weapon,
                     DamageDice = string.IsNullOrWhiteSpace(model.DamageDice) ? "1d4" : model.DamageDice.Trim(),
@@ -1238,6 +1239,7 @@ namespace RPGSystem.Services
                 "Armor" => new Armor
                 {
                     Name = model.Name.Trim(),
+                    Weight = model.Weight,
                     Description = model.Description?.Trim() ?? "",
                     Type = ItemType.Armor,
                     ArmorType = model.ArmorType,
@@ -1247,6 +1249,7 @@ namespace RPGSystem.Services
                 _ => new Item
                 {
                     Name = model.Name.Trim(),
+                    Weight = model.Weight,
                     Description = model.Description?.Trim() ?? "",
                     Type = model.Type
                 }

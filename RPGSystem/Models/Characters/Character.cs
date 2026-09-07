@@ -68,6 +68,33 @@ namespace RPGSystem.Models.Characters
         public int PassiveInvestigation => GetPassiveSkillScore(SkillType.Investigation);
 
         public int PassiveInsight => GetPassiveSkillScore(SkillType.Insight);
+        public double TotalCarriedWeight
+        {
+            get
+            {
+                double total = Inventory.Sum(item => item.Weight);
+
+                if (EquippedWeapons != null)
+                    foreach (var item in EquippedWeapons)
+                    {
+                        total += item.Weight;
+                    }
+
+                if (EquippedArmor != null)
+                    total += EquippedArmor.Weight;
+
+                if (EquippedShield != null)
+                    total += EquippedShield.Weight;
+
+                return total;
+            }
+        }
+
+        public double CarryingCapacity =>
+            GetAbility(AbilityType.Strength).Score * 15;
+
+        public bool IsOverCarryingCapacity =>
+            TotalCarriedWeight > CarryingCapacity;
         // Character State
         public List<ConditionType> Conditions { get; set; } = new();
         public int DeathSaveSuccesses { get; set; }

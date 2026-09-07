@@ -626,7 +626,29 @@ input[type=number] {
     background: rgba(47, 143, 91, 0.16);
     border-left: 4px solid var(--success);
 }
+.inventory-weight-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
 
+.inventory-weight-summary strong {
+    color: var(--text);
+}
+
+.inventory-warning {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+.inventory-weight-summary.over-capacity {
+    border-left: 3px solid var(--danger);
+    padding-left: 0.75rem;
+}
 .equipped-container {
     display: flex;
     flex-direction: column;

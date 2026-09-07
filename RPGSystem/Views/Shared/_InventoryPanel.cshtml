@@ -5,8 +5,24 @@
         <div class="panel-title-row">
             <div>
                 <h2 class="sheet-panel-title mb-0">Inventory</h2>
-                <div class="text-muted small">
-                    Total weight: @Model.Inventory.Sum(item => item.Weight) lb
+                <div class="inventory-weight-summary
+            @(Model.IsOverCarryingCapacity ? "over-capacity" : "")">
+                    <span>
+                        Weight:
+                        <strong>@Model.TotalCarriedWeight.ToString("0.##") lb</strong>
+                    </span>
+
+                    <span>
+                        Capacity:
+                        <strong>@Model.CarryingCapacity.ToString("0.##") lb</strong>
+                    </span>
+
+                    @if (Model.IsOverCarryingCapacity)
+                    {
+                        <span class="inventory-warning">
+                            Over carrying capacity
+                        </span>
+                    }
                 </div>
             </div>
 
