@@ -7,5 +7,6 @@ namespace RPGSystem.Models.Items
     {
         public Character Character { get; set; }
         public DiceService DiceService { get; set; }
+        public Item Item { get; set; } = null!;
     }
 }

@@ -19,7 +19,11 @@ namespace RPGSystem.Models.Items
 
             context.Character.Heal(result.Total);
 
-            result.Actor = "Healing Potion";
+            result.Actor = context.Item.Name;
+
+            result.Formula = Notation;
+
+            result.Description = $"Heal roll with {context.Item.Name}.";
 
             result.Type = RollType.Heal;
 

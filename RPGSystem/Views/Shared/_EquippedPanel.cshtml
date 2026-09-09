@@ -1,5 +1,6 @@
 ﻿@using RPGSystem.Helpers
 @using RPGSystem.Models.Items
+@inject RPGSystem.Services.DiceService DiceService
 @model RPGSystem.Models.Characters.Character
 
 <section class="sheet-panel equipped-panel">
@@ -14,6 +15,33 @@
         {
             var attackBonus = Model.GetAttackBonus(weapon);
             var damageBonus = Model.GetDamageBonus(weapon);
+            var damageType = string.IsNullOrWhiteSpace(weapon.DamageType)
+            ? "Damage"
+            : char.ToUpperInvariant(weapon.DamageType[0]) +
+            weapon.DamageType[1..].ToLowerInvariant();
+
+            var damageDice = DiceService.GetBaseDiceNotation(weapon.DamageDice);
+            var weaponDamageBonus = DiceService.GetDiceModifier(weapon.DamageDice);
+            var damageAbility = Model.GetAttackAbility(weapon);
+
+            var damageParts = new List<string>
+        {
+        $"{damageType} Damage {damageDice}"
+        };
+
+            if (weaponDamageBonus != 0)
+            {
+                damageParts.Add(
+                $"{ModifierFormatter.FormatWithSpace(weaponDamageBonus)} Weapon Bonus");
+            }
+
+            if (damageBonus != 0)
+            {
+                damageParts.Add(
+                $"{ModifierFormatter.FormatWithSpace(damageBonus)} {damageAbility.Name}");
+            }
+
+            var damageText = string.Join(" ", damageParts);
 
             <div class="equipment-row">
                 <div>
@@ -26,10 +54,10 @@
                     {
                         <span class="badge bg-warning text-dark">Not proficient</span>
                     }
+                    
                     <div class="text-muted small">
                         Attack @ModifierFormatter.FormatWithoutSpace(attackBonus)
-                        · Damage @weapon.DamageDice @ModifierFormatter.FormatWithoutSpace(damageBonus)
-                        @weapon.DamageType
+                        · @damageText
                     </div>
                 </div>
 

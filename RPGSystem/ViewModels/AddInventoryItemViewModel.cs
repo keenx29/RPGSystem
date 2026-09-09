@@ -4,14 +4,14 @@ namespace RPGSystem.ViewModels
 {
     public class AddInventoryItemViewModel
     {
-        public string ItemKind { get; set; } = "Item";
+        public string ItemKind { get; set; } = "General";
 
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
-        public ItemType Type { get; set; } = ItemType.General;
         public double Weight { get; set; }
 
         public string? DamageDice { get; set; }
+        public string? HealingDice { get; set; }
 
         public string? DamageType { get; set; }
 

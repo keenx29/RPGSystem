@@ -1,103 +1,103 @@
 ﻿@using RPGSystem.Models.Items
 @model RPGSystem.Models.Characters.Character
 <section class="sheet-panel inventory-panel">
-        <div class="panel-title-row">
-        <div class="inventory-panel-content">
-                <h2 class="sheet-panel-title mb-0">Inventory</h2>
-                <div class="inventory-weight-summary
-            @(Model.IsOverCarryingCapacity ? "over-capacity" : "")">
-                    <span>
-                        Weight:
-                        <strong>@Model.TotalCarriedWeight.ToString("0.##") lb</strong>
-                    </span>
+    <div class="panel-title-row">
+        <h2 class="sheet-panel-title mb-0">Inventory</h2>
 
-                    <span>
-                        Capacity:
-                        <strong>@Model.CarryingCapacity.ToString("0.##") lb</strong>
-                    </span>
+        <a asp-controller="Character"
+           asp-action="AddItem"
+           class="btn btn-sm btn-dark panel-add-button"
+           title="Add item">
+            +
+        </a>
+    </div>
 
-                    @if (Model.IsOverCarryingCapacity)
-                    {
-                        <span class="inventory-warning">
-                            Over carrying capacity
-                        </span>
-                    }
-                </div>
-                <form asp-controller="Character"
-                      asp-action="UpdateCurrency"
-                      method="post"
-                      class="currency-tracker"
-                      data-currency-form>
+    <div class="inventory-weight-summary
+     @(Model.IsOverCarryingCapacity ? "over-capacity" : "")">
+        <span>
+            Weight:
+            <strong>@Model.TotalCarriedWeight.ToString("0.##") lb</strong>
+        </span>
 
-                    <div class="currency-field">
-                        <label for="platinumPieces" title="Platinum Pieces">PP</label>
-                        <input id="platinumPieces"
-                               name="PlatinumPieces"
-                               type="number"
-                               min="0"
-                               step="1"
-                               inputmode="numeric"
-                               value="@Model.PlatinumPieces"
-                               data-currency-input />
-                    </div>
+        <span>
+            Capacity:
+            <strong>@Model.CarryingCapacity.ToString("0.##") lb</strong>
+        </span>
 
-                    <div class="currency-field">
-                        <label for="goldPieces" title="Gold Pieces">GP</label>
-                        <input id="goldPieces"
-                               name="GoldPieces"
-                               type="number"
-                               min="0"
-                               step="1"
-                               inputmode="numeric"
-                               value="@Model.GoldPieces"
-                               data-currency-input />
-                    </div>
+        @if (Model.IsOverCarryingCapacity)
+        {
+            <span class="inventory-warning">
+                Over carrying capacity
+            </span>
+        }
+    </div>
 
-                    <div class="currency-field">
-                        <label for="electrumPieces" title="Electrum Pieces">EP</label>
-                        <input id="electrumPieces"
-                               name="ElectrumPieces"
-                               type="number"
-                               min="0"
-                               step="1"
-                               inputmode="numeric"
-                               value="@Model.ElectrumPieces"
-                               data-currency-input />
-                    </div>
+    <form asp-controller="Character"
+          asp-action="UpdateCurrency"
+          method="post"
+          class="currency-tracker"
+          data-currency-form>
 
-                    <div class="currency-field">
-                        <label for="silverPieces" title="Silver Pieces">SP</label>
-                        <input id="silverPieces"
-                               name="SilverPieces"
-                               type="number"
-                               min="0"
-                               step="1"
-                               inputmode="numeric"
-                               value="@Model.SilverPieces"
-                               data-currency-input />
-                    </div>
-
-                    <div class="currency-field">
-                        <label for="copperPieces" title="Copper Pieces">CP</label>
-                        <input id="copperPieces"
-                               name="CopperPieces"
-                               type="number"
-                               min="0"
-                               step="1"
-                               inputmode="numeric"
-                               value="@Model.CopperPieces"
-                               data-currency-input />
-                    </div>
-                </form>
-            </div>
-
-            <a asp-controller="Character"
-               asp-action="AddItem"
-               class="btn btn-sm btn-dark panel-add-button"
-               title="Add item">
-                +
-            </a>
+        <div class="currency-field currency-copper">
+            <label for="copperPieces">Copper</label>
+            <input id="copperPieces"
+                   name="CopperPieces"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   value="@Model.CopperPieces"
+                   data-currency-input />
         </div>
+
+        <div class="currency-field currency-silver">
+            <label for="silverPieces">Silver</label>
+            <input id="silverPieces"
+                   name="SilverPieces"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   value="@Model.SilverPieces"
+                   data-currency-input />
+        </div>
+
+        <div class="currency-field currency-electrum">
+            <label for="electrumPieces">Electrum</label>
+            <input id="electrumPieces"
+                   name="ElectrumPieces"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   value="@Model.ElectrumPieces"
+                   data-currency-input />
+        </div>
+
+        <div class="currency-field currency-gold">
+            <label for="goldPieces">Gold</label>
+            <input id="goldPieces"
+                   name="GoldPieces"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   value="@Model.GoldPieces"
+                   data-currency-input />
+        </div>
+
+        <div class="currency-field currency-platinum">
+            <label for="platinumPieces">Platinum</label>
+            <input id="platinumPieces"
+                   name="PlatinumPieces"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   value="@Model.PlatinumPieces"
+                   data-currency-input />
+        </div>
+    </form>
 
     
     @foreach (var item in Model.Inventory)

@@ -32,11 +32,120 @@ namespace RPGSystem.Services
         }
         public int RollDice(string notation)
         {
-            var parts = notation.ToLower().Split('d');
+            if (!TryParseDiceExpression(notation, out int count, out int sides, out int modifier))
+                throw new ArgumentException("Invalid dice notation.", nameof(notation));
 
-            int count = int.Parse(parts[0]);
-            int sides = int.Parse(parts[1]);
+            return RollDiceBase(count, sides) + modifier;
+        }
+        public RollResult RollDiceDetailed(string notation)
+        {
+            if (!TryParseDiceExpression(notation, out int count, out int sides, out int modifier))
+                throw new ArgumentException("Invalid dice notation.", nameof(notation));
 
+            return new RollResult
+            {
+                DiceRoll = RollDiceBase(count, sides),
+                Modifier = modifier,
+                Formula = notation
+            };
+        }
+        public string DoubleDiceExpression(string diceExpression)
+        {
+            if (!TryParseDiceExpression(diceExpression, out int count, out int sides, out int modifier))
+                return diceExpression;
+
+            string modifierText = modifier switch
+            {
+                > 0 => $"+{modifier}",
+                < 0 => modifier.ToString(),
+                _ => ""
+            };
+
+            return $"{count * 2}d{sides}{modifierText}";
+        }
+
+        public bool IsValidDiceNotation(string? notation)
+        {
+            return TryParseDiceExpression(notation, out _, out _, out _);
+        }
+        public string GetBaseDiceNotation(string notation)
+        {
+            if (!TryParseDiceExpression(notation, out int count, out int sides, out _))
+                throw new ArgumentException("Invalid dice notation.", nameof(notation));
+
+            return $"{count}d{sides}";
+        }
+
+        public int GetDiceModifier(string notation)
+        {
+            if (!TryParseDiceExpression(notation, out _, out _, out int modifier))
+                throw new ArgumentException("Invalid dice notation.", nameof(notation));
+
+            return modifier;
+        }
+        private bool TryParseDiceExpression(
+            string? notation,
+            out int count,
+            out int sides,
+            out int modifier)
+        {
+            count = 0;
+            sides = 0;
+            modifier = 0;
+
+            if (string.IsNullOrWhiteSpace(notation))
+                return false;
+
+            var value = notation
+                .Trim()
+                .ToLowerInvariant()
+                .Replace(" ", "");
+
+            int dIndex = value.IndexOf('d');
+
+            if (dIndex <= 0 || dIndex == value.Length - 1)
+                return false;
+
+            int modifierIndex = -1;
+
+            for (int i = dIndex + 2; i < value.Length; i++)
+            {
+                if (value[i] == '+' || value[i] == '-')
+                {
+                    modifierIndex = i;
+                    break;
+                }
+            }
+
+            string countText = value[..dIndex];
+            string sidesText = modifierIndex >= 0
+                ? value[(dIndex + 1)..modifierIndex]
+                : value[(dIndex + 1)..];
+
+            string? modifierText = modifierIndex >= 0
+                ? value[modifierIndex..]
+                : null;
+
+            if (!int.TryParse(countText, out count) ||
+                !int.TryParse(sidesText, out sides))
+            {
+                return false;
+            }
+
+            if (modifierText != null &&
+                !int.TryParse(modifierText, out modifier))
+            {
+                return false;
+            }
+
+            return count > 0 &&
+                   count <= 20 &&
+                   sides > 0 &&
+                   sides <= 100;
+        }
+
+        private int RollDiceBase(int count, int sides)
+        {
             int total = 0;
 
             for (int i = 0; i < count; i++)
@@ -46,56 +155,6 @@ namespace RPGSystem.Services
 
             return total;
         }
-        public RollResult RollDiceDetailed(string notation)
-        {
-            var parts = notation.Split('+', StringSplitOptions.RemoveEmptyEntries);
-
-            int roll = RollDice(parts[0]);
-
-            int modifier = 0;
-
-            if (parts.Length > 1)
-                modifier = int.Parse(parts[1]);
-
-            return new RollResult
-            {
-                DiceRoll = roll,
-                Modifier = modifier,
-            };
-        }
-        public string DoubleDiceExpression(string diceExpression)
-        {
-            if (!IsValidDiceNotation(diceExpression))
-                return diceExpression;
-
-            var parts = diceExpression.ToLower().Split('d');
-            int diceCount = int.Parse(parts[0]);
-            int sides = int.Parse(parts[1]);
-
-            return $"{diceCount * 2}d{sides}";
-        }
-        public bool IsValidDiceNotation(string? notation)
-        {
-            if (string.IsNullOrWhiteSpace(notation))
-                return false;
-
-            var parts = notation.ToLower().Split('d');
-
-            if (parts.Length != 2)
-                return false;
-
-            if (!int.TryParse(parts[0], out int count))
-                return false;
-
-            if (!int.TryParse(parts[1], out int sides))
-                return false;
-
-            return count > 0 &&
-                   count <= 20 &&
-                   sides > 0 &&
-                   sides <= 100;
-        }
-
     }
 }
 

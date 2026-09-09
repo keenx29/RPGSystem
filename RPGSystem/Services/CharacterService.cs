@@ -34,6 +34,7 @@ namespace RPGSystem.Services
             ApplySavedCharacterStates();
 
             _character = _characters.First();
+            // TODO: Display weapon ability scaling in equipped weapon panel
         }
         private void ApplySavedCharacterStates()
         {
@@ -601,7 +602,6 @@ namespace RPGSystem.Services
         }
         public RollResult RollSkill(SkillType skillType, AdvantageState adv)
         {
-            //TODO: Formula for negative modifiers
             var skill = _character.GetSkill(skillType);
             var advantage = ResolveAdvantage(RollType.Check, adv, skill.RelatedAbility.Type);
             int roll = _diceService.RollD20(advantage.FinalState);
@@ -768,6 +768,8 @@ namespace RPGSystem.Services
         }
         private RollResult RollDamage(Guid weaponId, bool isCritical)
         {
+            // TODO: Fix string formatting for negative modifier on weapon bonus
+            // Should be fixed just needs testing after fixing add item weapon dice bonus
             var weapon = FindWeapon(weaponId);
 
             if (weapon == null)
@@ -802,7 +804,8 @@ namespace RPGSystem.Services
                 ? _diceService.DoubleDiceExpression(weapon.DamageDice)
                 : weapon.DamageDice;
 
-            
+            var baseDamageDice = _diceService.GetBaseDiceNotation(damageDice);
+
             if (isCritical)
             {
                 explanations.Add(new RollExplanation
@@ -810,21 +813,36 @@ namespace RPGSystem.Services
                     Type = RollExplanationType.Critical,
                     Source = "Critical Hit",
                     Text = "Critical damage doubles the weapon damage dice.",
-                    Dice = damageDice
+                    Dice = baseDamageDice
                 });
             }
 
-            int roll = _diceService.RollDice(damageDice);
+            var weaponDamage = _diceService.RollDiceDetailed(damageDice);
 
-            int modifier = ability.Modifier;
+            int roll = weaponDamage.DiceRoll;
+            int modifier = ability.Modifier + weaponDamage.Modifier;
             int extraDamage = 0;
             var appliedEffects = new List<string>();
-            var formulaParts = new List<string>
-            {
-                damageDice,
-                $"{ability.Modifier} {ability.Name}"
-              };
 
+            var formula = baseDamageDice;
+
+            if (weaponDamage.Modifier != 0)
+            {
+                formula += $" {ModifierFormatter.FormatWithSpace(weaponDamage.Modifier)} Weapon Bonus";
+
+                explanations.Add(new RollExplanation
+                {
+                    Type = RollExplanationType.Bonus,
+                    Source = weapon.Name,
+                    Text = $"Weapon damage bonus applied: {weaponDamage.Modifier:+#;-#;0}.",
+                    Value = weaponDamage.Modifier
+                });
+            }
+
+            if (ability.Modifier != 0)
+            {
+                formula += $" {ModifierFormatter.FormatWithSpace(ability.Modifier)} {ability.Name}";
+            }
 
             var context = new RollContext
             {
@@ -863,7 +881,7 @@ namespace RPGSystem.Services
 
                 if (mod.FlatBonus != 0)
                 {
-                    formulaParts.Add($"{mod.FlatBonus} {source}");
+                    formula += $" {mod.FlatBonus:+ #;- #;+ 0} {source}";
 
                     explanations.Add(new RollExplanation
                     {
@@ -880,7 +898,8 @@ namespace RPGSystem.Services
                         ? _diceService.DoubleDiceExpression(mod.ExtraDice)
                         : mod.ExtraDice;
 
-                    formulaParts.Add($"{extraDice} {source}");
+                    formula += $" + {extraDice} {source}";
+
                     extraDamage += _diceService.RollDice(extraDice);
 
                     explanations.Add(new RollExplanation
@@ -904,7 +923,7 @@ namespace RPGSystem.Services
                 DiceRoll = roll,
                 Modifier = modifier + extraDamage,
                 DamageType = weapon.DamageType,
-                Formula = string.Join(" + ", formulaParts),
+                Formula = formula,
                 Description = isCritical
                     ? $"Critical damage roll with {weapon.Name}"
                     : $"Damage roll with {weapon.Name}",
@@ -1071,6 +1090,7 @@ namespace RPGSystem.Services
             {
                 Character = _character,
                 DiceService = _diceService,
+                Item = item
             };
 
             var result = item.Effect.Apply(context);
@@ -1354,10 +1374,51 @@ namespace RPGSystem.Services
                 return CreateFeedback("Item name is required.");
             }
 
+            if (model.Weight < 0)
+            {
+                return CreateFeedback("Item weight cannot be negative.");
+            }
+
+            var healingDice = string.IsNullOrWhiteSpace(model.HealingDice)
+                ? "2d4+2"
+                : model.HealingDice.Trim();
+
+            if (model.ItemKind == "HealingPotion" &&
+                !_diceService.IsValidDiceNotation(healingDice))
+            {
+                return CreateFeedback(
+                    "Healing dice must use a format like 2d4+2 or 4d4+4.");
+            }
+
             Item item = model.ItemKind switch
             {
+                "HealingPotion" => new Item
+                {
+                    Name = string.IsNullOrWhiteSpace(model.Name)
+                        ? "Healing Potion"
+                        : model.Name.Trim(),
+
+                    Description = string.IsNullOrWhiteSpace(model.Description)
+                        ? $"Restores {healingDice} hit points when used."
+                        : model.Description.Trim(),
+
+                    Weight = model.Weight,
+
+                    Type = ItemType.Consumable,
+
+                    Effect = new HealEffect(healingDice)
+                },
+
+                "General" => new Item
+                {
+                    Name = model.Name.Trim(),
+                    Weight = model.Weight,
+                    Description = model.Description?.Trim() ?? "",
+                    Type = ItemType.General
+                },
                 "Weapon" => new Weapon
                 {
+                    
                     Name = model.Name.Trim(),
                     Weight = model.Weight,
                     Description = model.Description?.Trim() ?? "",
@@ -1385,7 +1446,6 @@ namespace RPGSystem.Services
                     Name = model.Name.Trim(),
                     Weight = model.Weight,
                     Description = model.Description?.Trim() ?? "",
-                    Type = model.Type
                 }
             };
 
