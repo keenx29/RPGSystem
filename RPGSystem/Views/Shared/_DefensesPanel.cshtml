@@ -1,12 +1,65 @@
-﻿@using RPGSystem.Models.Classes.Features
+﻿@using RPGSystem.Models.Characters
+@using RPGSystem.Models.Classes.Features
 @model RPGSystem.Models.Characters.Character
 
 <section class="sheet-panel">
-    <h2 class="sheet-panel-title">Defenses</h2>
+    <div class="panel-title-row">
+        <h2 class="sheet-panel-title">Defenses</h2>
+
+        <details class="inline-editor">
+            <summary class="panel-add-button" title="Add defense">+</summary>
+
+            <form asp-controller="Character"
+                  asp-action="AddDefense"
+                  method="post"
+                  class="inline-editor-form">
+                <select name="Type" class="form-select form-select-sm">
+                    <option value="@DefenseType.Resistance">Resistance</option>
+                    <option value="@DefenseType.Vulnerability">Vulnerability</option>
+                    <option value="@DefenseType.DamageImmunity">Damage Immunity</option>
+                    <option value="@DefenseType.ConditionImmunity">Condition Immunity</option>
+                </select>
+
+                <input name="Name" class="form-control form-control-sm"
+                       placeholder="For example: Fire" maxlength="50" required />
+
+                <button class="btn btn-sm btn-primary" type="submit">Add</button>
+            </form>
+        </details>
+    </div>
 
     <div class="defense-group">
         <div class="sheet-subtitle">Resistances</div>
-        <div>@(Model.DamageResistances.Any() ? string.Join(", ", Model.DamageResistances) : "None")</div>
+
+        <div class="defense-list">
+            @if (Model.DamageResistances.Any())
+            {
+                foreach (var defense in Model.DamageResistances)
+                {
+                    <span class="defense-chip">
+                        @defense
+
+                        <form asp-controller="Character"
+                              asp-action="RemoveDefense"
+                              method="post">
+                            <input type="hidden" name="type"
+                                   value="@DefenseType.Resistance" />
+                            <input type="hidden" name="name" value="@defense" />
+                            <button type="submit"
+                                    class="compact-remove-button"
+                                    title="Remove @defense"
+                                    aria-label="Remove @defense">
+                                ×
+                            </button>
+                        </form>
+                    </span>
+                }
+            }
+            else
+            {
+                <span class="text-muted small">None</span>
+            }
+        </div>
     </div>
 
     @if (Model.GetFeature(BarbarianFeatures.Rage)?.IsActive == true)
@@ -19,16 +72,104 @@
 
     <div class="defense-group">
         <div class="sheet-subtitle">Vulnerabilities</div>
-        <div>@(Model.DamageVulnerabilities.Any() ? string.Join(", ", Model.DamageVulnerabilities) : "None")</div>
+
+        <div class="defense-list">
+            @if (Model.DamageVulnerabilities.Any())
+            {
+                foreach (var defense in Model.DamageVulnerabilities)
+                {
+                    <span class="defense-chip">
+                        @defense
+
+                        <form asp-controller="Character"
+                              asp-action="RemoveDefense"
+                              method="post">
+                            <input type="hidden" name="type"
+                                   value="@DefenseType.Vulnerability" />
+                            <input type="hidden" name="name" value="@defense" />
+                            <button type="submit"
+                                    class="compact-remove-button"
+                                    title="Remove @defense"
+                                    aria-label="Remove @defense">
+                                ×
+                            </button>
+                        </form>
+                    </span>
+                }
+            }
+            else
+            {
+                <span class="text-muted small">None</span>
+            }
+        </div>
     </div>
 
     <div class="defense-group">
         <div class="sheet-subtitle">Immunities</div>
-        <div>@(Model.DamageImmunities.Any() ? string.Join(", ", Model.DamageImmunities) : "None")</div>
+
+        <div class="defense-list">
+            @if (Model.DamageImmunities.Any())
+            {
+                foreach (var defense in Model.DamageImmunities)
+                {
+                    <span class="defense-chip">
+                        @defense
+
+                        <form asp-controller="Character"
+                              asp-action="RemoveDefense"
+                              method="post">
+                            <input type="hidden" name="type"
+                                   value="@DefenseType.DamageImmunity" />
+                            <input type="hidden" name="name" value="@defense" />
+                            <button type="submit"
+                                    class="compact-remove-button"
+                                    title="Remove @defense"
+                                    aria-label="Remove @defense">
+                                ×
+                            </button>
+                        </form>
+                    </span>
+                }
+            }
+            else
+            {
+                <span class="text-muted small">None</span>
+            }
+        </div>
     </div>
 
     <div class="defense-group">
         <div class="sheet-subtitle">Condition Immunities</div>
-        <div>@(Model.ConditionImmunities.Any() ? string.Join(", ", Model.ConditionImmunities) : "None")</div>
+
+        <div class="defense-list">
+            @if (Model.ConditionImmunities.Any())
+            {
+                foreach (var defense in Model.ConditionImmunities)
+                {
+                    <span class="defense-chip">
+                        @defense
+
+                        <form asp-controller="Character"
+                              asp-action="RemoveDefense"
+                              method="post">
+                            <input type="hidden" name="type"
+                                   value="@DefenseType.ConditionImmunity" />
+                            <input type="hidden" name="name" value="@defense" />
+                            <button type="submit"
+                                    class="compact-remove-button"
+                                    title="Remove @defense"
+                                    aria-label="Remove @defense">
+                                ×
+                            </button>
+                        </form>
+                    </span>
+                }
+            }
+            else
+            {
+                <span class="text-muted small">None</span>
+            }
+        </div>
     </div>
+
 </section>

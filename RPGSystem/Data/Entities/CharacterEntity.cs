@@ -54,6 +54,8 @@ namespace RPGSystem.Data.Entities
         public List<SkillEntity> Skills { get; set; } = new();
         public List<ItemEntity> Items { get; set; } = new();
         public List<ConditionEntity> Conditions { get; set; } = new();
+        public List<CharacterSenseEntity> Senses { get; set; } = new();
+        public List<DefenseEntryEntity> Defenses { get; set; } = new();
         public List<FeatureStateEntity> FeatureStates { get; set; } = new();
         public List<FeatureResourceEntity> FeatureResources { get; set; } = new();
     

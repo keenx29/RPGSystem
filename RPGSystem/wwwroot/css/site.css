@@ -823,10 +823,10 @@ input[type=number] {
     margin-bottom: 0.75rem;
 }
 
-    .roll-chat-header h5 {
-        color: var(--accent);
-        margin-bottom: 0;
-    }
+.roll-chat-header h5 {
+    color: var(--accent);
+    margin-bottom: 0;
+}
 
 .roll-message {
     background: var(--surface-soft);
@@ -841,9 +841,19 @@ input[type=number] {
     font-size: 0.9rem;
 }
 
-    .roll-message-header span {
-        color: var(--text-muted);
-    }
+.roll-message-header span {
+    color: var(--text-muted);
+}
+
+.roll-message.roll-critical-success .roll-total,
+.roll-message.roll-critical-success .roll-breakdown {
+    color: var(--success);
+}
+
+.roll-message.roll-critical-failure .roll-total,
+.roll-message.roll-critical-failure .roll-breakdown {
+    color: var(--danger);
+}
 
 .roll-description {
     color: var(--text-muted);
@@ -1024,6 +1034,7 @@ input[type=number] {
     border-color: rgba(169, 45, 45, 0.7);
 }
 
+
 .damage-chip {
     color: var(--text);
     background: rgba(196, 151, 79, 0.14);
@@ -1143,4 +1154,75 @@ input[type=number] {
     .currency-tracker {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+}
+
+.inline-editor {
+    position: relative;
+}
+
+.inline-editor summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.inline-editor summary::-webkit-details-marker {
+    display: none;
+}
+
+.inline-editor-form {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    display: grid;
+    gap: 0.5rem;
+    width: min(20rem, 80vw);
+    padding: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.35);
+}
+
+.sense-other-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.defense-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.defense-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.2rem 0.45rem;
+    background: var(--surface-soft);
+    border: 1px solid var(--border-soft);
+    border-radius: 999px;
+    color: var(--text-soft);
+    font-size: 0.8rem;
+}
+
+    .defense-chip form {
+        display: inline;
+    }
+
+.compact-remove-button {
+    border: 0;
+    padding: 0 0.15rem;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.compact-remove-button:hover {
+    color: var(--danger);
 }

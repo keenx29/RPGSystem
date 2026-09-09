@@ -24,6 +24,8 @@ namespace RPGSystem.Services
                 .Include(c => c.Skills)
                 .Include(c => c.Items)
                 .Include(c => c.Conditions)
+                .Include(c => c.Senses)
+                .Include(c => c.Defenses)
                 .Include(c => c.FeatureStates)
                 .Include(c => c.FeatureResources)
                 .AsNoTracking()
@@ -41,6 +43,8 @@ namespace RPGSystem.Services
                     .Include(c => c.Skills)
                     .Include(c => c.Items)
                     .Include(c => c.Conditions)
+                    .Include(c => c.Senses)
+                    .Include(c => c.Defenses)
                     .Include(c => c.FeatureStates)
                     .Include(c => c.FeatureResources)
                     .FirstOrDefault(c => c.Id == character.Id);
@@ -56,6 +60,8 @@ namespace RPGSystem.Services
                 UpdateSkills(existing, character);
                 UpdateItems(context, existing, character);
                 UpdateConditions(context, existing, character);
+                UpdateSenses(context, existing, character);
+                UpdateDefenses(context, existing, character);
                 UpdateFeatureStates(context, existing, character);
                 UpdateFeatureResources(context, existing, character);
             }
@@ -88,6 +94,14 @@ namespace RPGSystem.Services
             entity.Skills = character.Skills
                 .Select(s => ToSkillEntity(s, character.Id))
                 .ToList();
+
+            entity.Senses = character.Senses
+                .Select(sense => ToSenseEntity(sense, character.Id))
+                .ToList();
+
+            entity.Defenses = ToDefenseEntities(character);
+
+            //TODO: Ask why only for these 4 and not for conditions or other things
 
             return entity;
         }
@@ -268,6 +282,86 @@ namespace RPGSystem.Services
                     CharacterId = character.Id,
                     Type = condition
                 }));
+        }
+        private CharacterSenseEntity ToSenseEntity(
+            CharacterSense sense,
+            Guid characterId)
+        {
+            return new CharacterSenseEntity
+            {
+                Id = sense.Id,
+                CharacterId = characterId,
+                Name = sense.Name,
+                RangeFeet = sense.RangeFeet,
+                Description = sense.Description ?? ""
+            };
+        }
+
+        private void UpdateSenses(
+            RpgDbContext context,
+            CharacterEntity entity,
+            Character character)
+        {
+            context.CharacterSenses.RemoveRange(entity.Senses);
+
+            context.CharacterSenses.AddRange(
+                character.Senses.Select(sense =>
+                    ToSenseEntity(sense, character.Id)));
+        }
+
+        private void UpdateDefenses(
+            RpgDbContext context,
+            CharacterEntity entity,
+            Character character)
+        {
+            context.DefenseEntries.RemoveRange(entity.Defenses);
+
+            context.DefenseEntries.AddRange(ToDefenseEntities(character));
+        }
+
+        private List<DefenseEntryEntity> ToDefenseEntities(Character character)
+        {
+            var defenses = new List<DefenseEntryEntity>();
+
+            AddDefenseEntries(
+                defenses,
+                character.DamageResistances,
+                DefenseType.Resistance,
+                character.Id);
+
+            AddDefenseEntries(
+                defenses,
+                character.DamageVulnerabilities,
+                DefenseType.Vulnerability,
+                character.Id);
+
+            AddDefenseEntries(
+                defenses,
+                character.DamageImmunities,
+                DefenseType.DamageImmunity,
+                character.Id);
+
+            AddDefenseEntries(
+                defenses,
+                character.ConditionImmunities,
+                DefenseType.ConditionImmunity,
+                character.Id);
+
+            return defenses;
+        }
+
+        private void AddDefenseEntries(
+            List<DefenseEntryEntity> entries,
+            IEnumerable<string> values,
+            DefenseType type,
+            Guid characterId)
+        {
+            entries.AddRange(values.Select(value => new DefenseEntryEntity
+            {
+                CharacterId = characterId,
+                Type = type,
+                Name = value
+            }));
         }
         private void UpdateFeatureStates(RpgDbContext context, CharacterEntity entity, Character character)
         {

@@ -44,7 +44,12 @@
             "force" => "damage-force",
             _ => "damage-generic"
         };
-        <div class="roll-message roll-@roll.Type.ToString().ToLower()">
+        var criticalClass = roll.IsCriticalSuccess
+        ? "roll-critical-success"
+        : roll.IsCriticalFailure
+        ? "roll-critical-failure"
+        : "";
+        <div class="roll-message roll-@roll.Type.ToString().ToLower() @criticalClass">
 
             <div class="roll-message-header">
                 <div class="roll-message-title">

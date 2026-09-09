@@ -15,6 +15,8 @@ namespace RPGSystem.Data
         public DbSet<SkillEntity> Skills => Set<SkillEntity>();
         public DbSet<ItemEntity> Items => Set<ItemEntity>();
         public DbSet<ConditionEntity> Conditions => Set<ConditionEntity>();
+        public DbSet<CharacterSenseEntity> CharacterSenses => Set<CharacterSenseEntity>();
+        public DbSet<DefenseEntryEntity> DefenseEntries => Set<DefenseEntryEntity>();
         public DbSet<FeatureStateEntity> FeatureStates => Set<FeatureStateEntity>();
         public DbSet<FeatureResourceEntity> FeatureResources => Set<FeatureResourceEntity>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -54,6 +56,18 @@ namespace RPGSystem.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CharacterEntity>()
+                .HasMany(c => c.Senses)
+                .WithOne(c => c.Character)
+                .HasForeignKey(c => c.CharacterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CharacterEntity>()
+                .HasMany(c => c.Defenses)
+                .WithOne(c => c.Character)
+                .HasForeignKey(c => c.CharacterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CharacterEntity>()
                 .HasMany(c => c.FeatureStates)
                 .WithOne(f => f.Character)
                 .HasForeignKey(f => f.CharacterId)
@@ -75,6 +89,14 @@ namespace RPGSystem.Data
 
             modelBuilder.Entity<ConditionEntity>()
                 .HasIndex(c => new { c.CharacterId, c.Type })
+                .IsUnique();
+
+            modelBuilder.Entity<CharacterSenseEntity>()
+                .HasIndex(s => new { s.CharacterId, s.Name })
+                .IsUnique();
+
+            modelBuilder.Entity<DefenseEntryEntity>()
+                .HasIndex(d => new { d.CharacterId, d.Type, d.Name })
                 .IsUnique();
         }
     }

@@ -1,7 +1,30 @@
 ﻿@model RPGSystem.Models.Characters.Character
 
 <section class="sheet-panel senses-panel">
-    <h2 class="sheet-panel-title">Senses</h2>
+    <div class="panel-title-row">
+        <h2 class="sheet-panel-title">Senses</h2>
+
+        <details class="inline-editor">
+            <summary class="panel-add-button" title="Add sense">+</summary>
+
+            <form asp-controller="Character"
+                  asp-action="AddSense"
+                  method="post"
+                  class="inline-editor-form">
+                <input name="Name" class="form-control form-control-sm"
+                       placeholder="Sense name" maxlength="50" required />
+
+                <input name="RangeFeet" type="number"
+                       class="form-control form-control-sm"
+                       placeholder="Range in feet" min="0" max="1000" />
+
+                <input name="Description" class="form-control form-control-sm"
+                       placeholder="Optional description" maxlength="250" />
+
+                <button class="btn btn-sm btn-primary" type="submit">Add</button>
+            </form>
+        </details>
+    </div>
 
     <div class="sense-group">
         <h3 class="sheet-subtitle">Passive Senses</h3>
@@ -30,13 +53,27 @@
             foreach (var sense in Model.Senses)
             {
                 <div class="sense-other">
-                    <div class="d-flex justify-content-between gap-2">
-                        <strong>@sense.Name</strong>
+                    <div class="sense-other-header">
+                        <div>
+                            <strong>@sense.Name</strong>
 
-                        @if (sense.RangeFeet.HasValue)
-                        {
-                            <span class="text-muted">@sense.RangeFeet.Value ft.</span>
-                        }
+                            @if (sense.RangeFeet.HasValue)
+                            {
+                                <span class="text-muted">@sense.RangeFeet.Value ft.</span>
+                            }
+                        </div>
+
+                        <form asp-controller="Character"
+                              asp-action="RemoveSense"
+                              method="post">
+                            <input type="hidden" name="senseId" value="@sense.Id" />
+                            <button type="submit"
+                                    class="compact-remove-button"
+                                    title="Remove @sense.Name"
+                                    aria-label="Remove @sense.Name">
+                                ×
+                            </button>
+                        </form>
                     </div>
 
                     @if (!string.IsNullOrWhiteSpace(sense.Description))

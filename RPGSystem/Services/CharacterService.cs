@@ -136,6 +136,31 @@ namespace RPGSystem.Services
 
             RefreshClassProgression(character);
 
+            character.Senses = savedCharacter.Senses
+                .Select(sense => new CharacterSense
+                {
+                    Id = sense.Id,
+                    Name = sense.Name,
+                    RangeFeet = sense.RangeFeet,
+                    Description = sense.Description
+                })
+                .ToList();
+
+            character.DamageResistances = GetDefenseNames(
+                savedCharacter,
+                DefenseType.Resistance);
+
+            character.DamageVulnerabilities = GetDefenseNames(
+                savedCharacter,
+                DefenseType.Vulnerability);
+
+            character.DamageImmunities = GetDefenseNames(
+                savedCharacter,
+                DefenseType.DamageImmunity);
+
+            character.ConditionImmunities = GetDefenseNames(
+                savedCharacter,
+                DefenseType.ConditionImmunity);
             character.Conditions = savedCharacter.Conditions
                 .Select(c => c.Type)
                 .ToList();
@@ -522,6 +547,94 @@ namespace RPGSystem.Services
         {
             _character.ClearConditions();
             SaveState();
+        }
+        public RollResult? AddSense(AddCharacterSenseViewModel model)
+        {
+            var name = model.Name?.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+                return CreateFeedback("Sense name is required.");
+
+            if (model.RangeFeet is < 0 or > 1000)
+                return CreateFeedback("Sense range must be between 0 and 1000 feet.");
+
+            if (_character.Senses.Any(sense =>
+                sense.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            {
+                return CreateFeedback($"{name} is already added.");
+            }
+
+            _character.Senses.Add(new CharacterSense
+            {
+                Name = name,
+                RangeFeet = model.RangeFeet,
+                Description = model.Description?.Trim()
+            });
+
+            SaveState();
+
+            return null;
+        }
+        public void RemoveSense(Guid senseId)
+        {
+            var sense = _character.Senses
+                .FirstOrDefault(currentSense => currentSense.Id == senseId);
+
+            if (sense == null)
+                return;
+
+            _character.Senses.Remove(sense);
+
+            SaveState();
+        }
+        public RollResult? AddDefense(AddDefenseViewModel model)
+        {
+            var name = model.Name?.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+                return CreateFeedback("Defense name is required.");
+
+            if (!Enum.IsDefined(model.Type))
+                return CreateFeedback("Invalid defense type.");
+
+            var defenses = GetDefenseList(model.Type);
+
+            if (defenses.Any(defense =>
+                defense.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            {
+                return CreateFeedback($"{name} is already listed.");
+            }
+
+            defenses.Add(name);
+
+            SaveState();
+
+            return null;
+        }
+        public void RemoveDefense(DefenseType type, string name)
+        {
+            var defenses = GetDefenseList(type);
+
+            var defense = defenses.FirstOrDefault(currentDefense =>
+                currentDefense.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (defense == null)
+                return;
+
+            defenses.Remove(defense);
+
+            SaveState();
+        }
+        private List<string> GetDefenseList(DefenseType type)
+        {
+            return type switch
+            {
+                DefenseType.Resistance => _character.DamageResistances,
+                DefenseType.Vulnerability => _character.DamageVulnerabilities,
+                DefenseType.DamageImmunity => _character.DamageImmunities,
+                DefenseType.ConditionImmunity => _character.ConditionImmunities,
+                _ => throw new ArgumentOutOfRangeException(nameof(type))
+            };
         }
         public RollResult RollAbility(AbilityType type, AdvantageState adv)
         {
@@ -2226,6 +2339,15 @@ namespace RPGSystem.Services
         private RollResult CreateFeedback(string message)
         {
             return RollResult.Info("System", message);
+        }
+        private List<string> GetDefenseNames(
+    CharacterEntity character,
+    DefenseType type)
+        {
+            return character.Defenses
+                .Where(defense => defense.Type == type)
+                .Select(defense => defense.Name)
+                .ToList();
         }
         private Item ToItem(ItemEntity entity)
         {

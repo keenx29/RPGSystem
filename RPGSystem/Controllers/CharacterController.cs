@@ -156,6 +156,59 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult AddSense(AddCharacterSenseViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                _rollHistory.Insert(0,
+                    RollResult.Info("System", "Enter a valid sense name and range."));
+            }
+            else
+            {
+                var result = _characterService.AddSense(model);
+
+                if (result != null)
+                    _rollHistory.Insert(0, result);
+            }
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveSense(Guid senseId)
+        {
+            _characterService.RemoveSense(senseId);
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult AddDefense(AddDefenseViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                _rollHistory.Insert(0,
+                    RollResult.Info("System", "Enter a valid defense name."));
+            }
+            else
+            {
+                var result = _characterService.AddDefense(model);
+
+                if (result != null)
+                    _rollHistory.Insert(0, result);
+            }
+
+            return RedirectToAction("Sheet");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveDefense(DefenseType type, string name)
+        {
+            _characterService.RemoveDefense(type, name);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult SetAdvantageState(string state)
         {
             Enum.TryParse(state, out AdvantageState parsed);
