@@ -1,7 +1,6 @@
 ﻿using RPGSystem.Models.Classes;
 using RPGSystem.Models.Classes.Features;
 using RPGSystem.Models.Items;
-using System.Resources;
 
 namespace RPGSystem.Models.Characters
 {

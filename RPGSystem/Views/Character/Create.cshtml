@@ -1,4 +1,5 @@
-﻿@using RPGSystem.Models.Classes
+﻿@using RPGSystem.Models.Characters
+@using RPGSystem.Models.Classes
 @model RPGSystem.ViewModels.CreateCharacterViewModel
 
 @{
@@ -37,18 +38,32 @@
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <label class="form-label">Race</label>
-                        <input asp-for="Race"
-                               class="form-control"
-                               placeholder="Race" />
+                        <label asp-for="Race" class="form-label">Race</label>
+
+                        <select asp-for="Race" class="form-select">
+                            <option value="">Select a race</option>
+
+                            @foreach (var race in CharacterCreationCatalog.Races)
+                            {
+                                <option value="@race">@race</option>
+                            }
+                        </select>
+
                         <span asp-validation-for="Race" class="text-danger small"></span>
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <label class="form-label">Background</label>
-                        <input asp-for="Background"
-                               class="form-control"
-                               placeholder="Background" />
+                        <label asp-for="Background" class="form-label">Background</label>
+
+                        <select asp-for="Background" class="form-select">
+                            <option value="">Select a background</option>
+
+                            @foreach (var background in CharacterCreationCatalog.Backgrounds)
+                            {
+                                <option value="@background">@background</option>
+                            }
+                        </select>
+
                         <span asp-validation-for="Background" class="text-danger small"></span>
                     </div>
 

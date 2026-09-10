@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RPGSystem.Models.Rolls;
+﻿using RPGSystem.Models.Rolls;
 
 namespace RPGSystem.Services
 {

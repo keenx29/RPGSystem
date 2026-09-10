@@ -11,9 +11,11 @@ namespace RPGSystem.ViewModels
 
         public CharacterClassType ClassType { get; set; }
 
+        [Required(ErrorMessage = "Choose a race.")]
         [StringLength(50, ErrorMessage = "Race cannot be longer than 50 characters.")]
         public string Race { get; set; } = "";
 
+        [Required(ErrorMessage = "Choose a background.")]
         [StringLength(50, ErrorMessage = "Background cannot be longer than 50 characters.")]
         public string Background { get; set; } = "";
         public IFormFile? PortraitFile { get; set; }

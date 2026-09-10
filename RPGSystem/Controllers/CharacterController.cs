@@ -90,6 +90,20 @@ namespace RPGSystem.Controllers
                     "Character name is required.");
             }
 
+            if (!CharacterCreationCatalog.IsSupportedRace(model.Race))
+            {
+                ModelState.AddModelError(
+                    nameof(model.Race),
+                    "Choose a race from the list.");
+            }
+
+            if (!CharacterCreationCatalog.IsSupportedBackground(model.Background))
+            {
+                ModelState.AddModelError(
+                    nameof(model.Background),
+                    "Choose a background from the list.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View("Create", model);

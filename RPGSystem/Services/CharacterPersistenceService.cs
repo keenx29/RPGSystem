@@ -101,8 +101,6 @@ namespace RPGSystem.Services
 
             entity.Defenses = ToDefenseEntities(character);
 
-            //TODO: Ask why only for these 4 and not for conditions or other things
-
             return entity;
         }
 
