@@ -874,7 +874,7 @@ input[type=number] {
 }
 
 .roll-message {
-    background: var(--surface-soft)roll-message.roll-critical-success;
+    background: var(--surface-soft);
     padding: 0.75rem;
     margin-bottom: 0.75rem;
 }
@@ -1212,9 +1212,9 @@ input[type=number] {
     font-size: 0.8rem;
 }
 
-    .defense-chip form {
-        display: inline;
-    }
+.defense-chip form {
+    display: inline;
+}
 
 .compact-remove-button {
     border: 0;
@@ -1229,6 +1229,35 @@ input[type=number] {
 .compact-remove-button:hover {
     color: var(--danger);
 }
+.quick-dice-toolbar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.7rem;
+}
+
+.quick-dice-toolbar form {
+    margin: 0;
+}
+
+.quick-die-button {
+    width: 100%;
+    min-height: 2rem;
+    padding: 0.3rem 0.4rem;
+    color: var(--text);
+    background: var(--surface-soft);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.quick-die-button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(196, 151, 79, 0.14);
+}
+
 /* Responsive */
 
 @media (max-width: 1100px) {

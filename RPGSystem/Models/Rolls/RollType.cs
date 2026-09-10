@@ -10,6 +10,7 @@
         Initiative,
         MaxHP,
         Feature,
-        DeathSave
+        DeathSave,
+        Dice
     }
 }

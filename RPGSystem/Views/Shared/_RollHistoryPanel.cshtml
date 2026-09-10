@@ -5,6 +5,22 @@
 <div class="roll-chat">
     <div class="roll-chat-header">
         <h5>Roll Chat</h5>
+        <div class="quick-dice-toolbar" aria-label="Quick dice rolls">
+            @foreach (var sides in new[] { 4, 6, 8, 10, 12, 20, 100 })
+            {
+                <form asp-controller="Character"
+                      asp-action="RollQuickDie"
+                      method="post">
+                    <input type="hidden" name="sides" value="@sides" />
+
+                    <button type="submit"
+                            class="quick-die-button"
+                            title="Roll d@sides">
+                        d@(sides)
+                    </button>
+                </form>
+            }
+        </div>
     </div>
 
     @if (!Model.Any())
@@ -87,26 +103,33 @@
                     @roll.Total
                 </div>
 
-                <div class="roll-breakdown">
-                    <span class="roll-kept-d20"
-                          title="Kept roll">
-                        @roll.DiceRoll
-                    </span>
-
-                    @if (roll.DiscardedD20Roll.HasValue)
-                    {
-                        <span class="roll-d20-divider">/</span>
-
-                        <span class="roll-discarded-d20"
-                              title="Discarded roll">
-                            @roll.DiscardedD20Roll.Value
+                @if (roll.Type != RollType.Dice)
+                {
+                    <div class="roll-breakdown">
+                        <span class="roll-kept-d20"
+                              title="Kept roll">
+                            @roll.DiceRoll
                         </span>
-                    }
 
-                    <span>
-                        @ModifierFormatter.FormatWithSpace(roll.Modifier)
-                    </span>
-                </div>
+                        @if (roll.DiscardedD20Roll.HasValue)
+                        {
+                            <span class="roll-d20-divider">/</span>
+
+                            <span class="roll-discarded-d20"
+                                  title="Discarded roll">
+                                @roll.DiscardedD20Roll.Value
+                            </span>
+                        }
+
+                        @if (roll.Modifier != 0)
+                        {
+                            <span>
+                                @ModifierFormatter.FormatWithSpace(roll.Modifier)
+                            </span>
+                        }
+
+                    </div>
+                }
             }
 
             @if (!string.IsNullOrWhiteSpace(roll.Formula))

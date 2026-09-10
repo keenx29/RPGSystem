@@ -257,6 +257,34 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
+        public IActionResult RollQuickDie(int sides)
+        {
+            int[] supportedDice = [4, 6, 8, 10, 12, 20, 100];
+
+            if (!supportedDice.Contains(sides))
+            {
+                _rollHistory.Insert(0,
+                    RollResult.Info("Dice Roller", "Unsupported dice type."));
+
+                return RedirectToAction("Sheet");
+            }
+
+            var result = _diceService.RollDiceDetailed($"1d{sides}");
+
+            result.Actor = "Dice Roller";
+            result.Type = RollType.Dice;
+            result.Description = $"Dice roll for d{sides}.";
+
+            if (sides == 20)
+            {
+                result.NaturalRoll = result.DiceRoll;
+            }
+
+            _rollHistory.Insert(0, result);
+
+            return RedirectToAction("Sheet");
+        }
+        [HttpPost]
         public IActionResult RollAbility(AbilityType abilityType)
         {
             var result = _characterService.RollAbility(abilityType, _rollState.SelectedAdvantageState);
