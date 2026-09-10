@@ -110,6 +110,7 @@ namespace RPGSystem.Services
         {
             entity.Id = character.Id;
             entity.Name = character.Name;
+            entity.PortraitPath = character.PortraitPath;
             entity.ClassType = character.ClassType;
             entity.Level = character.Level;
             entity.MaxHP = character.MaxHP;

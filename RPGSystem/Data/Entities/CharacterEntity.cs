@@ -7,6 +7,7 @@ namespace RPGSystem.Data.Entities
         public Guid Id { get; set; }
 
         public string Name { get; set; } = "";
+        public string PortraitPath { get; set; } = "";
 
         public CharacterClassType ClassType { get; set; }
 

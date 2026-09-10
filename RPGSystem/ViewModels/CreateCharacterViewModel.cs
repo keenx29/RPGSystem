@@ -16,5 +16,6 @@ namespace RPGSystem.ViewModels
 
         [StringLength(50, ErrorMessage = "Background cannot be longer than 50 characters.")]
         public string Background { get; set; } = "";
+        public IFormFile? PortraitFile { get; set; }
     }
 }

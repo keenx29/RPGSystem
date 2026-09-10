@@ -73,6 +73,7 @@ namespace RPGSystem.Services
             character.Id = savedCharacter.Id;
             character.ClassType = savedCharacter.ClassType;
             character.Name = savedCharacter.Name;
+            character.PortraitPath = savedCharacter.PortraitPath;
             character.Level = savedCharacter.Level;
             character.MaxHP = savedCharacter.MaxHP;
             character.CurrentHP = savedCharacter.CurrentHP;
@@ -204,7 +205,7 @@ namespace RPGSystem.Services
             character.ClassFeatures = characterClass.GetFeaturesForLevel(character.Level);
             character.FeatureResources = characterClass.GetResourcesForLevel(character.Level);
         }
-        public void CreateCharacter(CreateCharacterViewModel model)
+        public void CreateCharacter(CreateCharacterViewModel model, string? portraitPath)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
@@ -217,6 +218,7 @@ namespace RPGSystem.Services
             character.Name = model.Name.Trim();
             character.Race = model.Race?.Trim() ?? "";
             character.Background = model.Background?.Trim() ?? "";
+            character.PortraitPath = portraitPath ?? "";
             _characters.Add(character);
             _character = character;
 

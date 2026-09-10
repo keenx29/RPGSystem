@@ -1,3 +1,5 @@
 .vs/
 bin/
 obj/
+RPGSystem/wwwroot/uploads/portraits/*
+!RPGSystem/wwwroot/uploads/portraits/.gitkeep

@@ -11,17 +11,20 @@ namespace RPGSystem.Controllers
     {
         private readonly DiceService _diceService;
         private readonly CharacterService _characterService;
+        private readonly CharacterPortraitService _characterPortraitService;
         private static List<RollResult> _rollHistory = new();
         private static RollStateService _rollState;
 
         public CharacterController(
             DiceService diceService, 
             CharacterService characterService, 
-            RollStateService rollState)
+            RollStateService rollState,
+            CharacterPortraitService characterPortraitService)
         {
             _diceService = diceService;
             _characterService = characterService;
             _rollState = rollState;
+            _characterPortraitService = characterPortraitService;
         }
         [HttpGet]
         public IActionResult Index()
@@ -77,11 +80,14 @@ namespace RPGSystem.Controllers
             return RedirectToAction("Sheet");
         }
         [HttpPost]
-        public IActionResult CreateCharacter(CreateCharacterViewModel model)
+        public async Task<IActionResult> CreateCharacter(
+    CreateCharacterViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                ModelState.AddModelError(nameof(model.Name), "Character name is required.");
+                ModelState.AddModelError(
+                    nameof(model.Name),
+                    "Character name is required.");
             }
 
             if (!ModelState.IsValid)
@@ -89,7 +95,23 @@ namespace RPGSystem.Controllers
                 return View("Create", model);
             }
 
-            _characterService.CreateCharacter(model);
+            string? portraitPath;
+
+            try
+            {
+                portraitPath = await _characterPortraitService
+                    .SavePortraitAsync(model.PortraitFile);
+            }
+            catch (InvalidOperationException exception)
+            {
+                ModelState.AddModelError(
+                    nameof(model.PortraitFile),
+                    exception.Message);
+
+                return View("Create", model);
+            }
+
+            _characterService.CreateCharacter(model, portraitPath);
 
             _rollHistory.Clear();
             _rollState.SelectedAdvantageState = AdvantageState.Normal;

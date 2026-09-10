@@ -18,6 +18,8 @@ builder.Services.AddSingleton<RollStateService>();
 
 builder.Services.AddSingleton<CharacterPersistenceService>();
 
+builder.Services.AddSingleton<CharacterPortraitService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

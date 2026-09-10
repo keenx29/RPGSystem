@@ -334,6 +334,24 @@ input[type=number] {
     border-color: var(--accent);
     transform: translateY(-1px);
 }
+.character-card-portrait {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.character-summary-portrait {
+    width: 5rem;
+    height: 5rem;
+    flex: 0 0 auto;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    background: var(--surface-soft);
+}
+
 
 /* Ability panel */
 
@@ -1141,68 +1159,6 @@ input[type=number] {
 .roll-message.roll-natural-one .roll-kept-d20 {
     color: var(--danger);
 }
-
-/* Responsive */
-
-@media (max-width: 1100px) {
-    .sheet-with-chat {
-        padding-right: 0;
-    }
-
-    .sheet-header-grid,
-    .sheet-body-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .sheet-chat-column {
-        position: static;
-        width: auto;
-    }
-
-    .sheet-chat-column .roll-chat {
-        height: auto;
-        max-height: none;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-    }
-}
-
-@media (max-width: 576px) {
-    .layout-wrapper {
-        padding: 0 0.75rem;
-    }
-
-    .sheet-page {
-        padding-top: 0.5rem;
-    }
-
-    .sheet-roll-mode .btn {
-        min-width: auto;
-    }
-
-    .skill-row,
-    .equipment-row,
-    .resource-row {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .hp-current {
-        font-size: 1.6rem;
-    }
-    .feature-row {
-        grid-template-columns: 1fr;
-    }
-
-    .feature-action {
-        justify-content: flex-start;
-    }
-    .currency-tracker {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
 .inline-editor {
     position: relative;
 }
@@ -1273,3 +1229,68 @@ input[type=number] {
 .compact-remove-button:hover {
     color: var(--danger);
 }
+/* Responsive */
+
+@media (max-width: 1100px) {
+    .sheet-with-chat {
+        padding-right: 0;
+    }
+
+    .sheet-header-grid,
+    .sheet-body-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sheet-chat-column {
+        position: static;
+        width: auto;
+    }
+
+    .sheet-chat-column .roll-chat {
+        height: auto;
+        max-height: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+    }
+}
+
+@media (max-width: 576px) {
+    .layout-wrapper {
+        padding: 0 0.75rem;
+    }
+
+    .sheet-page {
+        padding-top: 0.5rem;
+    }
+
+    .sheet-roll-mode .btn {
+        min-width: auto;
+    }
+
+    .skill-row,
+    .equipment-row,
+    .resource-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .hp-current {
+        font-size: 1.6rem;
+    }
+    .feature-row {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-action {
+        justify-content: flex-start;
+    }
+    .currency-tracker {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .character-summary-portrait {
+        width: 4rem;
+        height: 4rem;
+    }
+}
+

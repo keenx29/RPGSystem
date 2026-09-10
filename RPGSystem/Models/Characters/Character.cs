@@ -10,6 +10,11 @@ namespace RPGSystem.Models.Characters
         // Identity
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = "";
+        public string PortraitPath { get; set; } = "";
+        public string PortraitUrl =>
+            !string.IsNullOrWhiteSpace(PortraitPath)
+                ? PortraitPath
+                : CharacterPortraitCatalog.GetDefaultPortraitPath(ClassType);
         public CharacterClassType ClassType { get; set; }
 
         // Core data
