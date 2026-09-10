@@ -44,12 +44,12 @@
             "force" => "damage-force",
             _ => "damage-generic"
         };
-        var criticalClass = roll.IsCriticalSuccess
-        ? "roll-critical-success"
-        : roll.IsCriticalFailure
-        ? "roll-critical-failure"
+        var naturalClass = roll.IsNaturalTwenty
+        ? "roll-natural-twenty"
+        : roll.IsNaturalOne
+        ? "roll-natural-one"
         : "";
-        <div class="roll-message roll-@roll.Type.ToString().ToLower() @criticalClass">
+        <div class="roll-message roll-@roll.Type.ToString().ToLower() @naturalClass">
 
             <div class="roll-message-header">
                 <div class="roll-message-title">
@@ -88,7 +88,24 @@
                 </div>
 
                 <div class="roll-breakdown">
-                    @roll.DiceRoll @ModifierFormatter.FormatWithSpace(roll.Modifier)
+                    <span class="roll-kept-d20"
+                          title="Kept roll">
+                        @roll.DiceRoll
+                    </span>
+
+                    @if (roll.DiscardedD20Roll.HasValue)
+                    {
+                        <span class="roll-d20-divider">/</span>
+
+                        <span class="roll-discarded-d20"
+                              title="Discarded roll">
+                            @roll.DiscardedD20Roll.Value
+                        </span>
+                    }
+
+                    <span>
+                        @ModifierFormatter.FormatWithSpace(roll.Modifier)
+                    </span>
                 </div>
             }
 

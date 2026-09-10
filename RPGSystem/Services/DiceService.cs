@@ -8,23 +8,32 @@ namespace RPGSystem.Services
         private readonly Random _random = new();
         public int RollD20(AdvantageState advantage = AdvantageState.Normal)
         {
-            if (advantage == AdvantageState.Advantage)
-            {
-                int firstRoll = RollOnce();
-                int secondRoll = RollOnce();
+            return RollD20Detailed(advantage).SelectedRoll;
+        }
+        public D20RollOutcome RollD20Detailed(
+    AdvantageState advantage = AdvantageState.Normal)
+        {
+            int firstRoll = RollOnce();
 
-                return Math.Max(firstRoll, secondRoll);
+            if (advantage == AdvantageState.Normal)
+            {
+                return new D20RollOutcome
+                {
+                    SelectedRoll = firstRoll
+                };
             }
 
-            if (advantage == AdvantageState.Disadvantage)
+            int secondRoll = RollOnce();
+
+            bool keepFirst = advantage == AdvantageState.Advantage
+                ? firstRoll >= secondRoll
+                : firstRoll <= secondRoll;
+
+            return new D20RollOutcome
             {
-                int firstRoll = RollOnce();
-                int secondRoll = RollOnce();
-
-                return Math.Min(firstRoll, secondRoll);
-            }
-
-            return RollOnce();
+                SelectedRoll = keepFirst ? firstRoll : secondRoll,
+                DiscardedRoll = keepFirst ? secondRoll : firstRoll
+            };
         }
         public int RollOnce()
         {

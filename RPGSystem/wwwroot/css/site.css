@@ -59,8 +59,6 @@ a {
 
 /* Navbar / Footer */
 
-/* Navbar / Footer */
-
 .app-header {
     height: var(--navbar-height);
 }
@@ -206,22 +204,22 @@ input[type=number] {
     border-color: var(--border-soft);
 }
 
-    .btn-outline-dark:hover {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #111;
-    }
+.btn-outline-dark:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111;
+}
 
 .btn-outline-secondary {
     color: var(--text-muted);
     border-color: var(--border-soft);
 }
 
-    .btn-outline-secondary:hover {
-        background: var(--surface-raised);
-        border-color: var(--accent);
-        color: var(--text);
-    }
+.btn-outline-secondary:hover {
+    background: var(--surface-raised);
+    border-color: var(--accent);
+    color: var(--text);
+}
 
 .btn-danger {
     background: var(--danger);
@@ -229,22 +227,22 @@ input[type=number] {
     color: #fff;
 }
 
-    .btn-danger:hover {
-        background: var(--danger-hover);
-        border-color: var(--danger-hover);
-        color: #fff;
-    }
+.btn-danger:hover {
+    background: var(--danger-hover);
+    border-color: var(--danger-hover);
+    color: #fff;
+}
 
 .btn-outline-danger {
     color: #f28b8b;
     border-color: rgba(220, 53, 69, 0.65);
 }
 
-    .btn-outline-danger:hover {
-        background: var(--danger);
-        border-color: var(--danger);
-        color: #fff;
-    }
+.btn-outline-danger:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
 
 .btn-success {
     background: var(--success);
@@ -252,11 +250,11 @@ input[type=number] {
     color: #fff;
 }
 
-    .btn-success:hover {
-        background: var(--success-hover);
-        border-color: var(--success-hover);
-        color: #fff;
-    }
+.btn-success:hover {
+    background: var(--success-hover);
+    border-color: var(--success-hover);
+    color: #fff;
+}
 
 .btn-warning,
 .btn-outline-warning:hover {
@@ -513,10 +511,10 @@ input[type=number] {
     gap: 1rem;
 }
 
-    .sheet-main-column .sheet-panel,
-    .sheet-side-column .sheet-panel {
-        margin-bottom: 0;
-    }
+.sheet-main-column .sheet-panel,
+.sheet-side-column .sheet-panel {
+    margin-bottom: 0;
+}
 
 .sheet-panel {
     padding: 0.75rem;
@@ -560,13 +558,13 @@ input[type=number] {
     border-radius: 0;
 }
 
-    .sheet-roll-mode .btn.active {
-        background: var(--danger);
-        border-color: var(--danger);
-        color: #fff;
-        transform: none;
-        z-index: 2;
-    }
+.sheet-roll-mode .btn.active {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+    transform: none;
+    z-index: 2;
+}
 
 /* Rows */
 
@@ -581,11 +579,11 @@ input[type=number] {
     border-bottom: 1px solid rgba(196, 151, 79, 0.16);
 }
 
-    .skill-row:last-child,
-    .equipment-row:last-child,
-    .resource-row:last-child {
-        border-bottom: 0;
-    }
+.skill-row:last-child,
+.equipment-row:last-child,
+.resource-row:last-child {
+    border-bottom: 0;
+}
 
 /* HP */
 
@@ -601,17 +599,46 @@ input[type=number] {
 
 .panel-title-row {
     display: flex;
-    width: 100%;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
+    width: 100%;
     margin-bottom: 0.75rem;
 }
 
-.panel-add-button {
+.panel-title-row .sheet-panel-title {
+    margin: 0;
+}
+
+.panel-title-row > .inline-editor {
     margin-left: auto;
-    min-width: 2rem;
-    font-weight: 800;
+    flex: 0 0 auto;
+}
+
+.panel-add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    background: var(--surface-soft);
+    color: var(--accent);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.panel-add-button:hover {
+    border-color: var(--accent);
+    background: var(--surface-raised);
+    color: var(--accent-hover);
+}
+
+.panel-title-row > .panel-add-button {
+    margin-left: auto;
+    flex: 0 0 auto;
 }
 
 .inventory-item {
@@ -829,7 +856,7 @@ input[type=number] {
 }
 
 .roll-message {
-    background: var(--surface-soft);
+    background: var(--surface-soft)roll-message.roll-critical-success;
     padding: 0.75rem;
     margin-bottom: 0.75rem;
 }
@@ -843,16 +870,6 @@ input[type=number] {
 
 .roll-message-header span {
     color: var(--text-muted);
-}
-
-.roll-message.roll-critical-success .roll-total,
-.roll-message.roll-critical-success .roll-breakdown {
-    color: var(--success);
-}
-
-.roll-message.roll-critical-failure .roll-total,
-.roll-message.roll-critical-failure .roll-breakdown {
-    color: var(--danger);
 }
 
 .roll-description {
@@ -1095,6 +1112,36 @@ input[type=number] {
     border-color: #4fa6b8;
     background: rgba(79, 166, 184, 0.18);
 }
+.roll-breakdown {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.roll-kept-d20 {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.roll-discarded-d20 {
+    color: var(--text-muted);
+    opacity: 0.45;
+}
+
+.roll-d20-divider {
+    color: var(--text-muted);
+}
+
+.roll-message.roll-natural-twenty .roll-total,
+.roll-message.roll-natural-twenty .roll-kept-d20 {
+    color: var(--success);
+}
+
+.roll-message.roll-natural-one .roll-total,
+.roll-message.roll-natural-one .roll-kept-d20 {
+    color: var(--danger);
+}
+
 /* Responsive */
 
 @media (max-width: 1100px) {

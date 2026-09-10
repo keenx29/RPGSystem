@@ -533,10 +533,24 @@ namespace RPGSystem.Services
 
                     return result;
                 }
-        public void AddCondition(ConditionType condition)
+        public RollResult? AddCondition(ConditionType condition)
         {
+            if (_character.IsImmuneToCondition(condition))
+            {
+                return CreateFeedback(
+                    $"{_character.Name} is immune to the {condition} condition.");
+            }
+
+            if (_character.HasCondition(condition))
+            {
+                return CreateFeedback(
+                    $"{_character.Name} already has the {condition} condition.");
+            }
+
             _character.AddCondition(condition);
             SaveState();
+
+            return null;
         }
         public void RemoveCondition(ConditionType condition)
         {
@@ -594,6 +608,11 @@ namespace RPGSystem.Services
             if (string.IsNullOrWhiteSpace(name))
                 return CreateFeedback("Defense name is required.");
 
+            if (!DefenseOptionCatalog.IsValidOption(model.Type, name))
+            {
+                return CreateFeedback("Select a valid defense option.");
+            }
+
             if (!Enum.IsDefined(model.Type))
                 return CreateFeedback("Invalid defense type.");
 
@@ -606,6 +625,12 @@ namespace RPGSystem.Services
             }
 
             defenses.Add(name);
+
+            if (model.Type == DefenseType.ConditionImmunity &&
+                Enum.TryParse<ConditionType>(name, true, out var condition))
+                {
+                    _character.RemoveCondition(condition);
+                }
 
             SaveState();
 
@@ -640,7 +665,9 @@ namespace RPGSystem.Services
         {
             var ability = _character.GetAbility(type);
             var advantage = ResolveAdvantage(RollType.Check, adv, type);
-            int roll = _diceService.RollD20(advantage.FinalState);
+            var d20Outcome = _diceService.RollD20Detailed(
+                advantage.FinalState);
+            int roll = d20Outcome.SelectedRoll;
             var explanations = new List<RollExplanation>(advantage.Explanations);
 
             explanations.Add(new RollExplanation
@@ -655,6 +682,7 @@ namespace RPGSystem.Services
                 Type = RollType.Check,
                 DiceRoll = roll,
                 NaturalRoll = roll,
+                DiscardedD20Roll = d20Outcome.DiscardedRoll,
                 Modifier = ability.Modifier,
                 Formula = $"1d20 {ability.Modifier:+ #;- #;+ 0} {ability.Name}",
                 Description = $"Ability check",
@@ -667,7 +695,9 @@ namespace RPGSystem.Services
         {
             var ability = _character.GetAbility(type);
             var advantage = ResolveAdvantage(RollType.Save, adv, type);
-            int roll = _diceService.RollD20(advantage.FinalState);
+            var d20Outcome = _diceService.RollD20Detailed(
+                advantage.FinalState);
+            int roll = d20Outcome.SelectedRoll;
             var proficiencyBonus =  _character.GetSavingThrowBonus(ability) - ability.Modifier;
             var formula = $"1d20 {ability.Modifier:+ #;- #;+ 0} {ability.Name}";
 
@@ -705,6 +735,7 @@ namespace RPGSystem.Services
                 Type = RollType.Save,
                 DiceRoll = roll,
                 NaturalRoll = roll,
+                DiscardedD20Roll = d20Outcome.DiscardedRoll,
                 Modifier = _character.GetSavingThrowBonus(ability),
                 Formula = formula,
                 Description = $"Saving throw",
@@ -717,7 +748,9 @@ namespace RPGSystem.Services
         {
             var skill = _character.GetSkill(skillType);
             var advantage = ResolveAdvantage(RollType.Check, adv, skill.RelatedAbility.Type);
-            int roll = _diceService.RollD20(advantage.FinalState);
+            var d20Outcome = _diceService.RollD20Detailed(
+                advantage.FinalState);
+            int roll = d20Outcome.SelectedRoll;
             var proficiencyBonus = _character.GetProficiencyBonus();
             var skillBonus = skill.GetBonus(proficiencyBonus);
             var formula = $"1d20 {skill.RelatedAbility.Modifier:+ #;- #;+ 0} {skill.RelatedAbility.Name}";
@@ -767,6 +800,7 @@ namespace RPGSystem.Services
                 Type = RollType.Check,
                 DiceRoll = roll,
                 NaturalRoll = roll,
+                DiscardedD20Roll = d20Outcome.DiscardedRoll,
                 Modifier = skillBonus,
                 Formula = formula,
                 Description = $"{skill.Name} skill check",
@@ -799,7 +833,10 @@ namespace RPGSystem.Services
 
             var advantage = ResolveAdvantage(RollType.Attack, adv, ability.Type);
 
-            int roll = _diceService.RollD20(advantage.FinalState);
+            var d20Outcome = _diceService.RollD20Detailed(
+                advantage.FinalState);
+
+            int roll = d20Outcome.SelectedRoll;
 
             var isProficient = _character.IsProficientWithWeapon(weapon);
 
@@ -862,6 +899,7 @@ namespace RPGSystem.Services
                 Type = RollType.Attack,
                 DiceRoll = roll,
                 NaturalRoll = roll,
+                DiscardedD20Roll = d20Outcome.DiscardedRoll,
                 Modifier = modifier,
                 Formula = formula,
                 Description = $"Attack roll with {weapon.Name}",
@@ -1080,7 +1118,10 @@ namespace RPGSystem.Services
 
             var advantage = ResolveAdvantage(RollType.DeathSave, adv);
 
-            int roll = _diceService.RollD20(advantage.FinalState);
+            var d20Outcome = _diceService.RollD20Detailed(
+                advantage.FinalState);
+
+            int roll = d20Outcome.SelectedRoll;
 
             _character.ApplyDeathSavingThrow(roll);
 
@@ -1122,6 +1163,7 @@ namespace RPGSystem.Services
                 Type = RollType.DeathSave,
                 DiceRoll = roll,
                 NaturalRoll = roll,
+                DiscardedD20Roll = d20Outcome.DiscardedRoll,
                 Modifier = 0,
                 Formula = "1d20",
                 Description = "Death saving throw",

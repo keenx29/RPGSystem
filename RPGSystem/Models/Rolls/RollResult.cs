@@ -31,6 +31,11 @@ namespace RPGSystem.Models.Rolls
         public bool CanRollDamage => Type == RollType.Attack && SourceItemId.HasValue;
         public bool CanRollCriticalDamage => CanRollDamage && IsCriticalSuccess;
         public bool IsCriticalDamage { get; set; }
+        public int? DiscardedD20Roll { get; set; }
+
+        public bool IsNaturalTwenty => NaturalRoll == 20;
+
+        public bool IsNaturalOne => NaturalRoll == 1;
         public static RollResult Info(string actor, string description)
         {
             return new RollResult

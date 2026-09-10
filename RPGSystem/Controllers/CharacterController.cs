@@ -135,7 +135,10 @@ namespace RPGSystem.Controllers
         [HttpPost]
         public IActionResult AddCondition(ConditionType condition)
         {
-            _characterService.AddCondition(condition);
+            var result = _characterService.AddCondition(condition);
+
+            if (result != null)
+                _rollHistory.Insert(0, result);
 
             return RedirectToAction("Sheet");
         }

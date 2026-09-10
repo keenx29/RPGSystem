@@ -160,6 +160,14 @@ namespace RPGSystem.Models.Characters
         {
             return Conditions.Contains(condition);
         }
+        public bool IsImmuneToCondition(ConditionType condition)
+        {
+            return ConditionImmunities.Any(immunity =>
+                string.Equals(
+                    immunity.Trim(),
+                    condition.ToString(),
+                    StringComparison.OrdinalIgnoreCase));
+        }
 
         public void AddCondition(ConditionType condition)
         {

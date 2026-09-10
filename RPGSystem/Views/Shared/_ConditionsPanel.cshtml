@@ -42,7 +42,11 @@
                 {
                     if (!Model.Conditions.Contains(condition))
                     {
-                        <option value="@condition">@condition</option>
+                        var isImmune = Model.IsImmuneToCondition(condition);
+
+                        <option value="@condition" disabled="@isImmune">
+                            @condition@(isImmune ? " (Immune)" : "")
+                        </option>
                     }
                 }
             </select>

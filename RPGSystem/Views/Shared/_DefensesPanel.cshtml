@@ -12,21 +12,71 @@
             <form asp-controller="Character"
                   asp-action="AddDefense"
                   method="post"
-                  class="inline-editor-form">
-                <select name="Type" class="form-select form-select-sm">
+                  class="inline-editor-form"
+                  data-defense-form>
+                <select name="Type"
+                        class="form-select form-select-sm"
+                        data-defense-type>
                     <option value="@DefenseType.Resistance">Resistance</option>
                     <option value="@DefenseType.Vulnerability">Vulnerability</option>
                     <option value="@DefenseType.DamageImmunity">Damage Immunity</option>
                     <option value="@DefenseType.ConditionImmunity">Condition Immunity</option>
                 </select>
 
-                <input name="Name" class="form-control form-control-sm"
-                       placeholder="For example: Fire" maxlength="50" required />
+                <select name="Name"
+                        class="form-select form-select-sm"
+                        data-defense-options="damage">
+                    @foreach (var damageType in DefenseOptionCatalog.DamageTypes)
+                    {
+                        <option value="@damageType">@damageType</option>
+                    }
+                </select>
+
+                <select name="Name"
+                        class="form-select form-select-sm"
+                        data-defense-options="condition"
+                        hidden
+                        disabled>
+                    @foreach (var condition in Enum.GetValues<ConditionType>())
+                    {
+                        <option value="@condition">@condition</option>
+                    }
+                </select>
 
                 <button class="btn btn-sm btn-primary" type="submit">Add</button>
             </form>
         </details>
     </div>
+
+    <script>
+        (() => {
+            const form = document.querySelector("[data-defense-form]");
+
+            if (!form) {
+                return;
+            }
+
+            const typeSelect = form.querySelector("[data-defense-type]");
+            const damageSelect = form.querySelector(
+                "[data-defense-options='damage']");
+            const conditionSelect = form.querySelector(
+                "[data-defense-options='condition']");
+
+            const updateDefenseOptions = () => {
+                const isConditionImmunity =
+                    typeSelect.value === "ConditionImmunity";
+
+                damageSelect.hidden = isConditionImmunity;
+                damageSelect.disabled = isConditionImmunity;
+
+                conditionSelect.hidden = !isConditionImmunity;
+                conditionSelect.disabled = !isConditionImmunity;
+            };
+
+            typeSelect.addEventListener("change", updateDefenseOptions);
+            updateDefenseOptions();
+        })();
+    </script>
 
     <div class="defense-group">
         <div class="sheet-subtitle">Resistances</div>

@@ -8,7 +8,7 @@ namespace RPGSystem.ViewModels
         [StringLength(50)]
         public string Name { get; set; } = "";
 
-        [Range(0, 1000)]
+        [Range(0, 10000)]
         public int? RangeFeet { get; set; }
 
         [StringLength(250)]
