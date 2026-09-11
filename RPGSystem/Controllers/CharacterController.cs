@@ -104,6 +104,15 @@ namespace RPGSystem.Controllers
                     "Choose a background from the list.");
             }
 
+            if (model.AbilityScoreMode == AbilityScoreMode.StandardArray &&
+                !CharacterCreationCatalog.IsValidStandardArray(
+                    model.GetSelectedAbilityScores()))
+            {
+                ModelState.AddModelError(
+                    nameof(model.AbilityScoreMode),
+                    "Use each standard array score exactly once.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View("Create", model);

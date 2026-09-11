@@ -31,7 +31,25 @@
             "Soldier",
             "Urchin"
         ];
+        public static IReadOnlyList<int> StandardArray { get; } =
+    [15, 14, 13, 12, 10, 8];
 
+        public static bool IsValidStandardArray(
+            IReadOnlyList<int?> selectedScores)
+        {
+            if (selectedScores.Count != StandardArray.Count ||
+                selectedScores.Any(score => !score.HasValue))
+            {
+                return false;
+            }
+
+            var selectedValues = selectedScores
+                .Select(score => score!.Value)
+                .OrderBy(score => score);
+
+            return selectedValues.SequenceEqual(
+                StandardArray.OrderBy(score => score));
+        }
         public static bool IsSupportedRace(string? race)
         {
             return Races.Contains(race, StringComparer.Ordinal);

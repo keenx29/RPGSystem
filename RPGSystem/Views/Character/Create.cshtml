@@ -36,6 +36,61 @@
                             }
                         </select>
                     </div>
+                    <div class="col-12">
+                        <label asp-for="AbilityScoreMode" class="form-label">
+                            Ability Scores
+                        </label>
+
+                        <select asp-for="AbilityScoreMode"
+                                class="form-select"
+                                id="ability-score-mode">
+                            <option value="ClassTemplate">
+                                Class template
+                            </option>
+                            <option value="StandardArray">
+                                Standard array
+                            </option>
+                        </select>
+
+                        <div class="form-text">
+                            Standard array uses 15, 14, 13, 12, 10 and 8 once each.
+                        </div>
+                    </div>
+
+                    <div class="col-12" id="standard-array-section">
+                        <div class="row g-2">
+                            @{
+                                var abilityFields = new[]
+                                {
+                                    ("Strength", "StrengthScore"),
+                                    ("Dexterity", "DexterityScore"),
+                                    ("Constitution", "ConstitutionScore"),
+                                    ("Intelligence", "IntelligenceScore"),
+                                    ("Wisdom", "WisdomScore"),
+                                    ("Charisma", "CharismaScore")
+                                };
+                            }
+
+                            @foreach (var abilityField in abilityFields)
+                            {
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label">@abilityField.Item1</label>
+
+                                    <select name="@abilityField.Item2" class="form-select">
+                                        <option value="">Choose</option>
+
+                                        @foreach (var score in CharacterCreationCatalog.StandardArray)
+                                        {
+                                            <option value="@score">@score</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        </div>
+
+                        <span asp-validation-for="AbilityScoreMode"
+                              class="text-danger small"></span>
+                    </div>
 
                     <div class="col-12 col-md-6">
                         <label asp-for="Race" class="form-label">Race</label>
@@ -103,6 +158,22 @@
     </section>
 
 </div>
+<script>
+    const scoreMode = document.getElementById("ability-score-mode");
+    const standardArraySection =
+        document.getElementById("standard-array-section");
+
+    function updateAbilityScoreMode() {
+        const usesStandardArray =
+            scoreMode.value === "StandardArray";
+
+        standardArraySection.hidden = !usesStandardArray;
+    }
+
+    scoreMode.addEventListener("change", updateAbilityScoreMode);
+
+    updateAbilityScoreMode();
+</script>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

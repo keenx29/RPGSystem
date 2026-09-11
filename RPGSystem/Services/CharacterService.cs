@@ -214,6 +214,14 @@ namespace RPGSystem.Services
 
             var character = CreateStarterCharacterTemplate(model.ClassType);
 
+            if (model.AbilityScoreMode == AbilityScoreMode.StandardArray)
+            {
+                ApplyStandardArray(
+                    character,
+                    model.GetSelectedAbilityScores());
+
+                RefreshLevelOneHitPoints(character);
+            }
             character.Id = Guid.NewGuid();
             character.Name = model.Name.Trim();
             character.Race = model.Race?.Trim() ?? "";
@@ -224,39 +232,354 @@ namespace RPGSystem.Services
 
             SaveState();
         }
-        private Character CreateStarterCharacterTemplate(CharacterClassType classType)
+        private Character CreateStarterCharacterTemplate(
+            CharacterClassType classType)
         {
-            var character = CreateDemoCharacterTemplate(classType);
-
-            character.Id = Guid.NewGuid();
-            character.Name = "";
-            character.Race = "";
-            character.Background = "";
-            character.Alignment = "";
-            character.PersonalityTraits = "";
-            character.Ideals = "";
-            character.Bonds = "";
-            character.Flaws = "";
-            character.Notes = "";
-
-            character.DamageResistances.Clear();
-            character.DamageVulnerabilities.Clear();
-            character.DamageImmunities.Clear();
-            character.ConditionImmunities.Clear();
-            character.Senses.Clear();
-            character.Conditions.Clear();
-
-            character.DeathSaveSuccesses = 0;
-            character.DeathSaveFailures = 0;
-            character.IsStable = false;
-            character.IsDead = false;
-
-            foreach (var feature in character.ClassFeatures)
+            return classType switch
             {
-                feature.IsActive = false;
-            }
+                CharacterClassType.Fighter => CreateFighterStarterTemplate(),
+                CharacterClassType.Rogue => CreateRogueStarterTemplate(),
+                CharacterClassType.Barbarian => CreateBarbarianStarterTemplate(),
+                CharacterClassType.Monk => CreateMonkStarterTemplate(),
+                _ => CreateFighterStarterTemplate()
+            };
+        }
+        private Character CreateLevelOneCharacter(
+            CharacterClassType classType,
+            int strength,
+            int dexterity,
+            int constitution,
+            int intelligence,
+            int wisdom,
+            int charisma,
+            IEnumerable<SkillType> proficientSkills,
+            IEnumerable<Weapon>? equippedWeapons = null,
+            Armor? equippedArmor = null,
+            Armor? equippedShield = null,
+            IEnumerable<Item>? inventory = null,
+            int goldPieces = 10)
+        {
+            var character = new Character
+            {
+                Id = Guid.NewGuid(),
+                Level = 1,
+                ClassType = classType,
+                MovementSpeed = 30,
+                GoldPieces = goldPieces,
+                EquippedWeapons = equippedWeapons?.ToList() ?? new List<Weapon>(),
+                EquippedArmor = equippedArmor,
+                EquippedShield = equippedShield,
+                Inventory = inventory?.ToList() ?? new List<Item>(),
+                Abilities =
+                [
+                    new Ability { Name = "Strength", Type = AbilityType.Strength, Score = strength },
+                    new Ability { Name = "Dexterity", Type = AbilityType.Dexterity, Score = dexterity },
+                    new Ability { Name = "Constitution", Type = AbilityType.Constitution, Score = constitution },
+                    new Ability { Name = "Intelligence", Type = AbilityType.Intelligence, Score = intelligence },
+                    new Ability { Name = "Wisdom", Type = AbilityType.Wisdom, Score = wisdom },
+                    new Ability { Name = "Charisma", Type = AbilityType.Charisma, Score = charisma }
+                ]
+            };
+
+            character.Skills = SkillFactory.CreateDefaultSkills(character);
+            character.ApplySkillProficiencies(proficientSkills);
+
+            ApplyClassSetup(character);
+            RefreshLevelOneHitPoints(character);
 
             return character;
+        }
+        private Character CreateFighterStarterTemplate()
+        {
+            return CreateLevelOneCharacter(
+                CharacterClassType.Fighter,
+                strength: 15,
+                dexterity: 13,
+                constitution: 14,
+                intelligence: 8,
+                wisdom: 12,
+                charisma: 10,
+                proficientSkills: [SkillType.Athletics, SkillType.Perception],
+                equippedWeapons:
+                [
+                    new Weapon
+            {
+                Name = "Longsword",
+                Type = ItemType.Weapon,
+                Weight = 3,
+                DamageDice = "1d8",
+                DamageType = "slashing",
+                ScalingType = WeaponScalingType.Strength,
+                ProficiencyType = WeaponProficiencyType.Martial,
+                ProficiencyName = "Longsword"
+            }
+                ],
+                equippedArmor: new Armor
+                {
+                    Name = "Chain Mail",
+                    Type = ItemType.Armor,
+                    Weight = 55,
+                    BaseArmorClass = 16,
+                    ArmorType = ArmorType.Heavy
+                },
+                equippedShield: new Armor
+                {
+                    Name = "Shield",
+                    Type = ItemType.Armor,
+                    Weight = 6,
+                    BaseArmorClass = 2,
+                    ArmorType = ArmorType.Shield
+                },
+                inventory:
+                [
+                    new Weapon
+            {
+                Name = "Light Crossbow",
+                Type = ItemType.Weapon,
+                Weight = 5,
+                DamageDice = "1d8",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Dexterity,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Light Crossbow"
+            },
+            new Item
+            {
+                Name = "Bolts (20)",
+                Type = ItemType.Ammo,
+                Weight = 1.5,
+                Description = "A case containing 20 crossbow bolts."
+            },
+            new Item
+            {
+                Name = "Explorer's Pack",
+                Type = ItemType.Pack,
+                Weight = 20,
+                Description = "Basic adventuring supplies."
+            }
+                ]);
+        }
+        private Character CreateRogueStarterTemplate()
+        {
+            return CreateLevelOneCharacter(
+                CharacterClassType.Rogue,
+                strength: 8,
+                dexterity: 15,
+                constitution: 14,
+                intelligence: 13,
+                wisdom: 12,
+                charisma: 10,
+                proficientSkills:
+                [
+                    SkillType.Acrobatics,
+                    SkillType.Investigation,
+                    SkillType.Perception,
+                    SkillType.Stealth
+                ],
+                equippedWeapons:
+                [
+                    new Weapon
+            {
+                Name = "Rapier",
+                Type = ItemType.Weapon,
+                Weight = 2,
+                DamageDice = "1d8",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Finesse,
+                ProficiencyType = WeaponProficiencyType.Specific,
+                ProficiencyName = "Rapier"
+            }
+                ],
+                equippedArmor: new Armor
+                {
+                    Name = "Leather Armor",
+                    Type = ItemType.Armor,
+                    Weight = 10,
+                    BaseArmorClass = 11,
+                    ArmorType = ArmorType.Light
+                },
+                inventory:
+                [
+                    new Weapon
+            {
+                Name = "Shortbow",
+                Type = ItemType.Weapon,
+                Weight = 2,
+                DamageDice = "1d6",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Dexterity,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Shortbow"
+            },
+            new Item
+            {
+                Name = "Arrows (20)",
+                Type = ItemType.Ammo,
+                Weight = 1,
+                Description = "A quiver containing 20 arrows."
+            },
+            new Item
+            {
+                Name = "Thieves' Tools",
+                Type = ItemType.Tool,
+                Weight = 1,
+                Description = "Tools used to disarm traps and open locks."
+            },
+            new Item
+            {
+                Name = "Burglar's Pack",
+                Type = ItemType.Pack,
+                Weight = 20,
+                Description = "Basic adventuring supplies for a rogue."
+            }
+                ]);
+        }
+        private Character CreateBarbarianStarterTemplate()
+        {
+            return CreateLevelOneCharacter(
+                CharacterClassType.Barbarian,
+                strength: 15,
+                dexterity: 14,
+                constitution: 13,
+                intelligence: 8,
+                wisdom: 12,
+                charisma: 10,
+                proficientSkills:
+                [
+                    SkillType.Athletics,
+            SkillType.Survival
+                ],
+                equippedWeapons:
+                [
+                    new Weapon
+            {
+                Name = "Greataxe",
+                Type = ItemType.Weapon,
+                Weight = 7,
+                DamageDice = "1d12",
+                DamageType = "slashing",
+                ScalingType = WeaponScalingType.Strength,
+                ProficiencyType = WeaponProficiencyType.Martial,
+                ProficiencyName = "Greataxe"
+            }
+                ],
+                inventory:
+                [
+                    new Weapon
+            {
+                Name = "Handaxes (2)",
+                Type = ItemType.Weapon,
+                Weight = 4,
+                DamageDice = "1d6",
+                DamageType = "slashing",
+                ScalingType = WeaponScalingType.Strength,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Handaxe"
+            },
+            new Weapon
+            {
+                Name = "Javelins (4)",
+                Type = ItemType.Weapon,
+                Weight = 8,
+                DamageDice = "1d6",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Strength,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Javelin"
+            },
+            new Item
+            {
+                Name = "Explorer's Pack",
+                Type = ItemType.Pack,
+                Weight = 20,
+                Description = "Basic adventuring supplies for travel and exploration."
+            }
+                ],
+                goldPieces: 0);
+        }
+        private Character CreateMonkStarterTemplate()
+        {
+            return CreateLevelOneCharacter(
+                CharacterClassType.Monk,
+                strength: 10,
+                dexterity: 15,
+                constitution: 13,
+                intelligence: 8,
+                wisdom: 14,
+                charisma: 12,
+                proficientSkills:
+                [
+                    SkillType.Acrobatics,
+            SkillType.Insight
+                ],
+                equippedWeapons:
+                [
+                    new Weapon
+            {
+                Name = "Shortsword",
+                Type = ItemType.Weapon,
+                Weight = 2,
+                DamageDice = "1d6",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Dexterity,
+                ProficiencyType = WeaponProficiencyType.Specific,
+                ProficiencyName = "Shortsword"
+            }
+                ],
+                inventory:
+                [
+                    new Weapon
+            {
+                Name = "Darts (10)",
+                Type = ItemType.Weapon,
+                Weight = 2.5,
+                DamageDice = "1d4",
+                DamageType = "piercing",
+                ScalingType = WeaponScalingType.Finesse,
+                ProficiencyType = WeaponProficiencyType.Simple,
+                ProficiencyName = "Dart"
+            },
+            new Item
+            {
+                Name = "Explorer's Pack",
+                Type = ItemType.Pack,
+                Weight = 20,
+                Description = "Basic adventuring supplies for travel and exploration."
+            }
+                ],
+                goldPieces: 0);
+        }
+        private static void RefreshLevelOneHitPoints(Character character)
+        {
+            var characterClass = CharacterClassFactory.Create(character.ClassType);
+
+            character.HitDiceRemaining = 1;
+            character.MaxHP = Math.Max(
+                1,
+                characterClass.HitDie +
+                character.GetAbility(AbilityType.Constitution).Modifier);
+
+            character.CurrentHP = character.MaxHP;
+        }
+        private static void ApplyStandardArray(
+            Character character,
+            IReadOnlyList<int?> selectedScores)
+        {
+            var abilityTypes = new[]
+            {
+                AbilityType.Strength,
+                AbilityType.Dexterity,
+                AbilityType.Constitution,
+                AbilityType.Intelligence,
+                AbilityType.Wisdom,
+                AbilityType.Charisma
+            };
+
+            for (int index = 0; index < abilityTypes.Length; index++)
+            {
+                character.GetAbility(abilityTypes[index]).Score =
+                    selectedScores[index]!.Value;
+            }
         }
         public void SaveCharacters()
         {
@@ -1352,6 +1675,10 @@ namespace RPGSystem.Services
                 Type = RollType.MaxHP,
                 DiceRoll = roll,
                 Modifier = ability.Modifier,
+                Formula =
+                    $"1d{characterClass.HitDie}" +
+                    $"{ModifierFormatter.FormatWithSpace(ability.Modifier)} Constitution",
+                Description = $"Maximum hit points increased by {hpGain}."
             };
         }
         public int GetHitDie()
@@ -2385,8 +2712,8 @@ namespace RPGSystem.Services
             return RollResult.Info("System", message);
         }
         private List<string> GetDefenseNames(
-    CharacterEntity character,
-    DefenseType type)
+            CharacterEntity character,
+            DefenseType type)
         {
             return character.Defenses
                 .Where(defense => defense.Type == type)

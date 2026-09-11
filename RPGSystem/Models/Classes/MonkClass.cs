@@ -22,7 +22,7 @@ namespace RPGSystem.Models.Classes
                     ActionType = FeatureActionType.None,
                     ResetType = FeatureResetType.None,
                     ActivationType = FeatureActivationType.Passive,
-                    Details = "..."
+                    Details = "While unarmed and not wearing armor or a shield, you can use Dexterity instead of Strength for monk weapon attacks and unarmed strikes. After taking the Attack action with an unarmed strike or monk weapon, you can make one unarmed strike as a bonus action."
                 });
             }
             if (level >= 2)
