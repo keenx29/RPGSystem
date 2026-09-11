@@ -1,54 +1,79 @@
 ﻿@using RPGSystem.Helpers
-@using RPGSystem.Models.Characters
-@model Ability
+@model RPGSystem.ViewModels.AbilityCardViewModel
+
 @{
-    var nextSavingThrowProficiencyValue = Model.IsSavingThrowProficient ? "false" : "true";
+    var ability = Model.Ability;
+
+    var nextSavingThrowProficiencyValue =
+        ability.IsSavingThrowProficient ? "false" : "true";
 }
 
-<div class="card p-3 m-2 text-center" style="width: 200px;">
+<article class="ability-card">
 
-    <h4>@Model.Name</h4>
+    <h3>@ability.Name</h3>
 
-    <h2>@Model.Score</h2>
+    <div class="ability-score-row">
+        <span class="ability-score">@ability.Score</span>
 
-    <p>
-        Modifier:
-        <span>@ModifierFormatter.FormatWithoutSpace(Model.Modifier)</span>
+        @if (Model.CanIncreaseScore)
+        {
+            <form asp-action="IncreaseAbilityScore" method="post">
+                <input type="hidden"
+                       name="abilityType"
+                       value="@ability.Type" />
+
+                <button type="submit"
+                        class="ability-score-increase"
+                        title="Increase @ability.Name by 1">
+                    +1
+                </button>
+            </form>
+        }
+    </div>
+
+    <p class="ability-modifier">
+        Modifier
+        <strong>@ModifierFormatter.FormatWithoutSpace(ability.Modifier)</strong>
     </p>
+
     <div class="ability-actions">
 
         <form asp-action="RollAbility" method="post" class="m-0">
-
             <input type="hidden"
-                    name="abilityType"
-                    value="@Model.Type" />
+                   name="abilityType"
+                   value="@ability.Type" />
 
             <button class="btn btn-dark btn-sm">
                 Check
             </button>
-
         </form>
 
         <form asp-action="RollSavingThrow" method="post" class="m-0">
-
             <input type="hidden"
-                    name="abilityType"
-                    value="@Model.Type" />
+                   name="abilityType"
+                   value="@ability.Type" />
 
-            <button class="btn btn-sm @(Model.IsSavingThrowProficient ? "btn-outline-danger" : "btn-outline-dark")">
+            <button class="btn btn-sm @(ability.IsSavingThrowProficient ? "btn-outline-danger" : "btn-outline-dark")">
                 Save
             </button>
-
         </form>
+
         <form asp-action="SetSavingThrowProficiency" method="post" class="m-0">
-            <input type="hidden" name="abilityType" value="@Model.Type" />
-            <input type="hidden" name="isProficient" value="@nextSavingThrowProficiencyValue" />
+            <input type="hidden"
+                   name="abilityType"
+                   value="@ability.Type" />
+
+            <input type="hidden"
+                   name="isProficient"
+                   value="@nextSavingThrowProficiencyValue" />
 
             <button type="submit"
-                    class="skill-toggle save-toggle @(Model.IsSavingThrowProficient ? "selected" : "")"
+                    class="skill-toggle save-toggle @(ability.IsSavingThrowProficient ? "selected" : "")"
                     title="Saving throw proficiency">
                 Prof
             </button>
         </form>
+
     </div>
-</div>
+
+</article>

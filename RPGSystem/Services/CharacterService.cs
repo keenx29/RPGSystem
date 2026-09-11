@@ -1184,7 +1184,7 @@ namespace RPGSystem.Services
             }
 
             var explanations = new List<RollExplanation>(advantage.Explanations);
-
+            
             explanations.Add(new RollExplanation
             {
                 Type = RollExplanationType.Info,
@@ -1260,6 +1260,12 @@ namespace RPGSystem.Services
                 {
                     Type = RollExplanationType.Info,
                     Source = weapon.Name,
+                    Text = $"{weapon.Name} damage uses {ability.Name} because of the weapon scaling type."
+                },
+                new RollExplanation
+                {
+                    Type = RollExplanationType.Info,
+                    Source = weapon.Name,
                     Text = $"{weapon.Name} deals {weapon.DamageDice} {weapon.DamageType} damage."
                 },
                 new RollExplanation
@@ -1269,12 +1275,6 @@ namespace RPGSystem.Services
                     Text = $"{ability.Name} damage modifier applied: {ability.Modifier:+#;-#;0}."
                 }
             };
-            explanations.Add(new RollExplanation
-            {
-                Type = RollExplanationType.Info,
-                Source = weapon.Name,
-                Text = $"{weapon.Name} damage uses {ability.Name} because of the weapon scaling type."
-            });
 
             var damageDice = isCritical
                 ? _diceService.DoubleDiceExpression(weapon.DamageDice)

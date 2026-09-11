@@ -1,4 +1,6 @@
 ﻿@using RPGSystem.Models.Items
+@using RPGSystem.Helpers
+@inject RPGSystem.Services.DiceService DiceService
 @model RPGSystem.Models.Characters.Character
 <section class="sheet-panel inventory-panel">
     <div class="panel-title-row">
@@ -106,30 +108,112 @@
         var weapon = item as Weapon;
         var isArmor = item is Armor;
         var armor = item as Armor;
-        var isConsumable = item.Type == ItemType.Consumable;
 
         var isShield = armor?.ArmorType == ArmorType.Shield;
+
+        var isWeaponProficient =
+        weapon != null &&
+        Model.IsProficientWithWeapon(weapon);
+
+        var isArmorProficient =
+        armor != null &&
+        (armor.ArmorType == ArmorType.Shield
+        ? Model.IsProficientWithShield()
+        : Model.IsProficientWithArmor(armor));
+
+        var armorFormula = armor?.ArmorType switch
+        {
+            ArmorType.Light =>
+            $"Base AC {armor.BaseArmorClass} + Dexterity modifier",
+
+            ArmorType.Medium =>
+            $"Base AC {armor.BaseArmorClass} + Dexterity modifier (max +2)",
+
+            ArmorType.Heavy =>
+            $"Base AC {armor.BaseArmorClass}",
+
+            ArmorType.Shield =>
+            $"+{armor.BaseArmorClass} AC while equipped",
+
+            _ => ""
+        };
+        var weaponDetails = "";
+
+        if (weapon != null)
+        {
+            var attackBonus = Model.GetAttackBonus(weapon);
+            var damageBonus = Model.GetDamageBonus(weapon);
+            var damageAbility = Model.GetAttackAbility(weapon);
+
+            var damageType = string.IsNullOrWhiteSpace(weapon.DamageType)
+            ? "Damage"
+            : char.ToUpperInvariant(weapon.DamageType[0]) +
+            weapon.DamageType[1..].ToLowerInvariant();
+
+            var damageDice =
+            DiceService.GetBaseDiceNotation(weapon.DamageDice);
+
+            var weaponDamageBonus =
+            DiceService.GetDiceModifier(weapon.DamageDice);
+
+            var damageParts = new List<string>
+            {
+            $"{damageType} Damage {damageDice}"
+            };
+
+            if (weaponDamageBonus != 0)
+            {
+                damageParts.Add(
+                $"{ModifierFormatter.FormatWithSpace(weaponDamageBonus)} Weapon Bonus");
+            }
+
+            if (damageBonus != 0)
+            {
+                damageParts.Add(
+                $"{ModifierFormatter.FormatWithSpace(damageBonus)} {damageAbility.Name}");
+            }
+
+            weaponDetails =
+            $"Attack {ModifierFormatter.FormatWithoutSpace(attackBonus)} · " +
+            string.Join(" ", damageParts);
+        }
 
         <div class="inventory-item @(Model.EquippedWeapon?.Id == item.Id || Model.EquippedArmor?.Id == item.Id ? "equipped" : "")">
 
             <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-start gap-2">
 
-                <div class="d-flex align-items-center gap-2">
+                <div class="equipment-name-line">
 
                     <strong>@item.Name</strong>
 
                     @if (isWeapon)
                     {
-                        <span class="badge bg-secondary">@(weapon.ScalingType) Weapon</span>
+                        <div class="equipment-tags">
+                            <span class="equipment-tag @(isWeaponProficient ? "is-proficient" : "is-not-proficient")">
+                                @(isWeaponProficient ? "Proficient" : "Not proficient")
+                            </span>
+
+                            <span class="equipment-tag">@weapon!.ScalingType</span>
+                        </div>
                     }
                     else if (isArmor)
                     {
-                        <span class="badge bg-secondary">@(armor.ArmorType) Armor</span>
+                        <div class="equipment-tags">
+                            <span class="equipment-tag @(isArmorProficient ? "is-proficient" : "is-not-proficient")">
+                                @(isArmorProficient ? "Proficient" : "Not proficient")
+                            </span>
+
+                            <span class="equipment-tag">
+                                @(armor!.ArmorType == ArmorType.Shield
+                                                        ? "Shield"
+                                                        : $"{armor.ArmorType} Armor")
+                            </span>
+                        </div>
                     }
                     else
                     {
-                        <span class="badge bg-secondary">@item.Type</span>
+                        <span class="equipment-tag">@item.Type</span>
                     }
                     
                 </div>
@@ -144,6 +228,18 @@
             {
                 <div class="inventory-description">
                     @item.Description
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(armorFormula))
+            {
+                <div class="inventory-armor-formula">
+                    @armorFormula
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(weaponDetails))
+            {
+                <div class="equipment-details">
+                    @weaponDetails
                 </div>
             }
             <!-- ACTIONS -->

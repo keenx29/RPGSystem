@@ -149,34 +149,9 @@
                     }
                 </div>
             }
-            @if (roll.Explanations.Any())
-            {
-                <details class="roll-explanations">
-                    <summary>Details</summary>
-
-                    <ul class="mb-0 mt-2">
-                        @foreach (var explanation in roll.Explanations)
-                        {
-                            <li class="@(explanation.Type == RollExplanationType.Ignored ? "text-muted" : "")">
-                                <strong>@explanation.Source:</strong>
-                                @explanation.Text
-
-                                @if (explanation.Value.HasValue)
-                                {
-                                    <span>(@ModifierFormatter.FormatWithoutSpace(explanation.Value.Value))</span>
-                                }
-
-                                @if (!string.IsNullOrWhiteSpace(explanation.Dice))
-                                {
-                                    <span>(@explanation.Dice)</span>
-                                }
-                            </li>
-                        }
-                    </ul>
-                </details>
-            }
 
             <div class="roll-actions">
+
                 @if (roll.CanRollDamage && roll.SourceItemId.HasValue)
                 {
                     <form asp-controller="Character"
@@ -189,6 +164,7 @@
                         </button>
                     </form>
                 }
+
                 @if (roll.CanRollCriticalDamage && roll.SourceItemId.HasValue)
                 {
                     <form asp-controller="Character"
@@ -201,19 +177,63 @@
                         </button>
                     </form>
                 }
-            </div>
-            @if (roll.IsCriticalSuccess)
-            {
-                <span class="badge bg-success">Critical Hit</span>
-            }
 
-            @if (roll.IsCriticalFailure)
+            </div>
+
+            @if (roll.Explanations.Any() ||
+                    roll.IsCriticalSuccess ||
+                    roll.IsCriticalFailure ||
+                    roll.IsCriticalDamage)
             {
-                <span class="badge bg-danger">Critical Fail</span>
-            }
-            @if (roll.IsCriticalDamage)
-            {
-                <span class="badge bg-warning text-dark">Critical Damage</span>
+                <details class="roll-explanations">
+                    <summary>Details</summary>
+
+                    <ul class="mb-0 mt-2">
+                        @if (roll.IsCriticalSuccess)
+                        {
+                            <li>
+                                <strong>Critical hit:</strong>
+                                Natural 20. The attack automatically hits.
+                            </li>
+                        }
+
+                        @if (roll.IsCriticalFailure)
+                        {
+                            <li>
+                                <strong>Critical failure:</strong>
+                                Natural 1. The attack automatically misses.
+                            </li>
+                        }
+
+                        @if (roll.IsCriticalDamage)
+                        {
+                            <li>
+                                <strong>Critical damage:</strong>
+                                Damage dice is doubled.
+                            </li>
+                        }
+
+                        @foreach (var explanation in roll.Explanations)
+                        {
+                            <li class="@(explanation.Type == RollExplanationType.Ignored ? "text-muted" : "")">
+                                <strong>@explanation.Source:</strong>
+                                @explanation.Text
+
+                                @if (explanation.Value.HasValue)
+                                {
+                                    <span>
+                                        (@ModifierFormatter.FormatWithoutSpace(explanation.Value.Value))
+                                    </span>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(explanation.Dice))
+                                {
+                                    <span>(@explanation.Dice)</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </details>
             }
 
         </div>
