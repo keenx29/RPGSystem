@@ -13,5 +13,10 @@ namespace RPGSystem.Models.Items
         public WeaponProficiencyType ProficiencyType { get; set; }
 
         public string? ProficiencyName { get; set; }
+        public bool IsThrown { get; set; }
+
+        public int? NormalRangeFeet { get; set; }
+
+        public int? LongRangeFeet { get; set; }
     }
 }

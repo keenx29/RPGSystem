@@ -251,6 +251,9 @@ namespace RPGSystem.Services
                 entity.ScalingType = weapon.ScalingType;
                 entity.ProficiencyType = weapon.ProficiencyType;
                 entity.ProficiencyName = weapon.ProficiencyName;
+                entity.IsThrown = weapon.IsThrown;
+                entity.NormalRangeFeet = weapon.NormalRangeFeet;
+                entity.LongRangeFeet = weapon.LongRangeFeet;
             }
             else if (item is Armor armor)
             {

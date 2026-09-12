@@ -33,6 +33,11 @@ namespace RPGSystem.Data.Entities
         public WeaponProficiencyType ProficiencyType { get; set; }
 
         public string? ProficiencyName { get; set; }
+        public bool IsThrown { get; set; }
+
+        public int? NormalRangeFeet { get; set; }
+
+        public int? LongRangeFeet { get; set; }
 
         public int BaseArmorClass { get; set; }
 
@@ -41,5 +46,6 @@ namespace RPGSystem.Data.Entities
         public string? EffectType { get; set; }
 
         public string? EffectDice { get; set; }
+        
     }
 }

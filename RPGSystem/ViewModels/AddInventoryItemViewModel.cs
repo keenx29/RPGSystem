@@ -18,6 +18,11 @@ namespace RPGSystem.ViewModels
         public WeaponScalingType ScalingType { get; set; } = WeaponScalingType.Strength;
 
         public WeaponProficiencyType WeaponProficiencyType { get; set; } = WeaponProficiencyType.Simple;
+        public bool IsThrown { get; set; }
+
+        public int? NormalRangeFeet { get; set; }
+
+        public int? LongRangeFeet { get; set; }
 
         public ArmorType ArmorType { get; set; } = ArmorType.Light;
 

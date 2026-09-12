@@ -474,7 +474,10 @@ namespace RPGSystem.Services
                 DamageType = "slashing",
                 ScalingType = WeaponScalingType.Strength,
                 ProficiencyType = WeaponProficiencyType.Simple,
-                ProficiencyName = "Handaxe"
+                ProficiencyName = "Handaxe",
+                IsThrown = true,
+                NormalRangeFeet = 20,
+                LongRangeFeet = 60,
             },
             new Weapon
             {
@@ -485,7 +488,10 @@ namespace RPGSystem.Services
                 DamageType = "piercing",
                 ScalingType = WeaponScalingType.Strength,
                 ProficiencyType = WeaponProficiencyType.Simple,
-                ProficiencyName = "Javelin"
+                ProficiencyName = "Javelin",
+                IsThrown = true,
+                NormalRangeFeet = 30,
+                LongRangeFeet = 120,
             },
             new Item
             {
@@ -1933,7 +1939,10 @@ namespace RPGSystem.Services
                     ScalingType = model.ScalingType,
                     ProficiencyType = model.WeaponProficiencyType,
                     ProficiencyName = model.Name.Trim(),
-                    AttackBonus = model.AttackBonus
+                    AttackBonus = model.AttackBonus,
+                    IsThrown = model.IsThrown,
+                    NormalRangeFeet = model.IsThrown ? model.NormalRangeFeet : null,
+                    LongRangeFeet = model.IsThrown ? model.LongRangeFeet : null,
                 },
 
                 "Armor" => new Armor
@@ -1968,6 +1977,18 @@ namespace RPGSystem.Services
                 if (model.AttackBonus < -5 || model.AttackBonus > 5)
                 {
                     return CreateFeedback("Weapon attack bonus must be between -5 and +5.");
+                }
+
+                if (model.IsThrown)
+                {
+                    if (!model.NormalRangeFeet.HasValue ||
+                        !model.LongRangeFeet.HasValue ||
+                        model.NormalRangeFeet <= 0 ||
+                        model.LongRangeFeet < model.NormalRangeFeet)
+                    {
+                        return CreateFeedback(
+                            "Thrown weapons need a normal range and a long range greater than or equal to it.");
+                    }
                 }
             }
 
@@ -2757,7 +2778,10 @@ namespace RPGSystem.Services
                     AttackBonus = entity.AttackBonus,
                     ScalingType = entity.ScalingType,
                     ProficiencyType = entity.ProficiencyType,
-                    ProficiencyName = entity.ProficiencyName
+                    ProficiencyName = entity.ProficiencyName,
+                    IsThrown = entity.IsThrown,
+                    NormalRangeFeet = entity.NormalRangeFeet,
+                    LongRangeFeet = entity.LongRangeFeet,
                 };
             }
 

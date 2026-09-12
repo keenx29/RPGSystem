@@ -84,6 +84,14 @@
                             </span>
 
                             <span class="equipment-tag">@weapon.ScalingType</span>
+                            @if (weapon.IsThrown &&
+                                weapon.NormalRangeFeet.HasValue &&
+                                weapon.LongRangeFeet.HasValue)
+                            {
+                                <span class="equipment-tag">
+                                    Thrown @weapon.NormalRangeFeet/@weapon.LongRangeFeet ft.
+                                </span>
+                            }
                         </div>
                     </div>
 

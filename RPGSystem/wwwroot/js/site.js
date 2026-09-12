@@ -69,6 +69,16 @@ function updateArmorWeightDefault() {
 
     weight.value = defaultWeights[armorType.value] ?? "10";
 }
+function updateThrownWeaponFields() {
+    const thrownCheckbox = document.getElementById("inventoryWeaponIsThrown");
+    const rangeFields = document.getElementById("thrownWeaponRangeFields");
+
+    if (!thrownCheckbox || !rangeFields) {
+        return;
+    }
+
+    rangeFields.style.display = thrownCheckbox.checked ? "" : "none";
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const kindSelect = document.getElementById("inventoryItemKind");
@@ -78,7 +88,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     kindSelect.addEventListener("change", updateInventoryAddFields);
+
     updateInventoryAddFields();
+
+    const thrownCheckbox = document.getElementById("inventoryWeaponIsThrown");
+
+    if (thrownCheckbox) {
+        thrownCheckbox.addEventListener("change", updateThrownWeaponFields);
+        updateThrownWeaponFields();
+    }
     const armorType = document.getElementById("inventoryArmorType");
 
     if (armorType) {

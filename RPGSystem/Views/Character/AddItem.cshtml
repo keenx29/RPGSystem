@@ -94,6 +94,40 @@
                         }
                     </select>
 
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="IsThrown"
+                               id="inventoryWeaponIsThrown"
+                               class="form-check-input" />
+
+                        <label asp-for="IsThrown" class="form-check-label">
+                            Thrown weapon
+                        </label>
+                    </div>
+
+                    <div id="thrownWeaponRangeFields">
+                        <label asp-for="NormalRangeFeet" class="form-label small">
+                            Normal range (ft)
+                        </label>
+                        <input asp-for="NormalRangeFeet"
+                               id="inventoryWeaponNormalRange"
+                               type="number"
+                               min="5"
+                               step="5"
+                               class="form-control form-control-sm mb-2"
+                               placeholder="e.g. 20" />
+
+                        <label asp-for="LongRangeFeet" class="form-label small">
+                            Long range (ft)
+                        </label>
+                        <input asp-for="LongRangeFeet"
+                               id="inventoryWeaponLongRange"
+                               type="number"
+                               min="5"
+                               step="5"
+                               class="form-control form-control-sm mb-2"
+                               placeholder="e.g. 60" />
+                    </div>
+
                     <label class="form-label small">Attack bonus</label>
                     <input name="AttackBonus"
                            type="number"
