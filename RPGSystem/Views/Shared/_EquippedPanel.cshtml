@@ -137,6 +137,13 @@
                 <div class="equipment-details">
                     @GetArmorDetails(armor)
                 </div>
+
+                @if (!isArmorProficient)
+                {
+                    <div class="equipment-warning">
+                        Disadvantage on Strength/Dexterity attacks, checks and saving throws.
+                    </div>
+                }
             }
             else
             {

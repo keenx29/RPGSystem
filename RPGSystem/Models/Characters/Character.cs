@@ -438,6 +438,18 @@ namespace RPGSystem.Models.Characters
             var characterClass = CharacterClassFactory.Create(ClassType);
             return characterClass.IsProficientWithShield();
         }
+        public bool HasArmorProficiencyPenalty()
+        {
+            bool wearsNonProficientArmor =
+                EquippedArmor != null &&
+                !IsProficientWithArmor(EquippedArmor);
+
+            bool wearsNonProficientShield =
+                EquippedShield != null &&
+                !IsProficientWithShield();
+
+            return wearsNonProficientArmor || wearsNonProficientShield;
+        }
         public bool IncreaseAbilityScore(AbilityType abilityType)
         {
             if (PendingAbilityScoreImprovementPoints <= 0)

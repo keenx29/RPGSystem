@@ -705,6 +705,27 @@ namespace RPGSystem.Services
 
                     bool grantsAdvantage = false;
                     bool grantsDisadvantage = false;
+                    bool isAffectedRoll =
+                        rollType is RollType.Attack or RollType.Check or RollType.Save;
+
+                    bool usesStrengthOrDexterity =
+                        abilityType is AbilityType.Strength or AbilityType.Dexterity;
+
+                    if (_character.HasArmorProficiencyPenalty() &&
+                        isAffectedRoll &&
+                        usesStrengthOrDexterity)
+                    {
+                        grantsDisadvantage = true;
+                        result.AppliedEffects.Add("Non-proficient armor");
+
+                        result.Explanations.Add(new RollExplanation
+                        {
+                            Type = RollExplanationType.Disadvantage,
+                            Source = "Armor Proficiency",
+                            Text = "Wearing armor or a shield without proficiency gives disadvantage on this Strength/Dexterity roll."
+                        });
+                    }
+
                     var recklessAttack = _character.GetFeature(BarbarianFeatures.RecklessAttack);
 
                     if (rollType == RollType.Attack && recklessAttack?.IsActive == true)

@@ -46,11 +46,7 @@
 
                                 @if (feature.IsActive)
                                 {
-                                    <span class="badge bg-success">Active</span>
-                                }
-                                else if (feature.ActionType == FeatureActionType.None)
-                                {
-                                    <span class="badge bg-secondary">Passive</span>
+                                    <span class="equipment-tag is-proficient">Active</span>
                                 }
                             </div>
 
@@ -114,7 +110,7 @@
                                     <form asp-action="ToggleFeature" method="post" class="m-0">
                                         <input type="hidden" name="featureName" value="@feature.Name" />
 
-                                        <button class="btn btn-sm @(feature.IsActive ? "btn-success" : "btn-outline-dark")">
+                                        <button class="btn btn-sm @(feature.IsActive ? "feature-toggle-active" : "btn-outline-dark")">
                                             @(feature.IsActive ? "On" : "Toggle")
                                         </button>
                                     </form>

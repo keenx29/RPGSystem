@@ -1052,6 +1052,11 @@ input[type=number] {
     border: 1px solid var(--border-soft);
     border-radius: var(--radius);
 }
+.equipment-warning {
+    margin-top: 0.3rem;
+    color: #ff9d9d;
+    font-size: 0.8rem;
+}
 /* Defenses / Notes / Death saves */
 
 .defense-group {
