@@ -489,7 +489,8 @@ input[type=number] {
 }
 
 .skills-panel .skill-row:last-child {
-    margin-bottom: 0;
+    margin-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border-soft);
 }
 
 .skills-panel {
@@ -497,7 +498,7 @@ input[type=number] {
 }
 .skill-toggle {
     min-width: 44px;
-    padding: 0.18rem 0.45rem;
+    padding: 0.15rem 0.45rem;
     border: 1px solid var(--border-soft);
     border-radius: var(--radius);
     background: transparent;
@@ -512,11 +513,18 @@ input[type=number] {
     color: var(--text);
 }
 
-.skill-toggle.expertise.selected {
-    color: #c7e6ff;
-    background: rgba(78, 159, 199, 0.2);
-    border-color: #4e9fc7;
+.equipment-tag.is-expertise {
+    color: #ffd0d0;
+    background: rgba(169, 45, 45, 0.24);
+    border-color: rgba(169, 45, 45, 0.7);
 }
+
+.skill-toggle.expertise.selected {
+    color: #ffd0d0;
+    background: rgba(169, 45, 45, 0.24);
+    border-color: rgba(169, 45, 45, 0.7);
+}
+
 .skill-toggle.proficiency.selected,
 .skill-toggle.save-toggle.selected {
     background: rgba(47, 143, 91, 0.22);
@@ -525,9 +533,8 @@ input[type=number] {
 }
 
 .skill-toggle:disabled {
-    opacity: 0.28;
+    opacity: 0.45;
     cursor: not-allowed;
-    border-style: dashed;
 }
 
 /* Stats panel */
@@ -734,12 +741,46 @@ input[type=number] {
 
 /* HP */
 
-.hp-current {
+.hp-rest-controls {
     display: flex;
-    gap: 0.75rem;
-    font-size: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.hit-dice-control {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.hit-dice-control .btn:disabled {
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.hit-dice-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.rest-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rest-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
     font-weight: 700;
-    align-items: baseline;
+}
+
+.hp-panel .hp-heal-button,
+.hp-panel .rest-long-button {
+    color: #c6f6d5;
 }
 
 /* Inventory / Equipment */
@@ -768,6 +809,7 @@ input[type=number] {
     width: 2rem;
     height: 2rem;
     padding: 0;
+    padding-bottom: 0.15rem;
     border: 1px solid var(--border-soft);
     border-radius: var(--radius);
     background: var(--surface-soft);
@@ -854,22 +896,45 @@ input[type=number] {
     min-width: 0;
     padding: 0.45rem;
     text-align: center;
-    background: rgba(0, 0, 0, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--surface-raised);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.currency-field label {
-    font-size: 0.74rem;
-    font-weight: 700;
+.currency-field:hover,
+.currency-field:focus-within {
+    background: #2b261f;
+    border-color: var(--accent);
 }
 
 .currency-field input {
-    width: min(100%, 5.5rem);
+    box-sizing: border-box;
+    width: min(100%, 5rem);
     min-height: 2rem;
+    padding: 0.2rem 0.35rem;
     text-align: center;
+    color: var(--text);
+    background-color: #0f0f0f;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
     color-scheme: dark;
+    font-size: 0.85rem;
+    font-weight: 700;
     -moz-appearance: auto;
     appearance: auto;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.currency-field input:hover {
+    border-color: rgba(196, 151, 79, 0.65);
+}
+
+.currency-field input:focus {
+    background-color: #0f0f0f;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.15rem rgba(196, 151, 79, 0.18);
+    outline: 0;
 }
 
 .currency-copper label {
@@ -1156,6 +1221,12 @@ input[type=number] {
     background: var(--surface-soft);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.feature-row:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
 }
 
 .feature-main {
@@ -1202,6 +1273,18 @@ input[type=number] {
     color: var(--text-muted);
     font-size: 0.8rem;
 }
+.feature-toggle-active {
+    color: #9ee6b5;
+    background: rgba(47, 143, 91, 0.2);
+    border: 1px solid rgba(47, 143, 91, 0.65);
+}
+
+.feature-toggle-active:hover {
+    color: #c8f6d7;
+    background: rgba(47, 143, 91, 0.34);
+    border-color: var(--success);
+}
+
 .roll-message-header {
     align-items: flex-start;
 }
@@ -1397,18 +1480,29 @@ input[type=number] {
 }
 
 .compact-remove-button {
-    border: 0;
-    padding: 0 0.15rem;
-    background: transparent;
-    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    padding-bottom: 0.15rem;
+    color: #ffb3b3;
+    background: rgba(169, 45, 45, 0.16);
+    border: 1px solid rgba(169, 45, 45, 0.55);
+    border-radius: var(--radius);
     font-size: 1rem;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
 }
 
 .compact-remove-button:hover {
-    color: var(--danger);
+    color: #fff;
+    background: rgba(169, 45, 45, 0.4);
+    border-color: var(--danger);
 }
+
 .quick-dice-toolbar {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

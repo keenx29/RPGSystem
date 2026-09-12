@@ -23,6 +23,8 @@ namespace RPGSystem.Models.Classes
                     ActionType = FeatureActionType.Toggle,
                     IsActive = false,
                     Modifier = new SneakAttackModifier(GetSneakAttackDice(level)),
+                    ActivationType = FeatureActivationType.FreeAction,
+                    Details = $"Toggle before rolling damage to add {GetSneakAttackDice(level)}d6 extra damage with a Dexterity or Finesse weapon once per turn.",
                 });
             }
             if (level >= 2)

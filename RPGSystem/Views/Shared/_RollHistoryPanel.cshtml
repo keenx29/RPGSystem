@@ -205,14 +205,6 @@
                             </li>
                         }
 
-                        @if (roll.IsCriticalDamage)
-                        {
-                            <li>
-                                <strong>Critical damage:</strong>
-                                Damage dice is doubled.
-                            </li>
-                        }
-
                         @foreach (var explanation in roll.Explanations)
                         {
                             <li class="@(explanation.Type == RollExplanationType.Ignored ? "text-muted" : "")">

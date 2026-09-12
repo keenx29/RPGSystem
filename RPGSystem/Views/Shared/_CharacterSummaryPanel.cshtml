@@ -30,7 +30,11 @@
     </div>
 
     <div class="d-flex gap-2 mt-3 flex-wrap">
-        <form asp-controller="Character" asp-action="LevelUp" method="post" class="m-0">
+        <form asp-controller="Character"
+              asp-action="LevelUp"
+              method="post"
+              class="m-0"
+              onsubmit="return confirm('Level up this character? This increases maximum hit points by rolling a hit die and adding your Constitution modifier.');">
             <button class="btn btn-sm btn-outline-warning">
                 Level Up
             </button>

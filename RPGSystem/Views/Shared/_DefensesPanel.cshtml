@@ -78,6 +78,14 @@
         })();
     </script>
 
+    @if (Model.GetFeature(BarbarianFeatures.Rage)?.IsActive == true)
+    {
+        <div class="defense-group">
+            <div class="sheet-subtitle">Temporary</div>
+            <div>Rage: resistance to bludgeoning, piercing, and slashing damage</div>
+        </div>
+    }
+
     <div class="defense-group">
         <div class="sheet-subtitle">Resistances</div>
 
@@ -112,13 +120,7 @@
         </div>
     </div>
 
-    @if (Model.GetFeature(BarbarianFeatures.Rage)?.IsActive == true)
-    {
-        <div class="defense-group">
-            <div class="sheet-subtitle">Temporary</div>
-            <div>Rage: resistance to bludgeoning, piercing, and slashing damage</div>
-        </div>
-    }
+    
 
     <div class="defense-group">
         <div class="sheet-subtitle">Vulnerabilities</div>

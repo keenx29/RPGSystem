@@ -288,12 +288,15 @@
                     }
                     else
                     {
-                        <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
+                        <button type="button" class="btn btn-sm btn-outline-light" disabled>
                             No Use
                         </button>
                     }
                 }
-                <form asp-action="RemoveInventoryItem" method="post" class="d-inline">
+                <form asp-action="RemoveInventoryItem"
+                      method="post"
+                      class="d-inline"
+                      onsubmit="return confirm('Remove this item from inventory?');">
                     <input type="hidden" name="itemId" value="@item.Id" />
                     <button type="submit" class="btn btn-sm btn-outline-danger">
                         Remove

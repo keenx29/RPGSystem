@@ -96,12 +96,12 @@
                 <div class="d-flex gap-2">
                     <form asp-controller="Character" asp-action="RollAttack" method="post" class="m-0">
                         <input type="hidden" name="weaponId" value="@weapon.Id" />
-                        <button class="btn btn-sm btn-danger">Attack</button>
+                        <button class="btn btn-sm btn-outline-danger">Attack</button>
                     </form>
 
                     <form asp-controller="Character" asp-action="UnequipWeapon" method="post" class="m-0">
                         <input type="hidden" name="weaponId" value="@weapon.Id" />
-                        <button class="btn btn-sm btn-outline-secondary">Unequip</button>
+                        <button class="btn btn-sm btn-outline-dark">Unequip</button>
                     </form>
                 </div>
             </div>
@@ -148,7 +148,7 @@
             <div>
                 <form asp-controller="Character" asp-action="UnequipArmor" method="post" class="m-0">
                     <input type="hidden" name="armorId" value="@Model.EquippedArmor?.Id" />
-                    <button class="btn btn-sm btn-outline-secondary">Unequip</button>
+                    <button class="btn btn-sm btn-outline-dark">Unequip</button>
                 </form>
             </div>
         }
@@ -190,7 +190,7 @@
             <div>
                 <form asp-controller="Character" asp-action="UnequipShield" method="post" class="m-0">
                     <input type="hidden" name="shieldId" value="@Model.EquippedShield?.Id" />
-                    <button class="btn btn-sm btn-outline-secondary">Unequip</button>
+                    <button class="btn btn-sm btn-outline-dark">Unequip</button>
                 </form>
             </div>
         }

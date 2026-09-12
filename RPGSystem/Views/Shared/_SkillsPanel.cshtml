@@ -40,17 +40,28 @@
         var nextExpertiseValue = skill.IsExpertise ? "false" : "true";
 
         <div class="skill-row">
-            <div>
+            <div class="equipment-name-line">
                 <strong>@skill.Name</strong>
-                <span class="text-muted small">(@skill.RelatedAbility.Name)</span>
+
+                <span class="text-muted small">
+                    (@skill.RelatedAbility.Name)
+                </span>
 
                 @if (skill.IsExpertise)
                 {
-                    <span class="badge bg-success">Expertise</span>
+                    <div class="equipment-tags">
+                        <span class="equipment-tag is-expertise">
+                            Expertise
+                        </span>
+                    </div>
                 }
                 else if (skill.IsProficient)
                 {
-                    <span class="badge bg-secondary">Proficient</span>
+                    <div class="equipment-tags">
+                        <span class="equipment-tag is-proficient">
+                            Proficient
+                        </span>
+                    </div>
                 }
             </div>
 
@@ -85,7 +96,7 @@
 
                 <form asp-controller="Character" asp-action="RollSkill" method="post" class="m-0">
                     <input type="hidden" name="skillType" value="@skill.Type" />
-                    <button class="btn btn-sm btn-dark">
+                    <button class="btn btn-sm btn-outline-warning">
                         Roll
                     </button>
                 </form>

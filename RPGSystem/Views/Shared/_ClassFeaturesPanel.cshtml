@@ -33,6 +33,12 @@
                     resource != null &&
                     resource.Current >= feature.ResourceCost;
 
+                    var resetLabel = feature.ResetType switch
+                    {
+                        FeatureResetType.ShortRest => "Short Rest",
+                        FeatureResetType.LongRest => "Long Rest",
+                        _ => feature.ResetType.ToString()
+                    };
                     <div class="feature-row">
                         <div class="feature-main">
                             <div class="feature-name-line">
@@ -73,7 +79,7 @@
                                 @if (feature.ResetType != FeatureResetType.None)
                                 {
                                     <span>
-                                        Reset: @feature.ResetType
+                                        Reset: @resetLabel
                                     </span>
                                 }
                             </div>
@@ -86,7 +92,7 @@
                                     <form asp-action="UseFeature" method="post" class="m-0">
                                         <input type="hidden" name="featureName" value="@feature.Name" />
 
-                                        <button class="btn btn-sm btn-warning"
+                                        <button class="btn btn-sm btn-outline-warning"
                                                 disabled="@(!feature.IsAvailable)">
                                             Use
                                         </button>
@@ -97,7 +103,7 @@
                                     <form asp-action="UseFeature" method="post" class="m-0">
                                         <input type="hidden" name="featureName" value="@feature.Name" />
 
-                                        <button class="btn btn-sm btn-warning"
+                                        <button class="btn btn-sm btn-outline-warning"
                                                 disabled="@(!canUseResourceFeature)">
                                             Use
                                         </button>
@@ -108,7 +114,7 @@
                                     <form asp-action="ToggleFeature" method="post" class="m-0">
                                         <input type="hidden" name="featureName" value="@feature.Name" />
 
-                                        <button class="btn btn-sm @(feature.IsActive ? "btn-success" : "btn-outline-secondary")">
+                                        <button class="btn btn-sm @(feature.IsActive ? "btn-success" : "btn-outline-dark")">
                                             @(feature.IsActive ? "On" : "Toggle")
                                         </button>
                                     </form>
