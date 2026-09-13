@@ -9,7 +9,8 @@ namespace RPGSystem.ViewModels
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
         public double Weight { get; set; }
-
+        public bool IsStackable { get; set; }
+        public int Quantity { get; set; } = 1;
         public string? DamageDice { get; set; }
         public string? HealingDice { get; set; }
 

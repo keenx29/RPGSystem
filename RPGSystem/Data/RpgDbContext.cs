@@ -98,6 +98,10 @@ namespace RPGSystem.Data
             modelBuilder.Entity<DefenseEntryEntity>()
                 .HasIndex(d => new { d.CharacterId, d.Type, d.Name })
                 .IsUnique();
+
+            modelBuilder.Entity<ItemEntity>()
+                .Property(item => item.Quantity)
+                .HasDefaultValue(1);
         }
     }
 }

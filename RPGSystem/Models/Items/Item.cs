@@ -9,6 +9,10 @@
 
         public double Weight { get; set; }
         public bool IsStackable { get; set; } = false;
+        public int Quantity { get; set; } = 1;
+
+        public double TotalWeight =>
+            Weight * (IsStackable ? Quantity : 1);
 
         public ItemType Type { get; set; }
         public IItemEffect? Effect { get; set; }

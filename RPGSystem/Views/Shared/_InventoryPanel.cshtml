@@ -181,7 +181,7 @@
         <div class="inventory-item @(Model.EquippedWeapon?.Id == item.Id || Model.EquippedArmor?.Id == item.Id ? "equipped" : "")">
 
             <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-start gap-2">
+            <div class="d-flex justify-content-between align-items-center gap-2">
 
                 <div class="equipment-name-line">
 
@@ -225,11 +225,46 @@
                     }
                     
                 </div>
-               
-                <!-- small weight / meta (future-proof feel) -->
-                <small class="text-muted">
-                    @item.Weight lb
-                </small>
+
+                <div class="inventory-item-meta">
+                    @if (item.IsStackable)
+                    {
+                        <form asp-action="UpdateInventoryItemQuantity"
+                              method="post"
+                              class="item-quantity-control">
+                            <input type="hidden" name="itemId" value="@item.Id" />
+
+                            <button type="submit"
+                                    name="adjustment"
+                                    value="-1"
+                                    class="btn btn-sm btn-outline-dark"
+                                    @(item.Quantity == 1
+                                        ? "onclick=\"return confirm('Remove the last item in this stack?');\""
+                                        : "")>
+                                -
+                            </button>
+
+                            <input type="number"
+                                   name="quantity"
+                                   value="@item.Quantity"
+                                   min="0"
+                                   max="999"
+                                   class="item-quantity-input"
+                                   onchange="this.form.requestSubmit()" />
+
+                            <button type="submit"
+                                    name="adjustment"
+                                    value="1"
+                                    class="btn btn-sm btn-outline-dark">
+                                +
+                            </button>
+                        </form>
+                    }
+
+                    <small class="text-muted">
+                        @item.TotalWeight.ToString("0.##") lb
+                    </small>
+                </div>
 
             </div>
             @if (!string.IsNullOrWhiteSpace(item.Description))

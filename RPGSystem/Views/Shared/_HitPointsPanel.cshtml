@@ -36,7 +36,7 @@
                        name="amount"
                        value="1"
                        min="1"
-                       class="form-control form-control-sm text-center"
+                       class="form-control form-control-sm text-center modify-hp-input"
                        style="width: 80px;" />
 
                 <button class="btn btn-sm btn-outline-success hp-heal-button"
@@ -71,14 +71,14 @@
         <div class="rest-actions">
             <span class="rest-label">Rest:</span>
 
-            <form asp-controller="Character" asp-action="ShortRest" method="post" class="m-0">
+            <form asp-controller="Character" asp-action="ShortRest" method="post" class="m-0" onsubmit="return confirm('Take a short rest?\n\nRestores features and resources that recharge on a short rest. It does not restore HP automatically; use Hit Dice separately.');">
                 <button class="btn btn-sm btn-outline-warning"
                         disabled="@Model.Character.IsDead">
                     Short
                 </button>
             </form>
 
-            <form asp-controller="Character" asp-action="LongRest" method="post" class="m-0">
+            <form asp-controller="Character" asp-action="LongRest" method="post" class="m-0" onsubmit="return confirm('Take a long rest?\n\nRestores all HP, recovers Hit Dice, refreshes class features and resources, and clears death save progress.');">
                 <button class="btn btn-sm btn-outline-success rest-long-button"
                         disabled="@Model.Character.IsDead">
                     Long

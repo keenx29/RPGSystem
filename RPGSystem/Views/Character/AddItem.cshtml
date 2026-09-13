@@ -1,4 +1,5 @@
-﻿@using RPGSystem.Models.Items
+﻿@using RPGSystem.Models.Characters
+@using RPGSystem.Models.Items
 @model RPGSystem.ViewModels.AddInventoryItemViewModel
 
 @{
@@ -10,7 +11,7 @@
         <div>
             <h1>Add Item</h1>
             <p class="text-muted mb-0">
-                Add a basic item, weapon, or armor to the selected character inventory.
+                Add a basic item, potion, weapon, or armor to the selected character inventory.
             </p>
         </div>
 
@@ -68,15 +69,41 @@
                           rows="3"
                           placeholder="What does this item do?"></textarea>
 
+                <div id="stackableItemControl" class="form-check form-switch mb-2">
+                    <input asp-for="IsStackable"
+                           id="inventoryItemIsStackable"
+                           class="form-check-input" />
+
+                    <label asp-for="IsStackable" class="form-check-label">
+                        Track quantity
+                    </label>
+                </div>
+
+                <div id="stackableQuantityFields">
+                    <label asp-for="Quantity" class="form-label small">Quantity</label>
+                    <input asp-for="Quantity"
+                           id="inventoryItemQuantity"
+                           type="number"
+                           min="1"
+                           max="999"
+                           class="form-control form-control-sm mb-2" />
+                </div>
+
                 <div data-inventory-fields="weapon">
                     <label class="form-label small">Weapon damage dice</label>
                     <input name="DamageDice"
                            class="form-control form-control-sm mb-2"
-                           placeholder="e.g. 1d8" />
+                           placeholder="e.g. 1d8 or 1d8+2" />
 
-                    <input name="DamageType"
-                           class="form-control form-control-sm mb-2"
-                           placeholder="Damage type, e.g. slashing" />
+                    <label class="form-label small">Weapon damage type</label>
+                    <select name="DamageType" class="form-select form-select-sm mb-2">
+                        @foreach (var damageType in DefenseOptionCatalog.DamageTypes)
+                        {
+                            <option value="@damageType.ToLowerInvariant()">
+                                @damageType
+                            </option>
+                        }
+                    </select>
 
                     <label class="form-label small">Weapon scaling</label>
                     <select name="ScalingType" class="form-select form-select-sm mb-2">

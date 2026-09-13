@@ -19,6 +19,9 @@ namespace RPGSystem.Data.Entities
         public string Description { get; set; } = "";
 
         public double Weight { get; set; }
+        public bool IsStackable { get; set; }
+
+        public int Quantity { get; set; } = 1;
 
         public ItemType Type { get; set; }
 

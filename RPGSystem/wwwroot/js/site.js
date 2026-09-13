@@ -12,6 +12,7 @@
         section.style.display = sectionKind === selectedKind ? "" : "none";
     });
     applyInventoryDefaults(selectedKind);
+    updateStackableItemFields();
 }
 function setInventoryFieldValue(id, value) {
     const field = document.getElementById(id);
@@ -79,6 +80,28 @@ function updateThrownWeaponFields() {
 
     rangeFields.style.display = thrownCheckbox.checked ? "" : "none";
 }
+function updateStackableItemFields() {
+    const kindSelect = document.getElementById("inventoryItemKind");
+    const stackableControl = document.getElementById("stackableItemControl");
+    const stackableCheckbox = document.getElementById("inventoryItemIsStackable");
+    const quantityFields = document.getElementById("stackableQuantityFields");
+
+    if (!kindSelect || !stackableControl || !stackableCheckbox || !quantityFields) {
+        return;
+    }
+
+    const supportsStacking =
+        kindSelect.value === "General" ||
+        kindSelect.value === "HealingPotion";
+
+    stackableControl.style.display = supportsStacking ? "" : "none";
+    quantityFields.style.display =
+        supportsStacking && stackableCheckbox.checked ? "" : "none";
+
+    if (!supportsStacking) {
+        stackableCheckbox.checked = false;
+    }
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const kindSelect = document.getElementById("inventoryItemKind");
@@ -101,6 +124,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (armorType) {
         armorType.addEventListener("change", updateArmorWeightDefault);
+    }
+    const stackableCheckbox = document.getElementById("inventoryItemIsStackable");
+
+    if (stackableCheckbox) {
+        stackableCheckbox.addEventListener("change", updateStackableItemFields);
     }
 });
 

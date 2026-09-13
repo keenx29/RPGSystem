@@ -239,6 +239,8 @@ namespace RPGSystem.Services
                 Name = item.Name,
                 Description = item.Description,
                 Weight = item.Weight,
+                IsStackable = item.IsStackable,
+                Quantity = item.Quantity,
                 Type = item.Type
             };
 

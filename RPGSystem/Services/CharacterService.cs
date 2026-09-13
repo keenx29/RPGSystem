@@ -1604,9 +1604,18 @@ namespace RPGSystem.Services
 
             if (result != null)
             {
-                _character.Inventory.Remove(item);
+                if (item.IsStackable && item.Quantity > 1)
+                {
+                    item.Quantity--;
+                }
+                else
+                {
+                    _character.Inventory.Remove(item);
+                }
+
                 SaveState();
             }
+
             return result ?? CreateFeedback($"{item.Name} had no effect.");
         }
         private RollResult? ExecuteFeatureAction(ClassFeatureInstance feature)
@@ -1901,6 +1910,21 @@ namespace RPGSystem.Services
                     "Healing dice must use a format like 2d4+2 or 4d4+4.");
             }
 
+            bool supportsStacking =
+                model.ItemKind is "General" or "HealingPotion";
+
+            bool isStackable =
+                supportsStacking && model.IsStackable;
+
+            int quantity = isStackable
+                ? model.Quantity
+                : 1;
+
+            if (quantity < 1 || quantity > 999)
+            {
+                return CreateFeedback("Item quantity must be between 1 and 999.");
+            }
+
             Item item = model.ItemKind switch
             {
                 "HealingPotion" => new Item
@@ -1914,6 +1938,8 @@ namespace RPGSystem.Services
                         : model.Description.Trim(),
 
                     Weight = model.Weight,
+                    IsStackable = isStackable,
+                    Quantity = quantity,
 
                     Type = ItemType.Consumable,
 
@@ -1924,6 +1950,8 @@ namespace RPGSystem.Services
                 {
                     Name = model.Name.Trim(),
                     Weight = model.Weight,
+                    IsStackable = isStackable,
+                    Quantity = quantity,
                     Description = model.Description?.Trim() ?? "",
                     Type = ItemType.General
                 },
@@ -1932,10 +1960,12 @@ namespace RPGSystem.Services
                     
                     Name = model.Name.Trim(),
                     Weight = model.Weight,
+                    IsStackable = false,
+                    Quantity = 1,
                     Description = model.Description?.Trim() ?? "",
                     Type = ItemType.Weapon,
                     DamageDice = string.IsNullOrWhiteSpace(model.DamageDice) ? "1d4" : model.DamageDice.Trim(),
-                    DamageType = string.IsNullOrWhiteSpace(model.DamageType) ? "bludgeoning" : model.DamageType.Trim(),
+                    DamageType = string.IsNullOrWhiteSpace(model.DamageType) ? "bludgeoning" : model.DamageType.Trim().ToLowerInvariant(),
                     ScalingType = model.ScalingType,
                     ProficiencyType = model.WeaponProficiencyType,
                     ProficiencyName = model.Name.Trim(),
@@ -1949,6 +1979,8 @@ namespace RPGSystem.Services
                 {
                     Name = model.Name.Trim(),
                     Weight = model.Weight,
+                    IsStackable = false,
+                    Quantity = 1,
                     Description = model.Description?.Trim() ?? "",
                     Type = ItemType.Armor,
                     ArmorType = model.ArmorType,
@@ -1972,6 +2004,15 @@ namespace RPGSystem.Services
                 if (!_diceService.IsValidDiceNotation(damageDice))
                 {
                     return CreateFeedback("Weapon damage dice must use a format like 1d8 or 2d6.");
+                }
+
+                var damageType = model.DamageType?.Trim() ?? "";
+
+                if (!DefenseOptionCatalog.DamageTypes.Contains(
+                        damageType,
+                        StringComparer.OrdinalIgnoreCase))
+                {
+                    return CreateFeedback("Choose a valid weapon damage type.");
                 }
 
                 if (model.AttackBonus < -5 || model.AttackBonus > 5)
@@ -2021,6 +2062,26 @@ namespace RPGSystem.Services
             }
 
             _character.Inventory.Remove(item);
+            SaveState();
+        }
+        public void UpdateInventoryItemQuantity(Guid itemId, int quantity)
+        {
+            var item = _character.Inventory.FirstOrDefault(item => item.Id == itemId);
+
+            if (item == null || !item.IsStackable)
+            {
+                return;
+            }
+
+            if (quantity <= 0)
+            {
+                _character.Inventory.Remove(item);
+            }
+            else
+            {
+                item.Quantity = Math.Min(quantity, 999);
+            }
+
             SaveState();
         }
         public RollResult? EquipWeapon(Guid weaponId)
@@ -2805,6 +2866,8 @@ namespace RPGSystem.Services
                 Name = entity.Name,
                 Description = entity.Description,
                 Weight = entity.Weight,
+                IsStackable = entity.IsStackable,
+                Quantity = Math.Max(1, entity.Quantity),
                 Type = entity.Type,
                 Effect = entity.EffectType == "Heal"
                     ? new HealEffect(entity.EffectDice ?? "2d4+2")

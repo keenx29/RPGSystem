@@ -842,6 +842,64 @@ input[type=number] {
     transform: translateY(-1px);
 }
 
+.inventory-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+}
+.inventory-item .equipment-name-line {
+    min-height: 1.35rem;
+}
+
+.inventory-item .equipment-name-line > strong {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.35rem;
+    line-height: 1;
+}
+
+.inventory-item-meta {
+    gap: 0.45rem;
+}
+
+.item-quantity-control {
+    gap: 0.15rem;
+}
+
+.item-quantity-control .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.45rem;
+    min-width: 1.45rem;
+    height: 1.45rem;
+    padding: 0;
+    line-height: 1;
+}
+
+.inventory-item-meta .item-quantity-input {
+    width: 2.3rem;
+    min-width: 2.3rem;
+    height: 1.45rem;
+    padding: 0 0.15rem;
+    font-size: 0.75rem;
+}
+
+.item-quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin: 0;
+}
+
+.item-quantity-input {
+    width: 3rem;
+    min-width: 3rem;
+    padding: 0.15rem;
+    text-align: center;
+}
+
 .inventory-description {
     color: var(--text-muted);
     font-size: 0.85rem;
@@ -908,7 +966,9 @@ input[type=number] {
     border-color: var(--accent);
 }
 
-.currency-field input {
+.currency-field input,
+.inventory-item-meta input,
+.modify-hp-input{
     box-sizing: border-box;
     width: min(100%, 5rem);
     min-height: 2rem;
@@ -926,11 +986,15 @@ input[type=number] {
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.currency-field input:hover {
+.currency-field input:hover,
+.inventory-item-meta input:hover,
+.modify-hp-input:hover {
     border-color: rgba(196, 151, 79, 0.65);
 }
 
-.currency-field input:focus {
+.currency-field input:focus,
+.inventory-item-meta input:focus,
+.modify-hp-input:focus{
     background-color: #0f0f0f;
     border-color: var(--accent);
     box-shadow: 0 0 0 0.15rem rgba(196, 151, 79, 0.18);

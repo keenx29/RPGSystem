@@ -80,7 +80,7 @@ namespace RPGSystem.Models.Characters
         {
             get
             {
-                double total = Inventory.Sum(item => item.Weight);
+                double total = Inventory.Sum(item => item.TotalWeight);
 
                 if (EquippedWeapons != null)
                     foreach (var item in EquippedWeapons)

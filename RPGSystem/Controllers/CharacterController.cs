@@ -396,6 +396,20 @@ namespace RPGSystem.Controllers
 
             return RedirectToAction("Sheet");
         }
+
+        [HttpPost]
+        public IActionResult UpdateInventoryItemQuantity(
+            Guid itemId,
+            int quantity,
+            int adjustment = 0)
+        {
+            _characterService.UpdateInventoryItemQuantity(
+                itemId,
+                quantity + adjustment);
+
+            return RedirectToAction("Sheet");
+        }
+
         [HttpPost]
         public IActionResult UpdateCurrency(UpdateCurrencyViewModel model)
         {
